@@ -2,7 +2,12 @@ package UI;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -28,16 +33,14 @@ public class MainWindow extends JFrame {
 	private JSplitPane contentPane;
 	private Controller controller;
 	
-	private JPanel chatPanel;
-	private JTextField chatJTF;
-	private JComboBox<String> chatCharacter;
-	private JTextArea chatBox;
-	private JButton chatSendBtn;
+	private JTextArea chatJTA;
+	private JTextField chatBox;
+	private JButton chatBtnSend;
 	
 	public MainWindow(Controller controller) {
 		this.controller = controller;
 		init();
-		pack();
+		repaint();
 	}
 	
 	private void init() {
@@ -46,7 +49,17 @@ public class MainWindow extends JFrame {
 		setLayout(new BorderLayout());
 		setVisible(true);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		addWindowListener(new wListener());
+		
+		addComponentListener(new ComponentAdapter() { //Sidepanel is always 20% of window width.
+			public void componentResized(ComponentEvent e) {
+				Rectangle r = getBounds();
+				int w = (int)(r.width * 0.8);
+				try {
+					contentPane.setDividerLocation(w);
+
+				} catch (Exception e2) {}
+			}
+		});
 		
 		/*
 		 * ==============================================================
@@ -54,22 +67,36 @@ public class MainWindow extends JFrame {
 		 * ==============================================================
 		 */
 		
-		chatPanel = new JPanel(new BorderLayout());
-		chatJTF = new JTextField();
-		chatJTF.setEditable(false);
-		chatPanel.add(chatJTF, BorderLayout.CENTER);
+		// ---------- CHAT ---------
+		JPanel chatPanel = new JPanel(new BorderLayout());
 		
-		JPanel textBoxPane = new JPanel();
-		textBoxPane.add(new JLabel("Send message as:"));
-		String[] strings = {"Text1","Text2","Text3"};
-		chatCharacter = new JComboBox<String>(strings);
-		textBoxPane.add(chatCharacter);
-		chatBox = new JTextArea();
-		textBoxPane.add(chatBox);
-		chatSendBtn = new JButton("Send");
-		textBoxPane.add(chatSendBtn);
-		//TODO: ADD LISTENER TO BTN
+		JScrollPane scrollPane1 = new JScrollPane();
+		chatJTA = new JTextArea();
+		chatJTA.setEditable(false);
+		scrollPane1.setViewportView(chatJTA);
+		chatPanel.add(scrollPane1, BorderLayout.CENTER);
+		
+		JPanel textBoxPane = new JPanel(new BorderLayout());
+		chatBox = new JTextField();
+		chatBtnSend = new JButton("SEND");
+		chatBtnSend.addActionListener(new ButtonListener());
+		textBoxPane.add(chatBox, BorderLayout.CENTER);
+		textBoxPane.add(chatBtnSend, BorderLayout.EAST);
+		textBoxPane.setMinimumSize(new Dimension(0, 150));
 		chatPanel.add(textBoxPane,BorderLayout.SOUTH);
+		
+		// ---------- NOTES ----------
+		
+		JScrollPane notePanel = new JScrollPane();
+		JTextArea noteJTA = new JTextArea();
+		notePanel.setViewportView(noteJTA);
+		
+		// ---------- IMPORT ----------
+		
+		
+		
+		// ---------- SETTINGS ----------
+		
 		
 		/*
 		 * ==============================================================
@@ -81,12 +108,10 @@ public class MainWindow extends JFrame {
 		boardPanel = new JScrollPane();
 		sidePanel = new JTabbedPane();
 		
-		sidePanel.addTab("TEST 0", chatPanel);
-		sidePanel.addTab("TEST 1", new JPanel());
-		sidePanel.addTab("TEST 2", new JPanel());
-		sidePanel.addTab("TEST 3", new JPanel());
-		sidePanel.addTab("TEST 4", new JPanel());
-		sidePanel.addTab("TEST 5", new JPanel());
+		sidePanel.addTab("Chat", chatPanel);
+		sidePanel.addTab("Notes", notePanel);
+		sidePanel.addTab("Import", new JPanel());
+		sidePanel.addTab("Settings", new JPanel());
 		sidePanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		sidePanel.setMinimumSize(new Dimension(800, 800));
 		
@@ -95,13 +120,7 @@ public class MainWindow extends JFrame {
 		contentPane.setLeftComponent(boardPanel);
 		contentPane.setRightComponent(sidePanel);
 		contentPane.setEnabled(false);
-
-		
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int width = (int) (screenSize.width * 0.8);
-		contentPane.setDividerLocation(width);
 		add(contentPane,BorderLayout.CENTER);
-		add(new JLabel("TEST"),BorderLayout.NORTH);	
 	}
 	
 	private class TabListener implements ChangeListener {
@@ -129,27 +148,13 @@ public class MainWindow extends JFrame {
 		}		
 	}
 	
-	private class wListener implements WindowListener {
+	private class ButtonListener implements ActionListener {
 
-		@Override
-		public void windowActivated(WindowEvent arg0) {}
-
-		@Override
-		public void windowClosed(WindowEvent arg0) {}
-
-		@Override
-		public void windowClosing(WindowEvent arg0) {}
-
-		@Override
-		public void windowDeactivated(WindowEvent arg0) {}
-
-		@Override
-		public void windowDeiconified(WindowEvent arg0) {}
-
-		@Override
-		public void windowIconified(WindowEvent arg0) {}
-
-		public void windowOpened(WindowEvent arg0) {}
-		
+		public void actionPerformed(ActionEvent e) {
+			if(e.getSource() == chatBtnSend) {
+				controller.newChatMessage(chatBox.getText());
+				chatBox.setText("");
+			}
+		}
 	}
 }
