@@ -28,14 +28,26 @@ import client.Controller;
 
 public class MainWindow extends JFrame {
 
+	private Controller controller;
+	
+	//Components used in main window.
 	private JScrollPane boardPanel;
 	private JTabbedPane sidePanel;
 	private JSplitPane contentPane;
-	private Controller controller;
 	
+	//Components for chat-panel
 	private JTextArea chatJTA;
 	private JTextField chatBox;
 	private JButton chatBtnSend;
+	
+	//Components for import-panel
+	private JButton importBtnBackgroundFileChooser;
+	private JButton importBtnBackgoundImport;
+	private JButton importBtnIconFileChooser;
+	private JButton importBtnIconImport;
+	
+	//Components for settings-panel
+	
 	
 	public MainWindow(Controller controller) {
 		this.controller = controller;
@@ -86,16 +98,18 @@ public class MainWindow extends JFrame {
 		chatPanel.add(textBoxPane,BorderLayout.SOUTH);
 		
 		// ---------- NOTES ----------
-		
 		JScrollPane notePanel = new JScrollPane();
+		
 		JTextArea noteJTA = new JTextArea();
 		notePanel.setViewportView(noteJTA);
 		
 		// ---------- IMPORT ----------
+		JPanel importPanel = new JPanel();
 		
 		
 		
 		// ---------- SETTINGS ----------
+		JPanel settingsPanel = new JPanel();
 		
 		
 		/*
@@ -110,8 +124,8 @@ public class MainWindow extends JFrame {
 		
 		sidePanel.addTab("Chat", chatPanel);
 		sidePanel.addTab("Notes", notePanel);
-		sidePanel.addTab("Import", new JPanel());
-		sidePanel.addTab("Settings", new JPanel());
+		sidePanel.addTab("Import", importPanel);
+		sidePanel.addTab("Settings", settingsPanel);
 		sidePanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		sidePanel.setMinimumSize(new Dimension(800, 800));
 		
