@@ -1,6 +1,6 @@
 package client;
 
-import UI.MainWindow;
+import client.ui.MainWindow;
 
 public class Controller {
 	
