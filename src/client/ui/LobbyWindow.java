@@ -1,4 +1,4 @@
-package UI;
+package client.ui;
 
 import javax.swing.JFrame;
 
@@ -96,7 +96,7 @@ public class LobbyWindow extends JFrame
 		
 		private void createServer()
 		{
-			new CreateLobby();
+			
 		}
 		
 		private void joinServer()
