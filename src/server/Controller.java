@@ -1,8 +1,7 @@
 package server;
 
 public class Controller {
-
-	public Controller() {
-
+	public Controller(){
+		new Connection();
 	}
 }
