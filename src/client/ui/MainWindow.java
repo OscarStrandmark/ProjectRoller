@@ -64,7 +64,9 @@ public class MainWindow extends JFrame {
 	private int iconHeight = 150;
 
 	//Components for settings-panel
-
+	private JLabel settingsLblUsername;
+	private JTextField settingsJTFUsername;
+	private JButton settingsBtnSave;
 
 	public MainWindow(Controller controller) {
 		this.controller = controller;
@@ -152,7 +154,6 @@ public class MainWindow extends JFrame {
 		importBtnBackgoundImport = new JButton("Import");
 		importBtnBackgroundFileChooser = new JButton("Pick file");
 
-
 		importJFCBackground.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		importJFCBackground.setFileFilter(new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes())); //Accept all image files supported on the system the program is ran on.
 
@@ -163,15 +164,27 @@ public class MainWindow extends JFrame {
 
 		JPanel importSaveLoadSessionPane = new JPanel(); //For future implementation of importing saved session data.
 
-
 		importPanel.add(importIconPane);
 		importPanel.add(importBGPane);
 		importPanel.add(importSaveLoadSessionPane);
 
-
 		// ---------- SETTINGS ----------
-		JPanel settingsPanel = new JPanel();
+		JPanel settingsPanel = new JPanel(new GridLayout(15, 1));
+		JPanel usernamePanel = new JPanel(new GridLayout(1, 2));
+		usernamePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 
+		settingsLblUsername = new JLabel();
+		settingsLblUsername.setText("Username: ");
+
+		settingsJTFUsername = new JTextField();
+
+		settingsBtnSave = new JButton("Save");
+
+		settingsPanel.add(usernamePanel);
+
+		usernamePanel.add(settingsLblUsername);
+		usernamePanel.add(settingsJTFUsername);
+		settingsPanel.add(settingsBtnSave);
 
 		/*
 		 * ==============================================================
@@ -205,7 +218,7 @@ public class MainWindow extends JFrame {
 
 		importBtnBackgroundFileChooser.addActionListener(listener);
 		importBtnBackgoundImport      .addActionListener(listener);
-		
+
 		importBtnIconFileChooser      .addActionListener(listener);
 		importBtnIconImport           .addActionListener(listener);
 	}
@@ -302,6 +315,10 @@ public class MainWindow extends JFrame {
 				iconicon.setBounds(0,0,iconWidth,iconHeight);
 				boardPanel.add(iconicon);
 				boardPanel.repaint();
+			}
+
+			if(e.getSource() == settingsBtnSave) {
+				//TODO
 			}
 		}
 	}
