@@ -56,6 +56,12 @@ public class MainWindow extends JFrame {
 	private JButton importBtnIconFileChooser;
 	private JButton importBtnIconImport;
 
+	private JTextField scaleIcon;
+
+	private String imagePath;
+
+	private int iconWidth = 150;
+	private int iconHeight = 150;
 
 	//Components for settings-panel
 
@@ -118,8 +124,23 @@ public class MainWindow extends JFrame {
 		// ---------- IMPORT ----------
 		JPanel importPanel = new JPanel(new GridLayout(3, 1));
 
+		//Panel for importing an icon
 		JPanel importIconPane = new JPanel();
+		scaleIcon = new JTextField();
+		JLabel setSizeIcon = new JLabel("Set size for Icon (1-15)", SwingConstants.CENTER);
 
+		Border borderImport = BorderFactory.createLineBorder(Color.black);
+
+		importBtnIconFileChooser = new JButton("Choose Image");
+		importBtnIconImport = new JButton("Import Icon");
+
+		importIconPane.add(importBtnIconFileChooser);
+		importIconPane.add(importBtnIconImport);
+		importIconPane.add(setSizeIcon);
+		importIconPane.add(scaleIcon);
+		importIconPane.setBorder(borderImport);
+
+		//Panel for importing a background.
 		JPanel importBGPane = new JPanel(new GridLayout(4,1)); //Panel for importing a background.
 		importBGPane.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); //Creates a border for the panel
 
@@ -191,6 +212,39 @@ public class MainWindow extends JFrame {
 		g.drawImage(img, 0, 0, null);
 	}
 
+	/**
+	 * Scales the image by input from user. If no input is made,
+ 	* make the icon the standard size of 150 by 150 pixels.
+ 	*/
+	private void getScaleInput() {
+		if(scaleIcon.getText().length() == 0) {
+		} else if(Integer.parseInt(scaleIcon.getText()) < 0 || Integer.parseInt(scaleIcon.getText()) > 15 ) {
+			JOptionPane.showMessageDialog(null, "Enter a valid number between 0-15 or leave the field empty for a standard size of 150 by 150 pixels icon.");
+		} else if(Integer.parseInt(scaleIcon.getText()) >= 1 && Integer.parseInt(scaleIcon.getText()) <= 15 ) {
+			int amountOfScale = Integer.parseInt(scaleIcon.getText());
+			iconWidth = amountOfScale * 20;
+			iconHeight = amountOfScale * 20;
+		} else {
+			JOptionPane.showMessageDialog(null, "Enter a valid number between 0-15, or leave the field empty for a standard size of 150 by 150 pixels icon.");
+		}
+	}
+
+	/**
+ 	* Scales the chosen image to a set size.
+ 	* @param srcImg the image to be scaled
+ 	* @param w the width of the image
+ 	* @param h the height of the image
+ 	* @return return the new scaled image
+ 	*/
+	private Image getScaledImage(Image srcImg, int w, int h) {
+		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = resizedImg.createGraphics();
+		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g2.drawImage(srcImg, 0, 0, w, h, null);
+		g2.dispose();
+		return resizedImg;
+	}
+
 	private class ButtonListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
@@ -218,7 +272,33 @@ public class MainWindow extends JFrame {
 					e1.printStackTrace();
 				}
 				g.drawImage(img, 0, 0, boardPanel.getWidth(), boardPanel.getHeight(), null);
+			}
 
+			if(e.getSource() == importBtnIconFileChooser) {
+				JFileChooser fileChooser = new JFileChooser();
+				imagePath = null;
+
+				//Filter for what files to show in FileChooser-window.
+				FileNameExtensionFilter imageFilter = new FileNameExtensionFilter(
+						"Image files", ImageIO.getReaderFileSuffixes());
+				fileChooser.setFileFilter(imageFilter);
+				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+				int fileOk = fileChooser.showOpenDialog(null);
+				if(fileOk == JFileChooser.APPROVE_OPTION) {
+					imagePath = fileChooser.getSelectedFile().getPath();
+				}
+
+			if(e.getSource() == importBtnIconImport) {
+				getScaleInput();
+				ImageIcon icon = new ImageIcon(imagePath);
+				Image image = icon.getImage();
+				Image newIconImage = getScaledImage(image, iconWidth, iconHeight);
+				ImageIcon finalIcon = new ImageIcon(newIconImage);
+				JLabel iconicon = new JLabel(finalIcon);
+				iconicon.setBounds(0,0,iconWidth,iconHeight);
+				boardPanel.add(iconicon);
+				boardPanel.repaint();
 			}
 		}
 	}
