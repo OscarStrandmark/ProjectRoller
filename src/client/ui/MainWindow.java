@@ -205,6 +205,9 @@ public class MainWindow extends JFrame {
 
 		importBtnBackgroundFileChooser.addActionListener(listener);
 		importBtnBackgoundImport      .addActionListener(listener);
+		
+		importBtnIconFileChooser      .addActionListener(listener);
+		importBtnIconImport           .addActionListener(listener);
 	}
 
 	private void setBoardBackground(Image img) {
