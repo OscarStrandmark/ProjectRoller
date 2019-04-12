@@ -57,6 +57,9 @@ public class LobbyWindow extends JFrame
 	//----------------------------Data------------------------------------------------
 	//--------------------------------------------------------------------------------
 	
+	private Controller controller;
+	//TODO implementera controller-klassen
+	
 	//List for sessions
 	private ArrayList<Session> sessionList;
 	private JTable sessionTable;
@@ -77,9 +80,21 @@ public class LobbyWindow extends JFrame
 		setVisible(true);
 	}
 	
+	/**
+	    * Constuctor for the lobby window
+	    */
+	public LobbyWindow(Controller controller)
+	{
+		
+		//initilize the lobbywindow
+		init();
+		setVisible(true);
+		this.controller = controller;
+	}
+	
 	
 	/**
-	    * Initilizes the components and data in the lobby window
+	    * Initializes the components and data in the lobby window
 	    */
 	public void init()
 	{
@@ -147,7 +162,7 @@ public class LobbyWindow extends JFrame
 		}
 
 
-		//initilizing the JTable
+		//initializing the JTable
 		this.sessionTable = new JTable(this.sessionTableModel);
 		this.spnSessionList = new JScrollPane(this.sessionTable);
 
@@ -216,11 +231,62 @@ public class LobbyWindow extends JFrame
 	
 	
 	/**
+	    * Updates the session table in the lobby window
+	    * @param sessionList ArrayList<Session>
+	    */
+	public void updateSessionListServer(ArrayList<String> sessionData)
+	{
+
+		
+		//Clears the old table
+		((DefaultTableModel) this.sessionTableModel).setRowCount(0);
+
+		for(String session : sessionData)
+		{
+			
+
+			this.addSessionServer(session);
+			
+		}
+		
+		
+		((DefaultTableModel) this.sessionTableModel).fireTableDataChanged();
+		
+		this.sessionTable = new JTable(this.sessionTableModel);
+		this.sessionTable.revalidate();
+		
+		
+		this.spnSessionList = new JScrollPane(this.sessionTable);
+	}
+	
+	
+	/**
+	    * Adds a session the the tablemodel
+	    * @param session Session
+	    */
+	public void addSessionServer(String session)
+	{
+		//TODO decode the string
+		
+		String name = "";
+		int nbrPlayers = 0;
+		int maxPlayers = 0;
+		
+		
+		Vector<Object> tableData = new Vector<>();
+		tableData.add(name);
+		tableData.add(nbrPlayers);
+		tableData.add(maxPlayers);
+		((DefaultTableModel) this.sessionTableModel).addRow(tableData);
+	}
+	
+	
+	/**
 	    * Creates a window to create a  session
 	    */
 	private void createSession()
 	{
-		//initilizing the components in the create session window
+		//initializing the components in the create session window
 		JPanel pnlCreateSession = new JPanel(new BorderLayout());
 		JPanel pnlButtons = new JPanel(new FlowLayout());
 		JPanel pnlTextField = new JPanel(new GridLayout(3, 2));
@@ -234,11 +300,16 @@ public class LobbyWindow extends JFrame
 		tfPassword = new JTextField();
 		tfMaxPlayers = new JTextField();
 		
+		btnCreate = new JButton("Create");
+		btnCancel = new JButton("Cancel");
+		
+		//adding buttonlisteners to the buttons
+		btnCreate.addActionListener(new ButtonListener());
+		btnCancel.addActionListener(new ButtonListener());
+		
 		//adding the components to the create session window
 		pnlCreateSession.add(pnlTextField, BorderLayout.NORTH);
 		pnlCreateSession.add(pnlButtons, BorderLayout.SOUTH);
-		
-		;
 		
 		pnlTextField.add(lblName);
 		pnlTextField.add(tfName);
@@ -246,26 +317,18 @@ public class LobbyWindow extends JFrame
 		pnlTextField.add(tfPassword);
 		pnlTextField.add(lblMaxPlayers);
 		pnlTextField.add(tfMaxPlayers);
-		
-		btnCreate = new JButton("Create");
-		btnCancel = new JButton("Cancel");
-		
-		btnCreate.addActionListener(new ButtonListener());
-		btnCancel.addActionListener(new ButtonListener());
-												
+														
 		pnlButtons.add(btnCancel);
 		pnlButtons.add(btnCreate);
 		
-		//init the frame
-		frameCreateSession.setTitle("Create a Session");
-		
+		//initializing the frame
+		frameCreateSession.setTitle("Create a Session");		
 		frameCreateSession.setVisible(true);
 		frameCreateSession.add(pnlCreateSession);		
 		Dimension windowSize = Toolkit.getDefaultToolkit().getScreenSize();
 		windowSize.setSize(windowSize.getWidth()/3, windowSize.getHeight()/3);
 		frameCreateSession.setSize(windowSize);
-		frameCreateSession.setLocation((int)(windowSize.getWidth()/2) + (frameCreateSession.getWidth() /2), (int)(windowSize.getHeight()/2) + (frameCreateSession.getHeight()/2));
-	
+		frameCreateSession.setLocation((int)(windowSize.getWidth()/2) + (frameCreateSession.getWidth() /2), (int)(windowSize.getHeight()/2) + (frameCreateSession.getHeight()/2));	
 		frameCreateSession.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
 	}
