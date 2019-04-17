@@ -1,77 +1,177 @@
 package client.ui;
 
 import javax.swing.JFrame;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 import client.Controller;
+import client.StartClient;
+import server.Session;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Vector;
 
+
+
+/* A window that shows all active sessions
+ * @author Andreas Jönsson den 8/4-2019  
+ * 
+ **/
 public class LobbyWindow extends JFrame
 {
 
+	//--------------------------------------------------------------------------------
+	//----------------------------Create Window---------------------------------------
+	//--------------------------------------------------------------------------------
+	
+	private JFrame frameCreateSession;
 
+	JTextField tfName;
+	JTextField tfPassword;
+	JTextField tfMaxPlayers;
+	
+	private JButton btnCreate;
+	private JButton btnCancel;
+	
+	//--------------------------------------------------------------------------------
+	//----------------------------Main Window-----------------------------------------
+	//--------------------------------------------------------------------------------
+	
+	//panels
 	private JSplitPane pnlLobby;
 	private JPanel pnlLobbyCreate;
+	private JScrollPane spnSessionList;
+	
+	//Buttons
+	private JButton btnJoinSession;
+	private JButton btnCreateSession;
+	private JButton btnRefreah;
 	
 	
-	private JButton joinButton;
-	private JButton createButton;
+	//--------------------------------------------------------------------------------
+	//----------------------------Data------------------------------------------------
+	//--------------------------------------------------------------------------------
 	
-	private JList<String> serverList;
-	private DefaultListModel<String> listModel;
+	private Controller controller;
+	//TODO implementera controller-klassen
+	
+	//List for sessions
+	private ArrayList<Session> sessionList;
+	private JTable sessionTable;
+	private TableModel sessionTableModel;
+	
+	private ArrayList<String> sessionData;
+	//TODO change sessionList to sessionData to match with the server
 	
 	
+	/**
+	    * Constuctor for the lobby window
+	    */
 	public LobbyWindow()
 	{
-		init();
 		
+		//initilize the lobbywindow
+		init();
+		setVisible(true);
 	}
 	
+	/**
+	    * Constuctor for the lobby window
+	    */
+	public LobbyWindow(Controller controller)
+	{
+		
+		//initilize the lobbywindow
+		init();
+		setVisible(true);
+		this.controller = controller;
+	}
+	
+	
+	/**
+	    * Initializes the components and data in the lobby window
+	    */
 	public void init()
 	{
+		
+		//--------------------------------------------------------------------------------
+		//----------------------------init Frame------------------------------------------
+		//--------------------------------------------------------------------------------
+		
 		setTitle("Project Roller");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
 		setVisible(true);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		//this.setResizable(false);
+		this.setResizable(false);
 		
 
+		//--------------------------------------------------------------------------------
+		//----------------------------init Panels-----------------------------------------
+		//--------------------------------------------------------------------------------
+		
 		this.pnlLobby = new JSplitPane();
 				
 		this.pnlLobbyCreate = new JPanel();
-
-		this.joinButton = new JButton("Join Session");
-		this.createButton = new JButton("Create Session");
-		this.joinButton.addActionListener(new ButtonListener());
-		this.createButton.addActionListener(new ButtonListener());
-
-		
 		this.pnlLobbyCreate.setLayout(new BoxLayout(this.pnlLobbyCreate, BoxLayout.PAGE_AXIS));
-		this.pnlLobbyCreate.add(this.joinButton);
-		this.pnlLobbyCreate.add(this.createButton);
-
-
-		this.listModel = new DefaultListModel<String>();
-		this.listModel.addElement("Server1");
-		this.listModel.addElement("Server2");
-		this.listModel.addElement("Server3");
-		this.listModel.addElement("Server4");
-		this.listModel.addElement("Server5");
-		
-		this.serverList = new JList<String>(listModel);
 
 		
+		//--------------------------------------------------------------------------------
+		//----------------------------init Buttons----------------------------------------
+		//--------------------------------------------------------------------------------
+		this.btnJoinSession = new JButton("Join Session");
+		this.btnCreateSession = new JButton("Create Session");
+		this.btnRefreah = new JButton("Refresh");
+		this.btnJoinSession.addActionListener(new ButtonListener());
+		this.btnCreateSession.addActionListener(new ButtonListener());
+		this.btnRefreah.addActionListener(new ButtonListener());
+		
+		//--------------------------------------------------------------------------------
+		//----------------------------panel components init-------------------------------
+		//--------------------------------------------------------------------------------
+		this.pnlLobbyCreate.add(this.btnJoinSession);
+		this.pnlLobbyCreate.add(this.btnCreateSession);
+		this.pnlLobbyCreate.add(this.btnRefreah);
+
+
+		//--------------------------------------------------------------------------------
+		//----------------------------Lobby Data -----------------------------------------
+		//--------------------------------------------------------------------------------
+		sessionList = new ArrayList<Session>();
+		
+		sessionData = new ArrayList<String>();
+		//TODO change sessionList to sessionData to match with the server
+		
+		//--------------------------------------------------------------------------------
+		//----------------------------JTable----------------------------------------------
+		//--------------------------------------------------------------------------------
+		
+		this.sessionTableModel = new SessionTableModel();
+				
 		
 		
+		for(Session session : sessionList)
+		{
+			this.addSession(session);
+			//TODO change sessionList to sessionData to match with the server
+		}
+
+
+		//initializing the JTable
+		this.sessionTable = new JTable(this.sessionTableModel);
+		this.spnSessionList = new JScrollPane(this.sessionTable);
+
 		
 		
-		
-		
-		this.pnlLobby.setLeftComponent(this.serverList);
+		//-----------------------------------------------------------------------------------------
+		//------------------------------------------Main panels components-------------------------
+		//-----------------------------------------------------------------------------------------
+		this.pnlLobby.setLeftComponent(this.spnSessionList);
 		this.pnlLobby.setRightComponent(this.pnlLobbyCreate);
 		this.pnlLobby.setEnabled(false);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -84,24 +184,239 @@ public class LobbyWindow extends JFrame
 	}
 	
 	
+	/**
+	    * Updates the session table in the lobby window
+	    * @param sessionList ArrayList<Session>
+	    */
+	public void updateSessionList(ArrayList<Session> sessionList)
+	{
+
+		//TODO change sessionList to sessionData to match with the server
+		
+		//Clears the old table
+		((DefaultTableModel) this.sessionTableModel).setRowCount(0);
+
+		for(Session session : sessionList)
+		{
+			//TODO change sessionList to sessionData to match with the server
+
+			this.addSession(session);
+			
+		}
+		
+		
+		((DefaultTableModel) this.sessionTableModel).fireTableDataChanged();
+		
+		this.sessionTable = new JTable(this.sessionTableModel);
+		this.sessionTable.revalidate();
+		
+		
+		this.spnSessionList = new JScrollPane(this.sessionTable);
+	}
+	
+	
+	/**
+	    * Adds a session the the tablemodel
+	    * @param session Session
+	    */
+	public void addSession(Session session)
+	{
+		//TODO change sessionList to sessionData to match with the server
+		Vector<Object> tableData = new Vector<>();
+		tableData.add(session.getName());
+		tableData.add(session.getnbrPlayers());
+		tableData.add(session.getMaxPlayers());
+		((DefaultTableModel) this.sessionTableModel).addRow(tableData);
+	}
+	
+	
+	/**
+	    * Updates the session table in the lobby window
+	    * @param sessionList ArrayList<Session>
+	    */
+	public void updateSessionListServer(ArrayList<String> sessionData)
+	{
+
+		
+		//Clears the old table
+		((DefaultTableModel) this.sessionTableModel).setRowCount(0);
+
+		for(String session : sessionData)
+		{
+			
+
+			this.addSessionServer(session);
+			
+		}
+		
+		
+		((DefaultTableModel) this.sessionTableModel).fireTableDataChanged();
+		
+		this.sessionTable = new JTable(this.sessionTableModel);
+		this.sessionTable.revalidate();
+		
+		
+		this.spnSessionList = new JScrollPane(this.sessionTable);
+	}
+	
+	
+	/**
+	    * Adds a session the the tablemodel
+	    * @param session Session
+	    */
+	public void addSessionServer(String session)
+	{
+		//TODO decode the string
+		
+		String name = "";
+		int nbrPlayers = 0;
+		int maxPlayers = 0;
+		
+		
+		Vector<Object> tableData = new Vector<>();
+		tableData.add(name);
+		tableData.add(nbrPlayers);
+		tableData.add(maxPlayers);
+		((DefaultTableModel) this.sessionTableModel).addRow(tableData);
+	}
+	
+	
+	/**
+	    * Creates a window to create a  session
+	    */
+	private void createSession()
+	{
+		//initializing the components in the create session window
+		JPanel pnlCreateSession = new JPanel(new BorderLayout());
+		JPanel pnlButtons = new JPanel(new FlowLayout());
+		JPanel pnlTextField = new JPanel(new GridLayout(3, 2));
+		frameCreateSession = new JFrame();
+		
+		JLabel lblName = new JLabel("Session Name:");
+		JLabel lblPassword = new JLabel("Session Password:");
+		JLabel lblMaxPlayers = new JLabel("Max Players");
+		
+		tfName = new JTextField();
+		tfPassword = new JTextField();
+		tfMaxPlayers = new JTextField();
+		
+		btnCreate = new JButton("Create");
+		btnCancel = new JButton("Cancel");
+		
+		//adding buttonlisteners to the buttons
+		btnCreate.addActionListener(new ButtonListener());
+		btnCancel.addActionListener(new ButtonListener());
+		
+		//adding the components to the create session window
+		pnlCreateSession.add(pnlTextField, BorderLayout.NORTH);
+		pnlCreateSession.add(pnlButtons, BorderLayout.SOUTH);
+		
+		pnlTextField.add(lblName);
+		pnlTextField.add(tfName);
+		pnlTextField.add(lblPassword);
+		pnlTextField.add(tfPassword);
+		pnlTextField.add(lblMaxPlayers);
+		pnlTextField.add(tfMaxPlayers);
+														
+		pnlButtons.add(btnCancel);
+		pnlButtons.add(btnCreate);
+		
+		//initializing the frame
+		frameCreateSession.setTitle("Create a Session");		
+		frameCreateSession.setVisible(true);
+		frameCreateSession.add(pnlCreateSession);		
+		Dimension windowSize = Toolkit.getDefaultToolkit().getScreenSize();
+		windowSize.setSize(windowSize.getWidth()/3, windowSize.getHeight()/3);
+		frameCreateSession.setSize(windowSize);
+		frameCreateSession.setLocation((int)(windowSize.getWidth()/2) + (frameCreateSession.getWidth() /2), (int)(windowSize.getHeight()/2) + (frameCreateSession.getHeight()/2));	
+		frameCreateSession.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+	}
+	
+	/**
+	    * Joining an active session
+	    */
+	private void joinServer()
+	{
+		//starts the main window
+		new Controller();
+		this.setVisible(false);
+		
+		//TODO connect to the chosen session & communicate with the server
+	}
+	
+
+	
+	
+	/* The class sessionTableModel handles information to be used in the JTable
+	 * @author Andreas Jönsson den 10/04-2019  
+	 * 
+	 **/
+	private static class SessionTableModel extends DefaultTableModel
+	{
+		
+		//The names of the columns
+		private static final String[] columnNames = { "Session Name", "Number Of Players", "Max Players" };
+
+		
+		public SessionTableModel()
+		{
+			super(columnNames, 0);
+		}
+		
+		public String[] getColumnNames() 
+		{
+			return columnNames;
+		}
+	
+	}
+	
+	
+	/* A Listener that listens to buttons
+	 * @author Andreas Jönsson den 8/04-2019  
+	 * 
+	 **/
 	private class ButtonListener implements ActionListener
 	{
 
 		@Override
-		public void actionPerformed(ActionEvent e) 
-		{
+		public void actionPerformed(ActionEvent e){
 			
-			createServer();
-		}
-		
-		private void createServer()
-		{
+			//opens up the window to create a new session
+			if(e.getSource() == btnCreateSession){
+				createSession();
+			}
 			
-		}
-		
-		private void joinServer()
-		{
+			//the user joins the server
+			//TODO link with the server
+			else if(e.getSource() == btnJoinSession){
+				joinServer();
+			}
 			
+			
+			//when the button is pressed a new session is created
+			//TODO link with server
+			else if(e.getSource() == btnCreate){
+				
+				
+				Session newSession = new Session(tfName.getText(), 0, Integer.parseInt(tfMaxPlayers.getText()));
+				sessionList.add(newSession);
+				updateSessionList(sessionList);
+				frameCreateSession.setVisible(false);
+			}
+			
+			
+			//cancels creating a new session
+			else if(e.getSource() == btnCancel){
+				frameCreateSession.setVisible(false);
+			}
+			
+			
+			//if the button refresh is pressed the session table will update
+			//TODO link with the server
+			else if(e.getSource() == btnRefreah){
+				updateSessionList(sessionList);
+			}
 		}
 		
 	}

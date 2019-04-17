@@ -1,12 +1,12 @@
 package server;
 
-import java.util.ArrayList;
+ import java.util.ArrayList;
 
-import server.actions.JoinedAction;
+ import server.actions.JoinedAction;
 
-public class Session {
+ public class Session {
 
-	private boolean isPassworded;
+ 	private boolean isPassworded;
 	private String password;
 	private String sessionName;
 	private int maxPlayers;
@@ -16,7 +16,7 @@ public class Session {
 	//private BoardModel model;
 	//TODO: Complete model
 
-	/**
+ 	/**
 	 * Constructor to use when creating a session without a password.
 	 *
 	 * @param sessionName Name of the session.
@@ -30,7 +30,7 @@ public class Session {
 		connectedClients = new ArrayList<Client>();
 	}
 
-	/**
+ 	/**
 	 * Constructor to use when creating a session <b>with</b> a password.
 	 *
 	 * @param password The password for the session.
@@ -46,7 +46,7 @@ public class Session {
 		connectedClients = new ArrayList<Client>();
 	}
 
-	/**
+ 	/**
 	 * Check if the session is passworded.
 	 * @return True if session is passworded, false if it isn't.
 	 */
@@ -54,7 +54,7 @@ public class Session {
 		return isPassworded;
 	}
 
-	/**
+ 	/**
 	 * Check if entered password is the same as the password stored in the session.
 	 * @param password
 	 * @return True if password is correct, false if it isn't.
@@ -67,7 +67,7 @@ public class Session {
 		}
 	}
 
-	/**
+ 	/**
 	 * Get the name of the session.
 	 * @return The name of the session.
 	 */
@@ -75,7 +75,7 @@ public class Session {
 		return sessionName;
 	}
 
-	/**
+ 	/**
 	 * Called by a client when it wants to join the server.
 	 * @param client The client that is joining.
 	 */
@@ -85,7 +85,7 @@ public class Session {
 		client.sendAction(new JoinedAction("SERVERMESSAGE",index));
 	}
 
-	/**
+ 	/**
 	 * Called by a client when it wants to leave the server.
 	 * @param client The client that is leaving.
 	 */
@@ -93,7 +93,7 @@ public class Session {
 		connectedClients.remove(client);
 	}
 
-	/**
+ 	/**
 	 * Get the maximum amount of allowed connections.
 	 * @return The amount.
 	 */
@@ -101,7 +101,7 @@ public class Session {
 		return maxPlayers;
 	}
 
-	/**
+ 	/**
 	 * Get the current amount of connections to the session.
 	 * @return The amount of sessions.
 	 */
