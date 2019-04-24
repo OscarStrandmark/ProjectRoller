@@ -3,6 +3,7 @@ package server;
  import java.util.ArrayList;
 
  import server.actions.JoinedAction;
+import server.actions.SynchAction;
 
  public class Session {
 
@@ -107,5 +108,14 @@ package server;
 	 */
 	public int getCurrentConnections() {
 		return currentPlayers;
+	}
+
+	/**
+	 * Notifies all connected players that there has been a change in the BoardModel.
+	 */
+	public void notifyPlayersForSynch() {
+		for(Client c : connectedClients) {
+			c.sendAction(new SynchAction("SERVER"));
+		}
 	}
 }
