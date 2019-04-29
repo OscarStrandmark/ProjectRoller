@@ -8,6 +8,7 @@ import java.net.Socket;
 import server.actions.Action;
 import server.actions.ConnectToSessionAction;
 import server.actions.CreateSessionAction;
+import server.actions.RefreshAction;
 import shared.Buffer;
 
 public class Client {
@@ -108,6 +109,12 @@ public class Client {
 						connection.joinSession(connectAction.getSessionID(), thisClass);
 					}
 
+					else
+						
+					if(action instanceof RefreshAction	) { //User requested to refresh list of sessions.
+						connection.refreshSessionList();
+						
+					}
 					//TODO: Implement what to do when recieving an action.
 				} catch (Exception e) {
 					System.err.println("ERROR IN: CLIENT.RECIEVER");

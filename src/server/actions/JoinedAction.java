@@ -8,19 +8,19 @@ package server.actions;
 public class JoinedAction extends Action {
 
 	private static final long serialVersionUID = 4093545819968327857L;
-	private int sessionIndex;
+	private String sessionName;
 
 	/**
 	 * Create an object of this class.
 	 * @param username Username of sender.
-	 * @param sessionIndex Session index of the session to join.
+	 * @param sessionName Session index of the session to join.
 	 */
-	public JoinedAction(String username, int sessionIndex) {
+	public JoinedAction(String username, String sessionName) {
 		super(username);
-		this.sessionIndex = sessionIndex;
+		this.sessionName = sessionName;
 	}
 
-	public int getSessionIndex() {
-		return sessionIndex;
+	public String getSessionName() {
+		return sessionName;
 	}
 }

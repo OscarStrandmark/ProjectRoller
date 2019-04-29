@@ -4,7 +4,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import actions.Action;
+import server.actions.*;
 import shared.Buffer;
 
 public class Connection {
@@ -12,11 +12,12 @@ public class Connection {
     private static final int PORT = 48361; //Port the server will operate on.
     public static final String ADDRESS = "localhost"; //Address the server will operate on.
 
+    private Controller controller;
 	private Socket socket;
 	private Sender sender;
 
-	public Connection() {
-
+	public Connection(Controller controller) {
+		this.controller = controller; 
 		try {
 			socket = new Socket(ADDRESS,PORT);
 			sender = new Sender();
@@ -56,6 +57,7 @@ public class Connection {
 					Action act = buffer.get();
 					oos.writeObject(act);
 					oos.flush();
+					oos.reset();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -81,7 +83,16 @@ public class Connection {
 				try {
 					Action action = (Action) ois.readObject();
 
-					//TODO: Implement reactions to actions.
+					if(action instanceof SessionListRefreshAction) {
+						SessionListRefreshAction act = (SessionListRefreshAction)action;
+						
+						controller.updateSessionList(act.getSessionList());
+						
+					}
+					
+					//else
+					
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

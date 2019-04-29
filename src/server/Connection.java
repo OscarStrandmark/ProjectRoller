@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 import server.actions.ConnectedToServerAction;
 import server.actions.CreateSessionAction;
+import server.actions.SessionListRefreshAction;
 
 /**
  * Main connection class for the server. Handles all new incoming connections.
@@ -44,7 +45,17 @@ public class Connection {
 	}
 
 	/**
-	 * Have a client join a session specified.
+	 * Kills are removes a session. 
+	 * 
+	 * @param session The session to kill.
+	 */
+	public void killSession(Session session) {
+		sessions.remove(session);
+		
+	}
+	
+	/**
+	 * Force a client join the session specified.
 	 *
 	 * @param sessionName The name of the session to join.
 	 * @param client The client that will join
@@ -65,6 +76,19 @@ public class Connection {
 	 */
 	public int getSessionIndex(Session session) {
 		return sessions.indexOf(session);
+	}
+	
+	public void refreshSessionList() {
+		
+		ArrayList<String> list = new ArrayList<String>();
+		
+		for(Session s : sessions) {
+			String session = s.getSessionName() + ":" + s.getCurrentConnections() + ":" + s.getMaximumConnections();
+		}
+		
+		for(Client c : clientsInLobby) {
+			c.sendAction(new SessionListRefreshAction("SERVER", list));
+		}
 	}
 
 	/**

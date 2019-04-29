@@ -307,7 +307,8 @@ public class MainWindow extends JFrame {
 
 		public void actionPerformed(ActionEvent e) {
 			if(e.getSource() == chatBtnSend) {
-				controller.newChatMessage(chatBox.getText());
+				//TODO: Push new message action
+				//controller.pushActionToServer(act);
 				chatBox.setText("");
 			}
 
