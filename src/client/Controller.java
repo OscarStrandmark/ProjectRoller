@@ -16,6 +16,8 @@ public class Controller {
 	public Controller() {
 		lobbyWindow = new LobbyWindow(this);
 		window = new MainWindow(this);
+		window.setVisible(false);
+		connection = new Connection(this);
 	}
 
 	public void pushActionToServer(Action act) {
@@ -28,5 +30,10 @@ public class Controller {
 
 	public void updateSessionList(ArrayList<String> sessionList) {
 		lobbyWindow.updateSessionList(sessionList);
+	}
+	
+	public void sessionEntered() {
+		lobbyWindow.setVisible(true);
+		window.setVisible(true);
 	}
 }

@@ -319,7 +319,7 @@ public class LobbyWindow extends JFrame {
 					numeric = false;
 				}
 				
-				if(numeric) {
+				if(numeric && tfMaxPlayers.getText().length() > 0 && tfName.getText().length() > 0) {
 					CreateSessionAction act;
 					
 					if(tfPassword.getText().length() > 0) {
@@ -329,7 +329,7 @@ public class LobbyWindow extends JFrame {
 					}
 					controller.pushActionToServer(act);
 				} else {
-					JOptionPane.showMessageDialog(null, "Entered text for maximum players must be numeric", "ERROR", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Entered text for maximum players must be numeric, must exist and name must exist", "ERROR", JOptionPane.ERROR_MESSAGE);
 				}
 
 				frameCreateSession.setVisible(false);

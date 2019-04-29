@@ -90,9 +90,13 @@ public class Connection {
 						
 					}
 					
+					else
+					
+					if(action instanceof JoinedAction) {
+						controller.sessionEntered();
+					}
+					
 					//else
-					
-					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
