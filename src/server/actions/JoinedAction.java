@@ -8,7 +8,9 @@ package server.actions;
 public class JoinedAction extends Action {
 
 	private static final long serialVersionUID = 4093545819968327857L;
+
 	private String sessionName;
+
 
 	/**
 	 * Create an object of this class.
@@ -22,5 +24,6 @@ public class JoinedAction extends Action {
 
 	public String getSessionName() {
 		return sessionName;
+
 	}
 }

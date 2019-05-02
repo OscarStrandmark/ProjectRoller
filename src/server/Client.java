@@ -4,13 +4,17 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+
 import java.net.SocketException;
+
 
 import server.actions.Action;
 import server.actions.ConnectToSessionAction;
 import server.actions.CreateSessionAction;
+
 import server.actions.JoinedAction;
 import server.actions.RefreshAction;
+
 import shared.Buffer;
 
 public class Client {
@@ -101,8 +105,10 @@ public class Client {
 						CreateSessionAction createAction = (CreateSessionAction) action;
 						connection.createNewSession(createAction);
 						connection.joinSession(createAction.getSessionName(), thisClass);
+
 						
 						sender.send(new JoinedAction("SERVER", createAction.getSessionName()));
+
 					}
 
 					else
@@ -111,6 +117,7 @@ public class Client {
 						ConnectToSessionAction connectAction = (ConnectToSessionAction) action;
 						connection.joinSession(connectAction.getSessionID(), thisClass);
 					}
+
 
 					else
 						
@@ -124,6 +131,7 @@ public class Client {
 				} catch (Exception e) {
 					System.err.println("ERROR IN: CLIENT.RECIEVER");
 					
+
 					e.printStackTrace();
 				}
 			}

@@ -385,6 +385,5 @@ public class MainWindow extends JFrame {
 			// TODO Auto-generated method stub
 
 		}
-
 	}
 }

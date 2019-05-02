@@ -8,11 +8,12 @@ import server.actions.Action;
 
 public class Controller {
 
+
 	private LobbyWindow lobbyWindow;
 	private Connection connection;
 	private MainWindow window;
 	public String username;
-	
+
 	public Controller() {
 		lobbyWindow = new LobbyWindow(this);
 		window = new MainWindow(this);
@@ -35,5 +36,17 @@ public class Controller {
 	public void sessionEntered() {
 		lobbyWindow.setVisible(true);
 		window.setVisible(true);
+	}
+
+	public void pushActionToServre(Action act) {
+		//TODO: add action-handling.
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getUsername() {
+		return username;
 	}
 }

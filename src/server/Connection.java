@@ -7,7 +7,9 @@ import java.util.Iterator;
 
 import server.actions.ConnectedToServerAction;
 import server.actions.CreateSessionAction;
+
 import server.actions.SessionListRefreshAction;
+
 
 /**
  * Main connection class for the server. Handles all new incoming connections.

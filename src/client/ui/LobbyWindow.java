@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -19,6 +20,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -29,14 +31,13 @@ import server.actions.CreateSessionAction;
 import server.actions.RefreshAction;
 
 /* A window that shows all active sessions
- * @author Andreas Jönsson den 8/4-2019  
+ * @author Andreas JÃ¶nsson den 8/4-2019  
  * 
  **/
 public class LobbyWindow extends JFrame {
 
 	// --------------------------------------------------------------------------------
-	// ----------------------------Create
-	// Window---------------------------------------
+	// ----------------------------Create Window---------------------------------------
 	// --------------------------------------------------------------------------------
 
 	private JFrame frameCreateSession;
@@ -49,8 +50,7 @@ public class LobbyWindow extends JFrame {
 	private JButton btnCancel;
 
 	// --------------------------------------------------------------------------------
-	// ----------------------------Main
-	// Window-----------------------------------------
+	// ----------------------------MainWindow-----------------------------------------
 	// --------------------------------------------------------------------------------
 
 	// panels
@@ -105,9 +105,9 @@ public class LobbyWindow extends JFrame {
 	public void init() {
 
 		// --------------------------------------------------------------------------------
-		// ----------------------------init
-		// Frame------------------------------------------
+		// ----------------------------initFrame------------------------------------------
 		// --------------------------------------------------------------------------------
+
 
 		setTitle("Project Roller");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -116,19 +116,18 @@ public class LobbyWindow extends JFrame {
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setResizable(false);
 
-		// --------------------------------------------------------------------------------
-		// ----------------------------init
-		// Panels-----------------------------------------
-		// --------------------------------------------------------------------------------
 
+		//--------------------------------------------------------------------------------
+		//----------------------------init Panels-----------------------------------------
+		//--------------------------------------------------------------------------------
+		
 		this.pnlLobby = new JSplitPane();
 
 		this.pnlLobbyCreate = new JPanel();
 		this.pnlLobbyCreate.setLayout(new BoxLayout(this.pnlLobbyCreate, BoxLayout.PAGE_AXIS));
 
 		// --------------------------------------------------------------------------------
-		// ----------------------------init
-		// Buttons----------------------------------------
+		// ----------------------------initButtons----------------------------------------
 		// --------------------------------------------------------------------------------
 		this.btnJoinSession = new JButton("Join Session");
 		this.btnCreateSession = new JButton("Create Session");
@@ -138,16 +137,14 @@ public class LobbyWindow extends JFrame {
 		this.btnRefresh.addActionListener(new ButtonListener());
 
 		// --------------------------------------------------------------------------------
-		// ----------------------------panel components
-		// init-------------------------------
+		// ----------------------------panel components init-------------------------------
 		// --------------------------------------------------------------------------------
 		this.pnlLobbyCreate.add(this.btnJoinSession);
 		this.pnlLobbyCreate.add(this.btnCreateSession);
 		this.pnlLobbyCreate.add(this.btnRefresh);
 
 		// --------------------------------------------------------------------------------
-		// ----------------------------Lobby Data
-		// -----------------------------------------
+		// ----------------------------Lobby Data-----------------------------------------
 		// --------------------------------------------------------------------------------
 		sessionList = new ArrayList<Session>();
 
@@ -165,9 +162,9 @@ public class LobbyWindow extends JFrame {
 		this.spnSessionList = new JScrollPane(this.sessionTable);
 
 		// -----------------------------------------------------------------------------------------
-		// ------------------------------------------Main panels
-		// components-------------------------
+		// ------------------------------------------Main panels components-------------------------
 		// -----------------------------------------------------------------------------------------
+
 		this.pnlLobby.setLeftComponent(this.spnSessionList);
 		this.pnlLobby.setRightComponent(this.pnlLobbyCreate);
 		this.pnlLobby.setEnabled(false);
@@ -178,6 +175,7 @@ public class LobbyWindow extends JFrame {
 		add(this.pnlLobby, BorderLayout.CENTER);
 
 	}
+
 
 	/**
 	 * Updates the session table in the lobby window
@@ -261,7 +259,7 @@ public class LobbyWindow extends JFrame {
 	/*
 	 * The class sessionTableModel handles information to be used in the JTable
 	 * 
-	 * @author Andreas Jönsson den 10/04-2019
+	 * @author Andreas JÃ¶nsson den 10/04-2019
 	 * 
 	 **/
 	private static class SessionTableModel extends DefaultTableModel {
@@ -282,7 +280,7 @@ public class LobbyWindow extends JFrame {
 	/*
 	 * A Listener that listens to buttons
 	 * 
-	 * @author Andreas Jönsson den 8/04-2019
+	 * @author Andreas JÃ¶nsson den 8/04-2019
 	 * 
 	 **/
 	private class ButtonListener implements ActionListener {
@@ -343,6 +341,7 @@ public class LobbyWindow extends JFrame {
 			// if the button refresh is pressed the session table will update
 			else if (e.getSource() == btnRefresh) {
 				controller.pushActionToServer(new RefreshAction(controller.username));
+
 			}
 		}
 

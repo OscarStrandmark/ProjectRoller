@@ -4,7 +4,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+
 import server.actions.*;
+
 import shared.Buffer;
 
 public class Connection {
@@ -18,6 +20,7 @@ public class Connection {
 
 	public Connection(Controller controller) {
 		this.controller = controller; 
+
 		try {
 			socket = new Socket(ADDRESS,PORT);
 			sender = new Sender();
@@ -58,6 +61,7 @@ public class Connection {
 					oos.writeObject(act);
 					oos.flush();
 					oos.reset();
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -83,6 +87,7 @@ public class Connection {
 				try {
 					Action action = (Action) ois.readObject();
 
+
 					if(action instanceof SessionListRefreshAction) {
 						SessionListRefreshAction act = (SessionListRefreshAction)action;
 						
@@ -97,6 +102,7 @@ public class Connection {
 					}
 					
 					//else
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -62,7 +62,9 @@ public class BoardModel {
 	 */
 	public void setBackground(ImageIcon img) {
 		this.background = img;
+
 		synch(new BackgroundChangeAction(controller.username,img));
+
 	}
 
 	/**
@@ -72,16 +74,20 @@ public class BoardModel {
 	public void addIcon(CharacterIcon icon) {
 		icons.add(icon);
 		synch(new CreateIconAction(controller.username, icon));
+
 	}
 
 	public void changeIcon(CharacterIcon icon, int iconIndex, int valueIndex, Value value) {
 		icons.get(iconIndex).changeValue(value, valueIndex);
 		synch(new ChangeIconValueAction(controller.username, iconIndex, valueIndex, value));
+
 	}
 
 	public void removeIcon(CharacterIcon icon) {
 		icons.remove(icon);
+
 		synch(new RemoveIconAction(controller.username, icon));
+
 	}
 
 	private void synch(Action act) {
@@ -89,6 +95,7 @@ public class BoardModel {
 			session.notifyPlayersForSynch();
 		} else { //If on client
 			controller.pushActionToServer(act);
+
 		}
 	}
 }
