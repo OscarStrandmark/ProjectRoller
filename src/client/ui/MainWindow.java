@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -14,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -21,24 +23,32 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 
 import client.Controller;
 import shared.BoardModel;
@@ -46,9 +56,19 @@ import shared.CharacterIcon;
 
 public class MainWindow extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private Controller controller;
-	
-	private BoardModel board;
+
+	private BoardModel boardModel;
+	private CharacterIcon characterIcon;
+
+	private int iconNumber = 0;
+
+	private HashMap<String, Component> componentMap;
 
 	//Components used in main window.
 	private JPanel boardPanel;
@@ -75,20 +95,20 @@ public class MainWindow extends JFrame {
 	private String imagePath;
 
 	JLabel iconicon;
+	JLabel backgroundIcon;
 
-	private int iconSize = 150;
-
+	private int iconWidth = 150;
+	private int iconHeight = 150;
 
 	//Components for settings-panel
 
 
 	public MainWindow(Controller controller) {
 		this.controller = controller;
-		this.board =  new BoardModel(this.controller);
 		init();
 		repaint();
 		setVisible(true);
-//		IconMovement iconMovement = new IconMovement(getComponents());
+		//		IconMovement iconMovement = new IconMovement(getComponents());
 	}
 
 	private void init() {
@@ -174,7 +194,7 @@ public class MainWindow extends JFrame {
 		// ------- IMPORT ICON --------
 
 		scaleIcon = new JTextField();
-		JLabel setSizeIcon = new JLabel("Set size for Icon (1-15)", SwingConstants.CENTER);
+		JLabel setSizeIcon = new JLabel("Set size for Icon (1-15):", SwingConstants.CENTER);
 
 		Border borderImport = BorderFactory.createLineBorder(Color.black);
 
@@ -224,18 +244,53 @@ public class MainWindow extends JFrame {
 		importBtnBackgroundFileChooser.addActionListener(listener);
 		importBtnBackgoundImport.addActionListener(listener);
 
-		importBtnIconFileChooser.addActionListener(listener);
-		importBtnIconImport.addActionListener(listener);
+		importBtnIconFileChooser.addActionListener(e -> openFileChooser());
+		importBtnIconImport.addActionListener(e -> setIconImage());
 	}
 
-	
-	public void updateBoardModel(BoardModel boardModel)
-	{
-		this.board = boardModel;
-	}
-	
+	/**
+	 * When the "Choose Image"-button is clicked, show a FileChooser from which
+	 * a user can choose an image for an icon
+	 */
+	public void openFileChooser() {
+		JFileChooser fileChooser = new JFileChooser();
+		imagePath = null;
 
-	
+		//Filter for what files to show in FileChooser-window.
+		FileNameExtensionFilter imageFilter = new FileNameExtensionFilter(
+				"Image files", ImageIO.getReaderFileSuffixes());
+		fileChooser.setFileFilter(imageFilter);
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+		int fileOk = fileChooser.showOpenDialog(null);
+		if(fileOk == JFileChooser.APPROVE_OPTION) {
+			imagePath = fileChooser.getSelectedFile().getPath();
+		}
+	}
+
+	/**
+	 * When the "Import icon"-button is clicked, rescale the image
+	 * and show it on the gameboard.
+	 */
+	public void setIconImage() {
+		getScaleInput();
+		ImageIcon icon = new ImageIcon(imagePath);
+		Image image = icon.getImage();
+		Image newIconImage = getScaledImage(image, iconWidth, iconHeight);
+		ImageIcon finalIcon = new ImageIcon(newIconImage);
+		iconicon = new JLabel(finalIcon);
+		iconicon.setBounds(0,0,iconWidth,iconHeight);
+		boardPanel.add(iconicon);
+		//Här kan man köra .setName och på så sätt prioritera ikoner.
+		boardPanel.setComponentZOrder(iconicon, 0);
+		System.out.println("Icon: " + boardPanel.getComponentZOrder(iconicon));
+		System.out.println("B: " + boardPanel.getComponentZOrder(backgroundIcon));
+		boardPanel.repaint();
+		iconicon.addMouseListener(new IconMovement());
+		iconicon.addMouseMotionListener(new IconMovement());
+		iconNumber++;
+		System.out.println("Amount of icons: " + iconNumber);
+	}
 
 	/**
 	 * Scales the image by input from user. If no input is made,
@@ -249,8 +304,8 @@ public class MainWindow extends JFrame {
 					+ "pixels icon.");
 		}else if(Integer.parseInt(scaleIcon.getText()) >= 1 && Integer.parseInt(scaleIcon.getText()) <= 15 ) {
 			int amountOfScale = Integer.parseInt(scaleIcon.getText());
-			this.iconSize = amountOfScale * 20;
-			this.iconSize = amountOfScale * 20;
+			iconWidth = amountOfScale * 20;
+			iconHeight = amountOfScale * 20;
 		} else {
 			JOptionPane.showMessageDialog(null, "Enter a valid number between 0-15,"
 					+ " or leave the field empty for a standard size of 150 by 150 "
@@ -279,16 +334,23 @@ public class MainWindow extends JFrame {
 		g.drawImage(img, 0, 0, null);
 	}
 
+	private void createComponentMap(JFrame frame) {
+		componentMap = new HashMap<String,Component>();
+		Component[] components = frame.getContentPane().getComponents();
+		for (int i=0; i < components.length; i++) {
+			componentMap.put(components[i].getName(), components[i]);
+		}
+	}
+
 	private class ButtonListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-			
 			if(e.getSource() == chatBtnSend) {
 				controller.newChatMessage(chatBox.getText());
 				chatBox.setText("");
 			}
 
-			else if(e.getSource() == importBtnBackgroundFileChooser) {
+			if(e.getSource() == importBtnBackgroundFileChooser) {
 				importJFCBackground.showOpenDialog(null);
 
 				File file = importJFCBackground.getSelectedFile();
@@ -296,82 +358,37 @@ public class MainWindow extends JFrame {
 				importJTFFilePath.setText(file.getPath());
 			}
 
-			else if(e.getSource() == importBtnBackgoundImport) {
-				
-				String filePath = importJTFFilePath.getText();
-				Graphics g = boardPanel.getGraphics();
-
-				Image img = null;
-				try {
-					img = ImageIO.read(new File(filePath));
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-				
-				board.setBackground(new ImageIcon(img));
-				
-				g.drawImage(img, 0, 0, boardPanel.getWidth(), boardPanel.getHeight(), null);
-			}
-			
-			
-			else if(e.getSource() == importBtnIconFileChooser)
-			{
-				JFileChooser fileChooser = new JFileChooser();
-				imagePath = null;
-
-				//Filter for what files to show in FileChooser-window.
-				FileNameExtensionFilter imageFilter = new FileNameExtensionFilter(
-						"Image files", ImageIO.getReaderFileSuffixes());
-				fileChooser.setFileFilter(imageFilter);
-				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-				int fileOk = fileChooser.showOpenDialog(null);
-				if(fileOk == JFileChooser.APPROVE_OPTION) {
-					imagePath = fileChooser.getSelectedFile().getPath();
-				}
-			}
-			
-			else if(e.getSource() == importBtnIconImport)
-			{
-				getScaleInput();
-				
-				ImageIcon icon = new ImageIcon(imagePath);			
-				Image image = icon.getImage();
-				Image newIconImage = getScaledImage(image, iconSize, iconSize);
-				ImageIcon finalIcon = new ImageIcon(newIconImage);
-				
-
-				CharacterIcon characterIcon = new CharacterIcon(finalIcon, iconSize);
-				
-				board.addIcon(characterIcon);
-				
-				
-				iconicon = new JLabel(characterIcon.getImage());
-				iconicon.setBounds(0,0,characterIcon.getSize(),characterIcon.getSize());
-				boardPanel.add(iconicon);
+			if(e.getSource() == importBtnBackgoundImport) {
+				ImageIcon background = new ImageIcon(importJTFFilePath.getText());
+				Image backgroundImage = background.getImage();
+				Image newBackgroundImage = getScaledImage(backgroundImage, boardPanel.getWidth(), boardPanel.getHeight()); //mer parametrar i metoden
+				ImageIcon finalBackground = new ImageIcon(newBackgroundImage);
+				backgroundIcon = new JLabel(finalBackground);
+				backgroundIcon.setBounds(0,0,boardPanel.getWidth(), boardPanel.getHeight());
+				boardPanel.add(backgroundIcon);
+				backgroundPriorityLogic(backgroundIcon);
 				boardPanel.repaint();
-				iconicon.addMouseListener(new IconMovement());
-				iconicon.addMouseMotionListener(new IconMovement());
-			
 			}
-	
 		}
+	}
+
+	private void backgroundPriorityLogic(JLabel img) {
+		int nr = 0;
+		String backgroundName = "background" + String.valueOf(nr);
+		img.setName(backgroundName);
+		System.out.println("Aktuell ikon har: " + boardPanel.getComponentZOrder(iconicon));
+		boardPanel.setComponentZOrder(img, nr + iconNumber);
+
+		nr++;
 	}
 
 	private class IconMovement implements MouseListener, MouseMotionListener {
 		private int x,y;
 
-//		public IconMovement(Component... pns) {
-//			for(Component iconicon : pns) {
-//				iconicon.addMouseListener(this);
-//				iconicon.addMouseMotionListener(this);
-//			}
-//		}
-
 		@Override
 		public void mouseDragged(MouseEvent event) {
-				event.getComponent().setLocation((event.getX() + event.getComponent().getX())-x, (event.getY() + event.getComponent().getX())-y);
-			}
+			event.getComponent().setLocation((event.getX() + event.getComponent().getX()-x), (event.getY() + event.getComponent().getY()-y));
+		}
 
 		@Override
 		public void mouseMoved(MouseEvent event) {
@@ -381,21 +398,20 @@ public class MainWindow extends JFrame {
 
 		@Override
 		public void mouseClicked(MouseEvent event) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void mousePressed(MouseEvent event) {
-				x = event.getX();
-				y = event.getY();
-			}
+			x = event.getX();
+			y = event.getY();
+		}
 
 		@Override
 		public void mouseReleased(MouseEvent event) {
-			// TODO Auto-generated method stub
-			
-
+			if(event.getButton() == 3) {
+				PopAltMenu popMenu = new PopAltMenu();
+				popMenu.show(event.getComponent(), event.getX(), event.getY());
+			}
 		}
 
 		@Override
@@ -409,6 +425,152 @@ public class MainWindow extends JFrame {
 			// TODO Auto-generated method stub
 
 		}
+	}
 
+	private class PopAltMenu extends JPopupMenu {
+		private static final long serialVersionUID = 1L;
+
+		public PopAltMenu() {
+			JMenuItem altMenu = new JMenuItem(new ClickAltMenu());
+			add(altMenu);
+
+		}
+	}
+
+	private class ClickAltMenu extends AbstractAction{
+		private static final long serialVersionUID = 1L;
+
+		public ClickAltMenu() {
+			super("Open Value-menu");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			BuildAltMenu bam = new BuildAltMenu();
+		}
+	}
+
+	private class BuildAltMenu {
+		JFrame frame = new JFrame("Values for icon");
+		JTable table = new JTable();
+
+		JButton btnAdd = new JButton("Add");
+		JButton btnDelete = new JButton("Delete");
+		JButton btnUpdate = new JButton("Update"); 
+
+		JTextField textId = new JTextField();
+		JTextField textName = new JTextField();
+		JTextField textValue = new JTextField();
+
+		JLabel lblId = new JLabel("Insert Id:");
+		JLabel lblName = new JLabel("Insert Name:");
+		JLabel lblValue = new JLabel("Insert Value:");
+
+		JScrollPane pane = new JScrollPane(table);
+
+		public BuildAltMenu() {
+			Object[] columns = {"Id","Name","Value"};
+			DefaultTableModel model = new DefaultTableModel();
+			model.setColumnIdentifiers(columns);
+
+			table.setModel(model);
+			table.setBackground(Color.LIGHT_GRAY);
+			table.setForeground(Color.black);
+			Font font = new Font("",1,22);
+			table.setFont(font);
+			table.setRowHeight(30);
+
+			lblId.setBounds(20, 220, 80, 25);
+			lblName.setBounds(20, 265, 80, 25);
+			lblValue.setBounds(20, 310, 80, 25);
+
+			textId.setBounds(120, 220, 100, 25);
+			//med 30 på Y
+			textName.setBounds(120, 265, 100, 25);
+			textValue.setBounds(120, 310, 100, 25);
+
+			btnAdd.setBounds(250, 220, 100, 25);
+			btnUpdate.setBounds(250, 265, 100, 25);
+			btnDelete.setBounds(250, 310, 100, 25);
+
+			pane.setBounds(0, 0, 880, 200);
+			frame.setLayout(null);
+			frame.add(pane);
+
+			frame.add(lblId);
+			frame.add(lblName);
+			frame.add(lblValue);
+
+			frame.add(textId);
+			frame.add(textName);
+			frame.add(textValue);
+
+			frame.add(btnAdd);
+			frame.add(btnDelete);
+			frame.add(btnUpdate);
+
+			Object[] row = new Object[3];
+
+			btnAdd.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e) {
+
+					row[0] = textId.getText();
+					row[1] = textName.getText();
+					row[2] = textValue.getText();
+
+					// add row to the model
+					model.addRow(row);
+					System.out.println("Add!");
+				}
+			});
+
+			btnDelete.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// i = the index of the selected row
+					int i = table.getSelectedRow();
+					if(i >= 0){
+						// remove a row from jtable
+						model.removeRow(i);
+					}
+					else{
+						System.out.println("Delete Error");
+					}
+				}
+			});
+
+			table.addMouseListener(new MouseAdapter(){
+				@Override
+				public void mouseClicked(MouseEvent e){
+					// i = the index of the selected row
+					int i = table.getSelectedRow();
+					textId.setText(model.getValueAt(i, 0).toString());
+					textName.setText(model.getValueAt(i, 1).toString());
+					textValue.setText(model.getValueAt(i, 2).toString());
+				}
+			});
+
+			btnUpdate.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent e) {           
+					// i = the index of the selected row
+					int i = table.getSelectedRow();
+					if(i >= 0) 
+					{
+						model.setValueAt(textId.getText(), i, 0);
+						model.setValueAt(textName.getText(), i, 1);
+						model.setValueAt(textValue.getText(), i, 2);
+					}
+					else{
+						System.out.println("Update Error");
+					}
+				}
+			});
+
+			frame.setSize(900,400);
+			frame.setLocationRelativeTo(null);
+			frame.setVisible(true);
+		}
 	}
 }
