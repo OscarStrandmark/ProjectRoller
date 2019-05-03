@@ -62,7 +62,9 @@ public class BoardModel {
 	 */
 	public void setBackground(ImageIcon img) {
 		this.background = img;
-		synch(new BackgroundChangeAction(controller.getUsername(),img));
+
+		synch(new BackgroundChangeAction(controller.username,img));
+
 	}
 
 	/**
@@ -71,24 +73,34 @@ public class BoardModel {
 	 */
 	public void addIcon(CharacterIcon icon) {
 		icons.add(icon);
-		synch(new CreateIconAction(controller.getUsername(), icon));
+		synch(new CreateIconAction(controller.username, icon));
+
 	}
 
 	public void changeIcon(CharacterIcon icon, int iconIndex, int valueIndex, Value value) {
 		icons.get(iconIndex).changeValue(value, valueIndex);
-		synch(new ChangeIconValueAction(controller.getUsername(), iconIndex, valueIndex, value));
+		synch(new ChangeIconValueAction(controller.username, iconIndex, valueIndex, value));
+
+	}
+	
+	public void moveIcon(int iconIndex, int x, int y)
+	{
+		icons.get(iconIndex).setPosition(x, y);
 	}
 
 	public void removeIcon(CharacterIcon icon) {
 		icons.remove(icon);
-		synch(new RemoveIconAction(controller.getUsername(), icon));
+
+		synch(new RemoveIconAction(controller.username, icon));
+
 	}
 
 	private void synch(Action act) {
 		if(session != null) {//If on server
 			session.notifyPlayersForSynch();
 		} else { //If on client
-			controller.pushActionToServre(act);
+			controller.pushActionToServer(act);
+
 		}
 	}
 }

@@ -281,7 +281,7 @@ public class MainWindow extends JFrame {
 		iconicon = new JLabel(finalIcon);
 		iconicon.setBounds(0,0,iconWidth,iconHeight);
 		boardPanel.add(iconicon);
-		//Här kan man köra .setName och på så sätt prioritera ikoner.
+		//Hï¿½r kan man kï¿½ra .setName och pï¿½ sï¿½ sï¿½tt prioritera ikoner.
 		boardPanel.setComponentZOrder(iconicon, 0);
 		System.out.println("Icon: " + boardPanel.getComponentZOrder(iconicon));
 		System.out.println("B: " + boardPanel.getComponentZOrder(backgroundIcon));
@@ -346,7 +346,8 @@ public class MainWindow extends JFrame {
 
 		public void actionPerformed(ActionEvent e) {
 			if(e.getSource() == chatBtnSend) {
-				controller.newChatMessage(chatBox.getText());
+				//TODO: Push new message action
+				//controller.pushActionToServer(act);
 				chatBox.setText("");
 			}
 
@@ -484,7 +485,7 @@ public class MainWindow extends JFrame {
 			lblValue.setBounds(20, 310, 80, 25);
 
 			textId.setBounds(120, 220, 100, 25);
-			//med 30 på Y
+			//med 30 pï¿½ Y
 			textName.setBounds(120, 265, 100, 25);
 			textValue.setBounds(120, 310, 100, 25);
 
