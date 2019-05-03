@@ -82,16 +82,20 @@ import server.actions.SynchAction;
 	 */
 	public void join(Client client) {
 		connectedClients.add(client);
-		int index = connection.getSessionIndex(this);
-		client.sendAction(new JoinedAction("SERVERMESSAGE",index));
+		client.sendAction(new JoinedAction("SERVERMESSAGE",sessionName));
 	}
 
  	/**
-	 * Called by a client when it wants to leave the server.
+	 * Called by a client when it wants to leave the server. If it is the last client on the session, the session is deleted
 	 * @param client The client that is leaving.
 	 */
 	public void leave(Client client) {
-		connectedClients.remove(client);
+		if(connectedClients.size() == 1) {
+			connectedClients.remove(client);
+			connection.killSession(this);
+		} else {
+			connectedClients.remove(client);
+		}
 	}
 
  	/**

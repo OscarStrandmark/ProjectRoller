@@ -307,7 +307,8 @@ public class MainWindow extends JFrame {
 
 		public void actionPerformed(ActionEvent e) {
 			if(e.getSource() == chatBtnSend) {
-				controller.newChatMessage(chatBox.getText());
+				//TODO: Push new message action
+				//controller.pushActionToServer(act);
 				chatBox.setText("");
 			}
 
@@ -346,7 +347,7 @@ public class MainWindow extends JFrame {
 
 		@Override
 		public void mouseDragged(MouseEvent event) {
-				
+				event.getComponent().setLocation((event.getX() + event.getComponent().getX())-x, (event.getY() + event.getComponent().getX())-y);
 			}
 
 		@Override
@@ -370,7 +371,6 @@ public class MainWindow extends JFrame {
 		@Override
 		public void mouseReleased(MouseEvent event) {
 			// TODO Auto-generated method stub
-			event.getComponent().setLocation((event.getX() + event.getComponent().getX())-x, (event.getY() + event.getComponent().getX())-y);
 
 		}
 
@@ -385,6 +385,5 @@ public class MainWindow extends JFrame {
 			// TODO Auto-generated method stub
 
 		}
-
 	}
 }
