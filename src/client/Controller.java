@@ -2,6 +2,8 @@ package client;
 
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import client.ui.LobbyWindow;
 import client.ui.MainWindow;
 import server.actions.Action;
@@ -11,13 +13,13 @@ public class Controller {
 
 	private LobbyWindow lobbyWindow;
 	private Connection connection;
-	private MainWindow window;
+	private MainWindow mainWindow;
 	public String username;
 
 	public Controller() {
 		lobbyWindow = new LobbyWindow(this);
-		window = new MainWindow(this);
-		window.setVisible(false);
+		mainWindow = new MainWindow(this);
+		mainWindow.setVisible(false);
 		connection = new Connection(this);
 	}
 
@@ -30,18 +32,29 @@ public class Controller {
 	}
 	
 	public void sessionEntered() {
-		lobbyWindow.setVisible(true);
-		window.setVisible(true);
+		lobbyWindow.setVisible(false);
+		mainWindow.setVisible(true);
 	}
-
-	public void pushActionToServre(Action act) {
-		//TODO: add action-handling.
+	
+	public void sessionLeft() {
+		lobbyWindow.setVisible(true);
+		mainWindow.setVisible(false);
 	}
 
 	public void setUsername(String username) {
 		this.username = username;
 	}
 
+	public String requestPassword() {
+		String s = JOptionPane.showInputDialog("Enter password for session");
+		return s;
+	}
+	
+	public void disposeAll() {
+		lobbyWindow.dispose();
+		mainWindow.dispose();
+	}
+	
 	public String getUsername() {
 		return username;
 	}

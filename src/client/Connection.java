@@ -2,8 +2,10 @@ package client;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.Socket;
 
+import javax.swing.JOptionPane;
 
 import server.actions.*;
 
@@ -25,6 +27,10 @@ public class Connection {
 			socket = new Socket(ADDRESS,PORT);
 			sender = new Sender();
 					 new Reciever();
+		} catch (ConnectException ce) {
+			int input = JOptionPane.showConfirmDialog(null, "Server not found", "ERROR", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+			
+			controller.disposeAll();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -101,8 +107,21 @@ public class Connection {
 						controller.sessionEntered();
 					}
 					
-					//else
+					else
 
+					if(action instanceof RequestPasswordAction) {
+						RequestPasswordAction act = (RequestPasswordAction) action;
+						String sessionName = act.getSessionName();
+						String password = controller.requestPassword();
+						controller.pushActionToServer(new CheckPasswordAction(controller.username, sessionName, password));
+						
+					}
+					
+					else 
+						
+					if(action instanceof WrongPasswordAction) {
+						JOptionPane.showMessageDialog(null, "Password did not match", "Password mismatch", JOptionPane.INFORMATION_MESSAGE);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

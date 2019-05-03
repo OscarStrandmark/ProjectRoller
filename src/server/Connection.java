@@ -27,7 +27,7 @@ public class Connection {
 	public Connection() {
 		clientsInLobby = new ArrayList<Client>();
 		sessions = new ArrayList<Session>();
-
+		new ServerUI(this);
 		new ConnectionAccepter();
 	}
 
@@ -71,6 +71,22 @@ public class Connection {
 		}
 	}
 
+	public ArrayList<String> getSessionsStrings() {
+
+		ArrayList<String> list = new ArrayList<String>();
+		
+		for(Session s : sessions) {
+			list.add(s.getSessionName());
+		}
+		
+		return list;
+	}
+	
+	public ArrayList<Session> getSessions(){
+		return sessions;
+	}
+	
+	
 	/**
 	 * Get the index of the parameter session.
 	 * @param session The session whose index to find.
@@ -86,6 +102,7 @@ public class Connection {
 		
 		for(Session s : sessions) {
 			String session = s.getSessionName() + ":" + s.getCurrentConnections() + ":" + s.getMaximumConnections();
+			list.add(session);
 		}
 		
 		for(Client c : clientsInLobby) {
@@ -110,6 +127,7 @@ public class Connection {
 					try {
 						Socket socket = serverSocket.accept(); //Accept a connection.
 						Client newClient = new Client(socket, thisClass); //Create a client for the incoming connection.
+						
 						clientsInLobby.add(newClient); //Add the Client object to the list containing all clients in the lobby.
 
 						//Create a list for all session names.
