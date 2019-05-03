@@ -82,6 +82,11 @@ public class BoardModel {
 		synch(new ChangeIconValueAction(controller.username, iconIndex, valueIndex, value));
 
 	}
+	
+	public void moveIcon(int iconIndex, int x, int y)
+	{
+		icons.get(iconIndex).setPosition(x, y);
+	}
 
 	public void removeIcon(CharacterIcon icon) {
 		icons.remove(icon);
