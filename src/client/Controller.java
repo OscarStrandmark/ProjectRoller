@@ -25,10 +25,6 @@ public class Controller {
 		connection.send(act);
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
 	public void updateSessionList(ArrayList<String> sessionList) {
 		lobbyWindow.updateSessionList(sessionList);
 	}
