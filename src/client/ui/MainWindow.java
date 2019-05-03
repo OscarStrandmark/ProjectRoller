@@ -41,10 +41,14 @@ import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import client.Controller;
+import shared.BoardModel;
+import shared.CharacterIcon;
 
 public class MainWindow extends JFrame {
 
 	private Controller controller;
+	
+	private BoardModel board;
 
 	//Components used in main window.
 	private JPanel boardPanel;
@@ -72,14 +76,15 @@ public class MainWindow extends JFrame {
 
 	JLabel iconicon;
 
-	private int iconWidth = 150;
-	private int iconHeight = 150;
+	private int iconSize = 150;
+
 
 	//Components for settings-panel
 
 
 	public MainWindow(Controller controller) {
 		this.controller = controller;
+		this.board =  new BoardModel(this.controller);
 		init();
 		repaint();
 		setVisible(true);
@@ -219,47 +224,18 @@ public class MainWindow extends JFrame {
 		importBtnBackgroundFileChooser.addActionListener(listener);
 		importBtnBackgoundImport.addActionListener(listener);
 
-		importBtnIconFileChooser.addActionListener(e -> openFileChooser());
-		importBtnIconImport.addActionListener(e -> setIconImage());
+		importBtnIconFileChooser.addActionListener(listener);
+		importBtnIconImport.addActionListener(listener);
 	}
 
-	/**
-	 * When the "Choose Image"-button is clicked, show a FileChooser from which
-	 * a user can choose an image for an icon
-	 */
-	public void openFileChooser() {
-		JFileChooser fileChooser = new JFileChooser();
-		imagePath = null;
-
-		//Filter for what files to show in FileChooser-window.
-		FileNameExtensionFilter imageFilter = new FileNameExtensionFilter(
-				"Image files", ImageIO.getReaderFileSuffixes());
-		fileChooser.setFileFilter(imageFilter);
-		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-		int fileOk = fileChooser.showOpenDialog(null);
-		if(fileOk == JFileChooser.APPROVE_OPTION) {
-			imagePath = fileChooser.getSelectedFile().getPath();
-		}
+	
+	public void updateBoardModel(BoardModel boardModel)
+	{
+		this.board = boardModel;
 	}
+	
 
-	/**
-	 * When the "Import icon"-button is clicked, rescale the image
-	 * and show it on the gameboard.
-	 */
-	public void setIconImage() {
-		getScaleInput();
-		ImageIcon icon = new ImageIcon(imagePath);
-		Image image = icon.getImage();
-		Image newIconImage = getScaledImage(image, iconWidth, iconHeight);
-		ImageIcon finalIcon = new ImageIcon(newIconImage);
-		iconicon = new JLabel(finalIcon);
-		iconicon.setBounds(0,0,iconWidth,iconHeight);
-		boardPanel.add(iconicon);
-		boardPanel.repaint();
-		iconicon.addMouseListener(new IconMovement());
-		iconicon.addMouseMotionListener(new IconMovement());
-	}
+	
 
 	/**
 	 * Scales the image by input from user. If no input is made,
@@ -273,8 +249,8 @@ public class MainWindow extends JFrame {
 					+ "pixels icon.");
 		}else if(Integer.parseInt(scaleIcon.getText()) >= 1 && Integer.parseInt(scaleIcon.getText()) <= 15 ) {
 			int amountOfScale = Integer.parseInt(scaleIcon.getText());
-			iconWidth = amountOfScale * 20;
-			iconHeight = amountOfScale * 20;
+			this.iconSize = amountOfScale * 20;
+			this.iconSize = amountOfScale * 20;
 		} else {
 			JOptionPane.showMessageDialog(null, "Enter a valid number between 0-15,"
 					+ " or leave the field empty for a standard size of 150 by 150 "
@@ -306,12 +282,13 @@ public class MainWindow extends JFrame {
 	private class ButtonListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
+			
 			if(e.getSource() == chatBtnSend) {
 				controller.newChatMessage(chatBox.getText());
 				chatBox.setText("");
 			}
 
-			if(e.getSource() == importBtnBackgroundFileChooser) {
+			else if(e.getSource() == importBtnBackgroundFileChooser) {
 				importJFCBackground.showOpenDialog(null);
 
 				File file = importJFCBackground.getSelectedFile();
@@ -319,7 +296,8 @@ public class MainWindow extends JFrame {
 				importJTFFilePath.setText(file.getPath());
 			}
 
-			if(e.getSource() == importBtnBackgoundImport) {
+			else if(e.getSource() == importBtnBackgoundImport) {
+				
 				String filePath = importJTFFilePath.getText();
 				Graphics g = boardPanel.getGraphics();
 
@@ -329,8 +307,54 @@ public class MainWindow extends JFrame {
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
+				
+				board.setBackground(new ImageIcon(img));
+				
 				g.drawImage(img, 0, 0, boardPanel.getWidth(), boardPanel.getHeight(), null);
 			}
+			
+			
+			else if(e.getSource() == importBtnIconFileChooser)
+			{
+				JFileChooser fileChooser = new JFileChooser();
+				imagePath = null;
+
+				//Filter for what files to show in FileChooser-window.
+				FileNameExtensionFilter imageFilter = new FileNameExtensionFilter(
+						"Image files", ImageIO.getReaderFileSuffixes());
+				fileChooser.setFileFilter(imageFilter);
+				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+				int fileOk = fileChooser.showOpenDialog(null);
+				if(fileOk == JFileChooser.APPROVE_OPTION) {
+					imagePath = fileChooser.getSelectedFile().getPath();
+				}
+			}
+			
+			else if(e.getSource() == importBtnIconImport)
+			{
+				getScaleInput();
+				
+				ImageIcon icon = new ImageIcon(imagePath);			
+				Image image = icon.getImage();
+				Image newIconImage = getScaledImage(image, iconSize, iconSize);
+				ImageIcon finalIcon = new ImageIcon(newIconImage);
+				
+
+				CharacterIcon characterIcon = new CharacterIcon(finalIcon, iconSize);
+				
+				board.addIcon(characterIcon);
+				
+				
+				iconicon = new JLabel(characterIcon.getImage());
+				iconicon.setBounds(0,0,characterIcon.getSize(),characterIcon.getSize());
+				boardPanel.add(iconicon);
+				boardPanel.repaint();
+				iconicon.addMouseListener(new IconMovement());
+				iconicon.addMouseMotionListener(new IconMovement());
+			
+			}
+	
 		}
 	}
 
@@ -370,6 +394,7 @@ public class MainWindow extends JFrame {
 		@Override
 		public void mouseReleased(MouseEvent event) {
 			// TODO Auto-generated method stub
+			
 
 		}
 
