@@ -88,6 +88,7 @@ public class Connection {
 					Action action = (Action) ois.readObject();
 
 
+					//Updates the sessions in the sessionlist
 					if(action instanceof SessionListRefreshAction) {
 						SessionListRefreshAction act = (SessionListRefreshAction)action;
 						
@@ -99,6 +100,99 @@ public class Connection {
 					
 					if(action instanceof JoinedAction) {
 						controller.sessionEntered();
+					}
+					
+					else
+						
+					if(action instanceof CreateSessionAction)
+					{
+						//TODO tills lobbyWindow är klar
+					}
+					
+					else
+						
+					if(action instanceof MoveIconAction)
+					{
+					
+						MoveIconAction act = (MoveIconAction)action;
+						
+						controller.getBoardModel().getIcons().get(act.getCharacterIconIndex()).setPosition(act.getX(), act.getY());
+					}
+					
+					else
+						
+					if(action instanceof CreateIconAction)
+					{
+						CreateIconAction act = (CreateIconAction)action;
+						
+						controller.getBoardModel().addIcon(act.getIcon());
+					}
+					
+					else
+						
+					if(action instanceof RemoveIconAction)
+					{
+						RemoveIconAction act = (RemoveIconAction)action;
+						
+						controller.getBoardModel().removeIcon(act.getIcon());
+					}
+					
+					else 
+						
+					if(action instanceof CreateIconValueAction)
+					{
+						CreateIconValueAction act = (CreateIconValueAction)action;
+						
+						controller.getBoardModel().getIcons().get(act.getIconIndex()).addValue(act.getValue());
+								
+					}
+					
+					else
+						
+					if(action instanceof RemoveIconValueAction)
+					{
+						RemoveIconValueAction act = (RemoveIconValueAction)action;
+						
+						controller.getBoardModel().getIcons().get(act.getIconIndex()).removeValue(act.getValueIndex());
+					}
+						
+					else
+						
+					if(action instanceof ChangeIconValueAction)
+					{
+						ChangeIconValueAction act = (ChangeIconValueAction)action;
+						
+						controller.getBoardModel().getIcons().get(act.getIconIndex()).changeValue(act.getValue(), act.getValueIndex());
+					}
+					
+					else 
+					
+					if(action instanceof BackgroundChangeAction)
+					{
+						BackgroundChangeAction act = (BackgroundChangeAction)action;
+						
+						controller.getBoardModel().setBackground(act.getImage());
+					}
+					
+					else
+						
+					if(action instanceof RefreshAction)
+					{
+						//TODO
+					}
+					
+					else
+						
+					if(action instanceof ConnectToSessionAction)
+					{
+						//TODO
+					}
+					
+					else
+						
+					if(action instanceof ConnectToSessionAction)
+					{
+						//TODO
 					}
 					
 					//else
