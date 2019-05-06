@@ -94,6 +94,7 @@ public class Connection {
 					Action action = (Action) ois.readObject();
 
 
+					//Updates the sessions in the sessionlist
 					if(action instanceof SessionListRefreshAction) {
 						SessionListRefreshAction act = (SessionListRefreshAction)action;
 						

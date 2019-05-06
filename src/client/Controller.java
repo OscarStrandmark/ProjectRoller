@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import client.ui.LobbyWindow;
 import client.ui.MainWindow;
 import server.actions.Action;
+import shared.BoardModel;
 
 public class Controller {
 
@@ -15,12 +16,14 @@ public class Controller {
 	private Connection connection;
 	private MainWindow mainWindow;
 	public String username;
+	private BoardModel boardModel;
 
 	public Controller() {
 		lobbyWindow = new LobbyWindow(this);
 		mainWindow = new MainWindow(this);
 		mainWindow.setVisible(false);
 		connection = new Connection(this);
+		this.boardModel = new BoardModel(this);
 	}
 
 	public void pushActionToServer(Action act) {
@@ -57,5 +60,10 @@ public class Controller {
 	
 	public String getUsername() {
 		return username;
+	}
+	
+	public BoardModel getBoardModel()
+	{
+		return this.boardModel;
 	}
 }

@@ -13,12 +13,16 @@ public class CharacterIcon implements Serializable {
 
 	private ImageIcon image;
 	private int size;
+	private int x;
+	private int y;
 
 	private ArrayList<Value> values;
 
 	public CharacterIcon(ImageIcon image, int size) {
 		this.image = image;
 		this.size = size;
+		this.x = 0;
+		this.y = 0;
 	}
 
 	public ImageIcon getImage() {
@@ -27,6 +31,12 @@ public class CharacterIcon implements Serializable {
 
 	public int getSize() {
 		return size;
+	}
+	
+	public void setPosition(int x, int y)
+	{
+		this.x = x;
+		this.y = y;
 	}
 
 	public void setImage(ImageIcon image) {
