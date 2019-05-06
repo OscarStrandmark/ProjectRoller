@@ -2,8 +2,10 @@ package client;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.Socket;
 
+import javax.swing.JOptionPane;
 
 import server.actions.*;
 
@@ -25,6 +27,10 @@ public class Connection {
 			socket = new Socket(ADDRESS,PORT);
 			sender = new Sender();
 					 new Reciever();
+		} catch (ConnectException ce) {
+			int input = JOptionPane.showConfirmDialog(null, "Server not found", "ERROR", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+			
+			controller.disposeAll();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -103,100 +109,20 @@ public class Connection {
 					}
 					
 					else
-						
-					if(action instanceof CreateSessionAction)
-					{
-						//TODO tills lobbyWindow är klar
-					}
-					
-					else
-						
-					if(action instanceof MoveIconAction)
-					{
-					
-						MoveIconAction act = (MoveIconAction)action;
-						
-						controller.getBoardModel().getIcons().get(act.getCharacterIconIndex()).setPosition(act.getX(), act.getY());
-					}
-					
-					else
-						
-					if(action instanceof CreateIconAction)
-					{
-						CreateIconAction act = (CreateIconAction)action;
-						
-						controller.getBoardModel().addIcon(act.getIcon());
-					}
-					
-					else
-						
-					if(action instanceof RemoveIconAction)
-					{
-						RemoveIconAction act = (RemoveIconAction)action;
-						
-						controller.getBoardModel().removeIcon(act.getIcon());
-					}
-					
-					else 
-						
-					if(action instanceof CreateIconValueAction)
-					{
-						CreateIconValueAction act = (CreateIconValueAction)action;
-						
-						controller.getBoardModel().getIcons().get(act.getIconIndex()).addValue(act.getValue());
-								
-					}
-					
-					else
-						
-					if(action instanceof RemoveIconValueAction)
-					{
-						RemoveIconValueAction act = (RemoveIconValueAction)action;
-						
-						controller.getBoardModel().getIcons().get(act.getIconIndex()).removeValue(act.getValueIndex());
-					}
-						
-					else
-						
-					if(action instanceof ChangeIconValueAction)
-					{
-						ChangeIconValueAction act = (ChangeIconValueAction)action;
-						
-						controller.getBoardModel().getIcons().get(act.getIconIndex()).changeValue(act.getValue(), act.getValueIndex());
-					}
-					
-					else 
-					
-					if(action instanceof BackgroundChangeAction)
-					{
-						BackgroundChangeAction act = (BackgroundChangeAction)action;
-						
-						controller.getBoardModel().setBackground(act.getImage());
-					}
-					
-					else
-						
-					if(action instanceof RefreshAction)
-					{
-						//TODO
-					}
-					
-					else
-						
-					if(action instanceof ConnectToSessionAction)
-					{
-						//TODO
-					}
-					
-					else
-						
-					if(action instanceof ConnectToSessionAction)
-					{
-						//TODO
-					}
-					
-					//else
 
+					if(action instanceof RequestPasswordAction) {
+						RequestPasswordAction act = (RequestPasswordAction) action;
+						String sessionName = act.getSessionName();
+						String password = controller.requestPassword();
+						controller.pushActionToServer(new CheckPasswordAction(controller.username, sessionName, password));
+						
+					}
+					
+					else 
+						
+					if(action instanceof WrongPasswordAction) {
+						JOptionPane.showMessageDialog(null, "Password did not match", "Password mismatch", JOptionPane.INFORMATION_MESSAGE);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

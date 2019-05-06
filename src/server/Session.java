@@ -29,6 +29,7 @@ import server.actions.SynchAction;
 		this.maxPlayers = maxPlayers;
 		this.connection = connection;
 		connectedClients = new ArrayList<Client>();
+		System.out.println("Session created");
 	}
 
  	/**
@@ -61,7 +62,7 @@ import server.actions.SynchAction;
 	 * @return True if password is correct, false if it isn't.
 	 */
 	public boolean checkPassword(String password) { //TODO: Hash & salt, handle password correctly?
-		if(password == this.password) {
+		if(this.password.equals(password)) {
 			return true;
 		} else {
 			return false;
