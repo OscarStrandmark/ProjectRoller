@@ -5,7 +5,7 @@ package server.actions;
  * When an object of this class is sent a client is making a request to create a new session.
  * @author Oscar Strandmark
  */
-public class CreateSessionAction extends Action {
+public class SessionCreateAction extends Action {
 
 	private static final long serialVersionUID = 810392655728758390L;
 
@@ -22,7 +22,7 @@ public class CreateSessionAction extends Action {
 	 * @param maxPlayers Maximum amount of users that is allowed to connect to this session.
 	 * @param password The password this session will use.
 	 */
-	public CreateSessionAction(String username, String sessionName, int maxPlayers, String password) {
+	public SessionCreateAction(String username, String sessionName, int maxPlayers, String password) {
 		super(username);
 		this.sessionName = sessionName;
 		this.maxPlayers = maxPlayers;
@@ -37,7 +37,7 @@ public class CreateSessionAction extends Action {
 	 * @param sessionName Name of the session.
 	 * @param maxPlayers Maximum amount of users that is allowed to connect to this session.
 	 */
-	public CreateSessionAction(String username, String sessionName, int maxPlayers) {
+	public SessionCreateAction(String username, String sessionName, int maxPlayers) {
 		super(username);
 		this.sessionName = sessionName;
 		this.maxPlayers = maxPlayers;

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import server.actions.ConnectedToServerAction;
-import server.actions.CreateSessionAction;
+import server.actions.SessionCreateAction;
 
 import server.actions.SessionListRefreshAction;
 
@@ -32,10 +32,10 @@ public class Connection {
 	}
 
 	/**
-	 * Create a new session based of the information contained in the {@link CreateSessionAction}-object that is sent from a client to the server.
-	 * @param action A {@link CreateSessionAction}-object sent from a client.
+	 * Create a new session based of the information contained in the {@link SessionCreateAction}-object that is sent from a client to the server.
+	 * @param action A {@link SessionCreateAction}-object sent from a client.
 	 */
-	public void createNewSession(CreateSessionAction action) {
+	public void createNewSession(SessionCreateAction action) {
 		Session newSession;
 		if(action.isPassworded()) {
 			newSession = new Session(action.getPassword(), action.getSessionName(), action.getMaxPlayers(), this);
@@ -86,6 +86,9 @@ public class Connection {
 		return sessions;
 	}
 	
+	public void joinLobby(Client c) {
+		clientsInLobby.add(c);
+	}
 	
 	/**
 	 * Get the index of the parameter session.

@@ -2,7 +2,8 @@ package server;
 
  import java.util.ArrayList;
 
- import server.actions.JoinedAction;
+import server.actions.ChatDisplayTextAction;
+import server.actions.JoinedAction;
 import server.actions.SynchAction;
 
  public class Session {
@@ -29,7 +30,6 @@ import server.actions.SynchAction;
 		this.maxPlayers = maxPlayers;
 		this.connection = connection;
 		connectedClients = new ArrayList<Client>();
-		System.out.println("Session created");
 	}
 
  	/**
@@ -99,6 +99,12 @@ import server.actions.SynchAction;
 		}
 	}
 
+	public void pushChatText(String text) {
+		for(Client c : connectedClients) {
+			c.sendAction(new ChatDisplayTextAction("SERVER", text));
+		}
+	}
+	
  	/**
 	 * Get the maximum amount of allowed connections.
 	 * @return The amount.

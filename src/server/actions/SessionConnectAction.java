@@ -5,7 +5,7 @@ package server.actions;
  * When an object of this class is sent a client has made a request to connect to a session, named in the sessionID parameter.
  * @author Oscar Strandmark
  */
-public class ConnectToSessionAction extends Action {
+public class SessionConnectAction extends Action {
 
 	private static final long serialVersionUID = -8725308533299212574L;
 
@@ -17,7 +17,7 @@ public class ConnectToSessionAction extends Action {
 	 * @param username - Username requesting to connect.
 	 * @param sessionName - Name of the session.
 	 */
-	public ConnectToSessionAction(String username, String sessionName) {
+	public SessionConnectAction(String username, String sessionName) {
 		super(username);
 		this.sessionName = sessionName;
 	}

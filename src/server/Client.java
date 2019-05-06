@@ -8,10 +8,14 @@ import java.net.SocketException;
 import java.util.ArrayList;
 
 import server.actions.Action;
+import server.actions.ChatMessageAction;
 import server.actions.CheckPasswordAction;
-import server.actions.CreateSessionAction;
-import server.actions.JoinSessionRequestAction;
+import server.actions.SessionCreateAction;
+import server.actions.SessionJoinRequestAction;
 import server.actions.JoinedAction;
+import server.actions.QuitAction;
+import server.actions.SessionLeaveAction;
+import server.actions.UsernameChangeAction;
 import server.actions.RefreshAction;
 import server.actions.RequestPasswordAction;
 import server.actions.WrongPasswordAction;
@@ -20,6 +24,7 @@ import shared.Buffer;
 public class Client {
 
 	private Socket socket;
+	
 	private Sender sender;
 	private Reciever reciever;
 
@@ -29,6 +34,8 @@ public class Client {
 	private Connection connection;
 	private Session session; //The session the client is connected to. If null, client is in the lobby.
 
+	private volatile boolean alive = true;
+	
 	public Client(Socket socket, Connection connection) {
 		this.socket = socket;
 		this.username = "New client";
@@ -56,7 +63,13 @@ public class Client {
 	public void sendAction(Action act) {
 		sender.send(act);
 	}
-
+	
+	private void kill() {
+		alive = false;
+		sender = null;
+		reciever = null;
+	}
+	
 	private class Sender extends Thread {
 
 		private ObjectOutputStream oos;
@@ -74,7 +87,7 @@ public class Client {
 		}
 
 		public void run() {
-			while(true) {
+			while(alive) {
 				try {
 					Action act = buffer.get();
 					oos.writeObject(act);
@@ -97,15 +110,22 @@ public class Client {
 		}
 
 		public void run() {
-			while(true) {
+			while(alive) {
 				try {
 					Action action = (Action)ois.readObject();
 
-					if(action instanceof CreateSessionAction) { //User sent request to create a new session.
-						CreateSessionAction createAction = (CreateSessionAction) action;
+					if(action instanceof SessionCreateAction) { //User sent request to create a new session.
+						SessionCreateAction createAction = (SessionCreateAction) action;
 						connection.createNewSession(createAction);
 						connection.joinSession(createAction.getSessionName(), thisClient);
-
+						
+						ArrayList<Session> sessions = connection.getSessions();
+						
+						for(Session s : sessions) {
+							if(s.getSessionName() == createAction.getSessionName()) {
+								setSession(s);
+							}
+						}
 						
 						sender.send(new JoinedAction("SERVER", createAction.getSessionName()));
 
@@ -113,17 +133,19 @@ public class Client {
 
 					else
 
-					if(action instanceof JoinSessionRequestAction) { //User sent request to connect to a session.
-						JoinSessionRequestAction act = (JoinSessionRequestAction) action;
+					if(action instanceof SessionJoinRequestAction) { //User sent request to connect to a session.
+						SessionJoinRequestAction act = (SessionJoinRequestAction) action;
 						String sessionName = act.getSessionName();
 						ArrayList<Session> sessions = connection.getSessions();
 						
 						for(Session s : sessions) {
+							System.out.println(s.getSessionName());
 							if(s.getSessionName().equals(sessionName)) {
 								if(s.isPassworded()) {
 									sendAction(new RequestPasswordAction("SERVER",sessionName));
 								} else {
 									connection.joinSession(sessionName, thisClient);
+									setSession(s);
 									sendAction(new JoinedAction("SERVER", sessionName));
 								}
 							}
@@ -151,6 +173,7 @@ public class Client {
 							if(s.getSessionName().equals(sessionName)) {
 								if(s.checkPassword(password)) { //Password ok
 									connection.joinSession(sessionName, thisClient);
+									setSession(s);
 								} else { //Password not ok.
 									sendAction(new WrongPasswordAction("SERVER"));
 								}
@@ -158,13 +181,45 @@ public class Client {
 						}
 						
 					}
+					
+					else 
+						
+					if(action instanceof SessionLeaveAction) {
+						session.pushChatText("USER LEFT: " + action.getUsername());
+						session.leave(thisClient);
+						connection.joinLobby(thisClient);
+						setSession(null);
+					}
+					
+					else
+						
+					if(action instanceof ChatMessageAction) {
+						ChatMessageAction act = (ChatMessageAction) action;
+						String s = act.getUsername() + ": " + act.getMessage();
+						session.pushChatText(s);
+					}
+					
+					else
+						
+					if(action instanceof UsernameChangeAction) {
+						UsernameChangeAction act = (UsernameChangeAction) action;
+						username = act.getNewUsername();
+						session.pushChatText("NAME CHANGED: " + act.getUsername() + " -> " + act.getNewUsername());
+					}
+					
+					else
+						
+					if(action instanceof QuitAction) {
+						System.out.println("RECIEVED QUIT");
+						session.leave(thisClient);
+						kill();
+						session.pushChatText("USER LEFT: " + action.getUsername());
+					}
 					//TODO: Implement what to do when recieving an action.
 				} catch (SocketException se) {
 					try { socket.close(); } catch (IOException e1) {}		
 				} catch (Exception e) {
 					System.err.println("ERROR IN: CLIENT.RECIEVER");
-					
-
 					e.printStackTrace();
 				}
 			}
