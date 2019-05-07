@@ -147,6 +147,13 @@ public class Connection {
 						ChatDisplayTextAction act = (ChatDisplayTextAction) action;
 						controller.appendChatLine(act.getText());
 					}
+					
+					else
+						
+					if(action instanceof SynchAction) {
+						SynchAction act = (SynchAction) action;
+						controller.getBoardModel().synchClient(act.getMap(), act.getBackground());
+					}
 				} catch (SocketException se) {
 					se.printStackTrace();
 					kill();

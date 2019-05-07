@@ -1,10 +1,16 @@
 package server;
 
  import java.util.ArrayList;
+import java.util.HashMap;
 
+import javax.swing.JLabel;
+
+import server.actions.Action;
 import server.actions.ChatDisplayTextAction;
 import server.actions.JoinedAction;
 import server.actions.SynchAction;
+import shared.BoardModel;
+import shared.CharacterIcon;
 
  public class Session {
 
@@ -15,8 +21,7 @@ import server.actions.SynchAction;
 	private int currentPlayers;
 	private ArrayList<Client> connectedClients;
 	private Connection connection;
-	//private BoardModel model;
-	//TODO: Complete model
+	private BoardModel model;
 
  	/**
 	 * Constructor to use when creating a session without a password.
@@ -30,6 +35,7 @@ import server.actions.SynchAction;
 		this.maxPlayers = maxPlayers;
 		this.connection = connection;
 		connectedClients = new ArrayList<Client>();
+		model = new BoardModel(this);
 	}
 
  	/**
@@ -129,13 +135,11 @@ import server.actions.SynchAction;
 	public int getCurrentConnections() {
 		return currentPlayers;
 	}
-
-	/**
-	 * Notifies all connected players that there has been a change in the BoardModel.
-	 */
-	public void notifyPlayersForSynch() {
+	
+	public synchronized void synchBoard(HashMap<JLabel,CharacterIcon> map, JLabel background) {
+		model.synchServer(map, background);
 		for(Client c : connectedClients) {
-			c.sendAction(new SynchAction("SERVER"));
+			c.sendAction(new SynchAction("SERVER", map, background));
 		}
 	}
 }

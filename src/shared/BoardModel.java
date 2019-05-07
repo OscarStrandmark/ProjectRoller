@@ -1,106 +1,119 @@
 package shared;
 
-import java.util.ArrayList;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import client.Controller;
 import server.Session;
-import server.actions.Action;
-import server.actions.BackgroundChangeAction;
-import server.actions.ChangeIconValueAction;
-import server.actions.CreateIconAction;
-import server.actions.RemoveIconAction;
+import server.actions.SynchAction;
+
 
 /**
  * Class that represents the board.
+ * 
  * @author Oscar Strandmark
  */
-public class BoardModel {
+public class BoardModel implements Serializable {
 
-	private ArrayList<CharacterIcon> icons;
-	private ImageIcon background;
+	private long lastUpdatedEpoch;
+
+	private HashMap<JLabel,CharacterIcon> iconMap;
+	
+	private JPanel board;
+	private JLabel background;
+	
 	private Session session;
 	private Controller controller;
+
 	/**
 	 * Constructor used for creating a BoardModel on the client.
+	 * 
 	 * @param controller The controller-class of the client.
 	 */
 	public BoardModel(Controller controller) {
 		this.controller = controller;
-		this.icons = new ArrayList<CharacterIcon>();
+		this.iconMap = new HashMap<JLabel,CharacterIcon>();
 	}
 
 	/**
 	 * Constructor used for creating a BoardModel on the server.
+	 * 
 	 * @param session - The session the BoardModel belongs to.
 	 */
 	public BoardModel(Session session) {
 		this.session = session;
-		this.icons = new ArrayList<CharacterIcon>();
+		this.iconMap = new HashMap<JLabel,CharacterIcon>();
 	}
 
-	/**
-	 * Get the list of CharacterIcons on the board.
-	 * @return An {@link ArrayList} of icons on the board.
-	 */
-	public ArrayList<CharacterIcon> getIcons() {
-		return icons;
-	}
-
-	/**
-	 * Get the background image.
-	 * @return An {@link ImageIcon} of the background image.
-	 */
-	public ImageIcon getBackground() {
-		return background;
-	}
-
-	/**
-	 * Set the background image.
-	 * @param img An {@link ImageIcon} of the background image.
-	 */
-	public void setBackground(ImageIcon img) {
-		this.background = img;
-
-		synch(new BackgroundChangeAction(controller.username,img));
-
-	}
-
-	/**
-	 * Add an icon to the board.
-	 * @param icon
-	 */
-	public void addIcon(CharacterIcon icon) {
-		icons.add(icon);
-		synch(new CreateIconAction(controller.username, icon));
-
-	}
-
-	public void changeIcon(CharacterIcon icon, int iconIndex, int valueIndex, Value value) {
-		icons.get(iconIndex).changeValue(value, valueIndex);
-		synch(new ChangeIconValueAction(controller.username, iconIndex, valueIndex, value));
-
+	public void setBoard(JPanel board) {
+		this.board = board;
 	}
 	
-	public void moveIcon(int iconIndex, int x, int y)
-	{
-		icons.get(iconIndex).setPosition(x, y);
-	}
-
-	public void removeIcon(CharacterIcon icon) {
-		icons.remove(icon);
-
-		synch(new RemoveIconAction(controller.username, icon));
-
-	}
-
-	private void synch(Action act) {
-		if(session != null) {//If on server
-			session.notifyPlayersForSynch();
-		} else { //If on client
-			controller.pushActionToServer(act);
-
+	/**
+	 * Set the background image.
+	 * 
+	 * @param img An {@link ImageIcon} of the background image.
+	 */
+	public void setBackground(JLabel img) {
+		if(background != null) {
+			board.remove(background);
 		}
+		this.background = img;
+		board.setComponentZOrder(img, board.getComponentCount()-1);
+		synchToServer();
+	}
+	
+	public void addIcon(JLabel icon) {
+		CharacterIcon cIcon = new CharacterIcon(icon);
+		iconMap.put(icon, cIcon);
+		board.setComponentZOrder(icon, 0);
+		board.repaint();
+		synchToServer();
+	}
+	
+	public void removeIcon(JLabel icon) {
+		iconMap.remove(icon);
+		board.remove(icon);
+		board.repaint();
+		synchToServer();
+		
+	}
+	
+	public CharacterIcon lookup(JLabel lbl) {
+		return iconMap.get(lbl);
+	}
+
+	public void synchClient(HashMap<JLabel,CharacterIcon> map, JLabel background) {
+		board.removeAll();
+		iconMap = map;
+		this.background = background;
+
+		board.add(background);
+		
+		Set<JLabel> set = map.keySet();
+		Iterator<JLabel> iter = set.iterator();
+		
+		while(iter.hasNext()) {
+			JLabel lbl = iter.next();
+			board.add(lbl);
+			int x = lookup(lbl).getX();
+			int y = lookup(lbl).getY();
+			lbl.setLocation(x, y);
+		}
+	}
+	
+	public void synchServer(HashMap<JLabel,CharacterIcon> map, JLabel background) {
+		iconMap = map;
+		this.background = background;
+	}
+	
+	public void synchToServer() {
+		controller.pushActionToServer(new SynchAction(controller.username, iconMap, background));
 	}
 }

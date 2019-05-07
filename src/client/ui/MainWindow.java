@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -15,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -23,7 +20,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -40,20 +36,17 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.table.DefaultTableModel;
 
 import client.Controller;
 import server.actions.QuitAction;
 import server.actions.SessionLeaveAction;
 import server.actions.UsernameChangeAction;
 import shared.BoardModel;
-import shared.CharacterIcon;
 
 public class MainWindow extends JFrame {
 
@@ -63,14 +56,8 @@ public class MainWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private Controller controller;
-
-	private BoardModel boardModel;
-	private CharacterIcon characterIcon;
-
-	private int iconNumber = 0;
-
-	private HashMap<String, Component> componentMap;
-
+	private BoardModel model;
+	
 	//Components used in main window.
 	private JPanel boardPanel;
 	private JTabbedPane sidePanel;
@@ -95,8 +82,7 @@ public class MainWindow extends JFrame {
 
 	private String imagePath;
 
-	JLabel iconicon;
-	JLabel backgroundIcon;
+	private JLabel backgroundIcon;
 
 	private int iconWidth = 150;
 	private int iconHeight = 150;
@@ -108,13 +94,14 @@ public class MainWindow extends JFrame {
 	private JButton settingsBtnSave;
 	private JButton settingsBtnLeave;
 
-	public MainWindow(Controller controller) {
+	public MainWindow(Controller controller, BoardModel model) {
 		this.controller = controller;
+		this.model = model;
 		init();
 		repaint();
 		setVisible(true);
-		//		IconMovement iconMovement = new IconMovement(getComponents());
 		settingsJTFUsername.setText(controller.username);
+		model.setBoard(boardPanel);
 	}
 
 	private void init() {
@@ -236,9 +223,7 @@ public class MainWindow extends JFrame {
 		
 		settingsGrid.add(new JLabel("Username:"));
 		settingsGrid.add(settingsJTFUsername);
-		
-		//TODO:Settings n stuff
-		
+				
 		settingsPanel.add(settingsGrid);
 		settingsPanel.add(settingsBtnSave);
 		settingsPanel.add(settingsBtnLeave);
@@ -276,8 +261,8 @@ public class MainWindow extends JFrame {
 		importBtnBackgroundFileChooser.addActionListener(listener);
 		importBtnBackgoundImport.addActionListener(listener);
 
-		importBtnIconFileChooser.addActionListener(e -> openFileChooser());
-		importBtnIconImport.addActionListener(e -> setIconImage());
+		importBtnIconFileChooser.addActionListener(listener);
+		importBtnIconImport.addActionListener(listener);
 		
 		settingsBtnSave.addActionListener(listener);
 		settingsBtnLeave.addActionListener(listener);
@@ -289,71 +274,6 @@ public class MainWindow extends JFrame {
 		System.out.println("append");
 		String current = chatJTA.getText();
 		chatJTA.setText(current + line + "\n");
-	}
-	
-	/**
-	 * When the "Choose Image"-button is clicked, show a FileChooser from which
-	 * a user can choose an image for an icon
-	 */
-	public void openFileChooser() {
-		JFileChooser fileChooser = new JFileChooser();
-		imagePath = null;
-
-		//Filter for what files to show in FileChooser-window.
-		FileNameExtensionFilter imageFilter = new FileNameExtensionFilter(
-				"Image files", ImageIO.getReaderFileSuffixes());
-		fileChooser.setFileFilter(imageFilter);
-		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-		int fileOk = fileChooser.showOpenDialog(null);
-		if(fileOk == JFileChooser.APPROVE_OPTION) {
-			imagePath = fileChooser.getSelectedFile().getPath();
-		}
-	}
-
-	/**
-	 * When the "Import icon"-button is clicked, rescale the image
-	 * and show it on the gameboard.
-	 */
-	public void setIconImage() {
-		getScaleInput();
-		ImageIcon icon = new ImageIcon(imagePath);
-		Image image = icon.getImage();
-		Image newIconImage = getScaledImage(image, iconWidth, iconHeight);
-		ImageIcon finalIcon = new ImageIcon(newIconImage);
-		iconicon = new JLabel(finalIcon);
-		iconicon.setBounds(0,0,iconWidth,iconHeight);
-		boardPanel.add(iconicon);
-		//H�r kan man k�ra .setName och p� s� s�tt prioritera ikoner.
-		boardPanel.setComponentZOrder(iconicon, 0);
-		System.out.println("Icon: " + boardPanel.getComponentZOrder(iconicon));
-		System.out.println("B: " + boardPanel.getComponentZOrder(backgroundIcon));
-		boardPanel.repaint();
-		iconicon.addMouseListener(new IconMovement());
-		iconicon.addMouseMotionListener(new IconMovement());
-		iconNumber++;
-		System.out.println("Amount of icons: " + iconNumber);
-	}
-
-	/**
-	 * Scales the image by input from user. If no input is made,
-	 * make the icon the standard size of 150 by 150 pixels.
-	 */
-	public void getScaleInput() {
-		if(scaleIcon.getText().length() == 0) {
-		} else if(Integer.parseInt(scaleIcon.getText()) < 0 || Integer.parseInt(scaleIcon.getText()) > 15 ) {
-			JOptionPane.showMessageDialog(null, "Enter a valid number between 0-15,"
-					+ " or leave the field empty for a standard size of 150 by 150 "
-					+ "pixels icon.");
-		}else if(Integer.parseInt(scaleIcon.getText()) >= 1 && Integer.parseInt(scaleIcon.getText()) <= 15 ) {
-			int amountOfScale = Integer.parseInt(scaleIcon.getText());
-			iconWidth = amountOfScale * 20;
-			iconHeight = amountOfScale * 20;
-		} else {
-			JOptionPane.showMessageDialog(null, "Enter a valid number between 0-15,"
-					+ " or leave the field empty for a standard size of 150 by 150 "
-					+ "pixels icon.");
-		}
 	}
 
 	/**
@@ -372,27 +292,15 @@ public class MainWindow extends JFrame {
 		return resizedImg;
 	}
 
-	private void setBoardBackground(Image img) {
-		Graphics g = boardPanel.getGraphics();
-		g.drawImage(img, 0, 0, null);
-	}
-
-	private void createComponentMap(JFrame frame) {
-		componentMap = new HashMap<String,Component>();
-		Component[] components = frame.getContentPane().getComponents();
-		for (int i=0; i < components.length; i++) {
-			componentMap.put(components[i].getName(), components[i]);
-		}
-	}
-
 	private class ButtonListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
+			//Send text written in chatbox
 			if(e.getSource() == chatBtnSend) {
 				controller.handleMessage(chatBox.getText());
 				chatBox.setText("");
 			}
-
+			//Open File picker for background in import tab
 			if(e.getSource() == importBtnBackgroundFileChooser) {
 				importJFCBackground.showOpenDialog(null);
 
@@ -401,6 +309,7 @@ public class MainWindow extends JFrame {
 				importJTFFilePath.setText(file.getPath());
 			}
 
+			//Import selected file as a background
 			if(e.getSource() == importBtnBackgoundImport) {
 				ImageIcon background = new ImageIcon(importJTFFilePath.getText());
 				Image backgroundImage = background.getImage();
@@ -409,10 +318,62 @@ public class MainWindow extends JFrame {
 				backgroundIcon = new JLabel(finalBackground);
 				backgroundIcon.setBounds(0,0,boardPanel.getWidth(), boardPanel.getHeight());
 				boardPanel.add(backgroundIcon);
-				backgroundPriorityLogic(backgroundIcon);
+				model.setBackground(backgroundIcon);
 				boardPanel.repaint();
 			} 
 			
+			//Open file picker for importing new icons.
+			if(e.getSource() == importBtnIconFileChooser) {
+				JFileChooser fileChooser = new JFileChooser();
+				imagePath = null;
+
+				//Filter for what files to show in FileChooser-window.
+				FileNameExtensionFilter imageFilter = new FileNameExtensionFilter(
+						"Image files", ImageIO.getReaderFileSuffixes());
+				fileChooser.setFileFilter(imageFilter);
+				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+				int fileOk = fileChooser.showOpenDialog(null);
+				if(fileOk == JFileChooser.APPROVE_OPTION) {
+					imagePath = fileChooser.getSelectedFile().getPath();
+				}
+			}
+			
+			//Import the chosen file for icon import. 
+			if(e.getSource() == importBtnIconImport) {
+				
+				boolean scaled = false;
+				
+				if(scaleIcon.getText().length() != 0) {
+					int scale = Integer.parseInt(scaleIcon.getText());
+					
+					if( scale < 0 || scale > 15 ) {
+						JOptionPane.showMessageDialog(null, "Enter a valid number between 0-15, or leave the field empty for a standard size of 150 by 150 ");
+					} else if(scale >= 1 && scale <= 15 ) {
+						iconWidth = scale * 20;
+						iconHeight = scale * 20;
+						scaled = true;
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Enter a valid number between 0-15, or leave the field empty for a standard size of 150 by 150 ");
+				}
+				
+				if(scaled) {
+					
+					Image image = new ImageIcon(imagePath).getImage();
+					Image newIconImage = getScaledImage(image, iconWidth, iconHeight);
+					
+					JLabel icon = new JLabel(new ImageIcon(newIconImage));
+					icon.setBounds(0,0,iconWidth,iconHeight);
+					boardPanel.add(icon);
+					model.addIcon(icon);
+					boardPanel.repaint();
+					icon.addMouseListener(new IconMovement());
+					icon.addMouseMotionListener(new IconMovement());
+				}
+			}
+			
+			//Save changed settings in settings tab
 			if(e.getSource() == settingsBtnSave) {
 				String username = settingsJTFUsername.getText();
 				if(username != controller.username) {
@@ -421,6 +382,7 @@ public class MainWindow extends JFrame {
 				}
 			}
 			
+			//Leave the session
 			if(e.getSource() == settingsBtnLeave) {
 				controller.pushActionToServer(new SessionLeaveAction(controller.username));
 				controller.sessionLeft();
@@ -441,44 +403,29 @@ public class MainWindow extends JFrame {
 		public void windowActivated(WindowEvent e) {}
 		public void windowDeactivated(WindowEvent e) {}
 		public void windowOpened(WindowEvent e) {}
-			
-	}
-
-	private void backgroundPriorityLogic(JLabel img) {
-		int nr = 0;
-		String backgroundName = "background" + String.valueOf(nr);
-		img.setName(backgroundName);
-		System.out.println("Aktuell ikon har: " + boardPanel.getComponentZOrder(iconicon));
-		boardPanel.setComponentZOrder(img, nr + iconNumber);
-
-		nr++;
 	}
 
 	private class IconMovement implements MouseListener, MouseMotionListener {
 		private int x,y;
 
-		@Override
 		public void mouseDragged(MouseEvent event) {
 			event.getComponent().setLocation((event.getX() + event.getComponent().getX()-x), (event.getY() + event.getComponent().getY()-y));
 		}
 
-		public void mouseMoved(MouseEvent event) {}
-		public void mouseClicked(MouseEvent event) {}
-
-		@Override
 		public void mousePressed(MouseEvent event) {
 			x = event.getX();
 			y = event.getY();
 		}
 
-		@Override
 		public void mouseReleased(MouseEvent event) {
 			if(event.getButton() == 3) {
-				PopAltMenu popMenu = new PopAltMenu();
+				PopAltMenu popMenu = new PopAltMenu(event.getComponent());
 				popMenu.show(event.getComponent(), event.getX(), event.getY());
 			}
 		}
 		
+		public void mouseMoved(MouseEvent event) {}
+		public void mouseClicked(MouseEvent event) {}
 		public void mouseEntered(MouseEvent e) {}
 		public void mouseExited(MouseEvent e) {}
 	}
@@ -486,147 +433,41 @@ public class MainWindow extends JFrame {
 	private class PopAltMenu extends JPopupMenu {
 		private static final long serialVersionUID = 1L;
 
-		public PopAltMenu() {
-			JMenuItem altMenu = new JMenuItem(new ClickAltMenu());
-			add(altMenu);
+		public PopAltMenu(Component c) {
+			JMenuItem altMenuValue = new JMenuItem(new OpenValue(c));
+			add(altMenuValue);
+			
+			JMenuItem altMenuDelete = new JMenuItem(new DeleteIcon(c));
+			add(altMenuDelete);
 
 		}
 	}
 
-	private class ClickAltMenu extends AbstractAction{
-		private static final long serialVersionUID = 1L;
+	private class OpenValue extends AbstractAction {
 
-		public ClickAltMenu() {
+		private Component c;
+
+		public OpenValue(Component c) {
 			super("Open Value-menu");
+			this.c = c;
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			BuildAltMenu bam = new BuildAltMenu();
+			new ValueWindow(model, (JLabel)c);
 		}
 	}
+	
+	private class DeleteIcon extends AbstractAction {
 
-	private class BuildAltMenu {
-		JFrame frame = new JFrame("Values for icon");
-		JTable table = new JTable();
+		private Component c;
+		
+		public DeleteIcon(Component c) {
+			super("Delete Icon");
+			this.c = c;
+		}
 
-		JButton btnAdd = new JButton("Add");
-		JButton btnDelete = new JButton("Delete");
-		JButton btnUpdate = new JButton("Update"); 
-
-		JTextField textId = new JTextField();
-		JTextField textName = new JTextField();
-		JTextField textValue = new JTextField();
-
-		JLabel lblId = new JLabel("Insert Id:");
-		JLabel lblName = new JLabel("Insert Name:");
-		JLabel lblValue = new JLabel("Insert Value:");
-
-		JScrollPane pane = new JScrollPane(table);
-
-		public BuildAltMenu() {
-			Object[] columns = {"Id","Name","Value"};
-			DefaultTableModel model = new DefaultTableModel();
-			model.setColumnIdentifiers(columns);
-
-			table.setModel(model);
-			table.setBackground(Color.LIGHT_GRAY);
-			table.setForeground(Color.black);
-			Font font = new Font("",1,22);
-			table.setFont(font);
-			table.setRowHeight(30);
-
-			lblId.setBounds(20, 220, 80, 25);
-			lblName.setBounds(20, 265, 80, 25);
-			lblValue.setBounds(20, 310, 80, 25);
-
-			textId.setBounds(120, 220, 100, 25);
-			//med 30 p� Y
-			textName.setBounds(120, 265, 100, 25);
-			textValue.setBounds(120, 310, 100, 25);
-
-			btnAdd.setBounds(250, 220, 100, 25);
-			btnUpdate.setBounds(250, 265, 100, 25);
-			btnDelete.setBounds(250, 310, 100, 25);
-
-			pane.setBounds(0, 0, 880, 200);
-			frame.setLayout(null);
-			frame.add(pane);
-
-			frame.add(lblId);
-			frame.add(lblName);
-			frame.add(lblValue);
-
-			frame.add(textId);
-			frame.add(textName);
-			frame.add(textValue);
-
-			frame.add(btnAdd);
-			frame.add(btnDelete);
-			frame.add(btnUpdate);
-
-			Object[] row = new Object[3];
-
-			btnAdd.addActionListener(new ActionListener(){
-				@Override
-				public void actionPerformed(ActionEvent e) {
-
-					row[0] = textId.getText();
-					row[1] = textName.getText();
-					row[2] = textValue.getText();
-
-					// add row to the model
-					model.addRow(row);
-					System.out.println("Add!");
-				}
-			});
-
-			btnDelete.addActionListener(new ActionListener(){
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// i = the index of the selected row
-					int i = table.getSelectedRow();
-					if(i >= 0){
-						// remove a row from jtable
-						model.removeRow(i);
-					}
-					else{
-						System.out.println("Delete Error");
-					}
-				}
-			});
-
-			table.addMouseListener(new MouseAdapter(){
-				@Override
-				public void mouseClicked(MouseEvent e){
-					// i = the index of the selected row
-					int i = table.getSelectedRow();
-					textId.setText(model.getValueAt(i, 0).toString());
-					textName.setText(model.getValueAt(i, 1).toString());
-					textValue.setText(model.getValueAt(i, 2).toString());
-				}
-			});
-
-			btnUpdate.addActionListener(new ActionListener(){
-
-				@Override
-				public void actionPerformed(ActionEvent e) {           
-					// i = the index of the selected row
-					int i = table.getSelectedRow();
-					if(i >= 0) 
-					{
-						model.setValueAt(textId.getText(), i, 0);
-						model.setValueAt(textName.getText(), i, 1);
-						model.setValueAt(textValue.getText(), i, 2);
-					}
-					else{
-						System.out.println("Update Error");
-					}
-				}
-			});
-
-			frame.setSize(900,400);
-			frame.setLocationRelativeTo(null);
-			frame.setVisible(true);
+		public void actionPerformed(ActionEvent e) {
+			model.removeIcon((JLabel)c);
 		}
 	}
 }

@@ -1,50 +1,52 @@
 package shared;
 
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
+import client.Controller;
 
 public class CharacterIcon implements Serializable {
 
-
 	private static final long serialVersionUID = 197612831996384393L;
 
-	private ImageIcon image;
-	private int size;
+	private JLabel image;
 	private int x;
 	private int y;
-
+	
 	private ArrayList<Value> values;
 
-	public CharacterIcon(ImageIcon image, int size) {
+	public CharacterIcon(JLabel image) {
 		this.image = image;
-		this.size = size;
-		this.x = 0;
-		this.y = 0;
+		this.x = image.getX();
+		this.y = image.getY();
+		values = new ArrayList<Value>();
+		image.addComponentListener(new IconListener());
 	}
 
-	public ImageIcon getImage() {
+	public JLabel getImage() {
 		return image;
 	}
 
-	public int getSize() {
-		return size;
-	}
-	
-	public void setPosition(int x, int y)
-	{
+	public void setPosition(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
 
-	public void setImage(ImageIcon image) {
-		this.image = image;
+	public int getX() {
+		return x;
 	}
-
-	public void setSize(int size) {
-		this.size = size;
+	
+	public int getY() {
+		return y;
+	}
+	
+	public void setImage(JLabel image) {
+		this.image = image;
 	}
 
 	/**
@@ -55,33 +57,20 @@ public class CharacterIcon implements Serializable {
 	public Iterator<Value> getValueIterator() {
 		return values.iterator();
 	}
-
-	/**
-	 * Add a new value.
-	 *
-	 * @param val The value to be added.
-	 */
-	public void addValue(Value val) {
-		values.add(val);
+	
+	public void setValues(ArrayList<Value> valueList) {
+		values = valueList;
 	}
 
-	/**
-	 * Change the value to the parameter value at the parameter index.
-	 *
-	 * @param val The new value to be set at the index.
-	 * @param index Index of value to change.
-	 */
+	private class IconListener implements ComponentListener {
+		public void componentMoved(ComponentEvent e) {
+			x = image.getX();
+			y = image.getY();
+			System.out.println(x+","+y);
+		}
+		public void componentResized(ComponentEvent e) {}
+		public void componentShown(ComponentEvent e) {}
+		public void componentHidden(ComponentEvent e) {}
 
-	public void changeValue(Value val, int index) {
-		values.set(index, val);
-	}
-
-	/**
-	 * Remove the value at the parameter index.
-	 *
-	 * @param index Index of the value to be removed.
-	 */
-	public void removeValue(int index) {
-		values.remove(index);
 	}
 }

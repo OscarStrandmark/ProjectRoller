@@ -26,11 +26,11 @@ public class Controller {
 	private BoardModel boardModel;
 
 	public Controller() {
-		lobbyWindow = new LobbyWindow(this);
-		mainWindow = new MainWindow(this);
-		mainWindow.setVisible(false);
+		boardModel = new BoardModel(this);
 		connection = new Connection(this);
-		this.boardModel = new BoardModel(this);
+		lobbyWindow = new LobbyWindow(this);
+		mainWindow = new MainWindow(this,boardModel);
+		mainWindow.setVisible(false);
 	}
 
 	public void pushActionToServer(Action act) {

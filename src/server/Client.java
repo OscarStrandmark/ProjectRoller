@@ -22,6 +22,7 @@ import server.actions.RequestPasswordAction;
 import server.actions.SessionCreateAction;
 import server.actions.SessionJoinRequestAction;
 import server.actions.SessionLeaveAction;
+import server.actions.SynchAction;
 import server.actions.UsernameChangeAction;
 import server.actions.WrongPasswordAction;
 import shared.Buffer;
@@ -266,7 +267,14 @@ public class Client {
 						String contentString = "RP: " + act.getName() + ": " + act.getContent();
 						session.pushChatText(contentString);
 					}
-					//TODO: Implement what to do when recieving an action.
+					
+					else 
+						
+					if(action instanceof SynchAction) {
+						SynchAction act = (SynchAction) action;
+						session.synchBoard(act.getMap(),act.getBackground());
+					}
+					
 				} catch (SocketException se) {
 					try { socket.close(); } catch (IOException e1) {}		
 				} catch (Exception e) {

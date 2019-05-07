@@ -1,16 +1,17 @@
 package shared;
 
-public class Value {
+import java.io.Serializable;
 
-	public static final int STRING = 0;
-	public static final int NUMBER = 1;
+public class Value implements Serializable {
+
+	private static final long serialVersionUID = -3343975199321679760L;
 	
-	private int type;
+	private String name;
 	private String value;
 	
-	public Value(int type, String value) {
-		this.type = type;
+	public Value(String value, String name) {
 		this.value = value;
+		this.name = name;
 	}
 	
 	public void setValue(String value) {
@@ -20,12 +21,12 @@ public class Value {
 	public String getValue() {
 		return value;
 	}
-	
-	public void setType(int type) {
-		this.type = type;
+
+	public String getName() {
+		return name;
 	}
-	
-	public int getType() {
-		return type;
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }
