@@ -4,6 +4,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.SocketException;
 
 import javax.swing.JOptionPane;
 
@@ -18,15 +19,18 @@ public class Connection {
 
     private Controller controller;
 	private Socket socket;
+	
 	private Sender sender;
-
+	private Reciever reciev;
+	private boolean alive = true;
+	
 	public Connection(Controller controller) {
 		this.controller = controller; 
 
 		try {
 			socket = new Socket(ADDRESS,PORT);
 			sender = new Sender();
-					 new Reciever();
+			reciev = new Reciever();
 		} catch (ConnectException ce) {
 			int input = JOptionPane.showConfirmDialog(null, "Server not found", "ERROR", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
 			
@@ -40,6 +44,16 @@ public class Connection {
 		sender.send(action);
 	}
 
+	private void kill() {
+		alive = false;
+		
+		sender.interrupt();
+		reciev.interrupt();
+		
+		JOptionPane.showMessageDialog(null, "Connection lost", "FATAL ERROR", JOptionPane.ERROR);
+		
+	}
+	
 	private class Sender extends Thread {
 
 		private Buffer<Action> buffer;
@@ -61,15 +75,18 @@ public class Connection {
 		}
 
 		public void run() {
-			while(true) {
+			while(alive) {
 				try {
 					Action act = buffer.get();
 					oos.writeObject(act);
 					oos.flush();
 					oos.reset();
 
+				} catch (SocketException se) {
+					se.printStackTrace();
+					kill();
 				} catch (Exception e) {
-					e.printStackTrace();
+					e.printStackTrace();	
 				}
 			}
 		}
@@ -89,7 +106,7 @@ public class Connection {
 		}
 
 		public void run() {
-			while(true) {
+			while(alive) {
 				try {
 					Action action = (Action) ois.readObject();
 
@@ -123,6 +140,16 @@ public class Connection {
 					if(action instanceof WrongPasswordAction) {
 						JOptionPane.showMessageDialog(null, "Password did not match", "Password mismatch", JOptionPane.INFORMATION_MESSAGE);
 					}
+					
+					else
+						
+					if(action instanceof ChatDisplayTextAction) {
+						ChatDisplayTextAction act = (ChatDisplayTextAction) action;
+						controller.appendChatLine(act.getText());
+					}
+				} catch (SocketException se) {
+					se.printStackTrace();
+					kill();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

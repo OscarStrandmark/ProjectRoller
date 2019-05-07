@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import client.Controller;
-import server.actions.CreateSessionAction;
+import server.actions.SessionCreateAction;
 
 /**
  * Class for the window where the user creates a new session.	
@@ -86,9 +86,9 @@ public class NewSessionWindow extends JFrame {
 			int max_players = Integer.parseInt(jntfMaxPlayers.getText());
 
 			if(jtfPassword.getText().length() > 0) {
-				controller.pushActionToServer(new CreateSessionAction(controller.username, name, max_players, pass));
+				controller.pushActionToServer(new SessionCreateAction(controller.username, name, max_players, pass));
 			} else {
-				controller.pushActionToServer(new CreateSessionAction(controller.username, name, max_players));
+				controller.pushActionToServer(new SessionCreateAction(controller.username, name, max_players));
 			}
 			dispose();
 		} else {

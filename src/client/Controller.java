@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import client.ui.LobbyWindow;
 import client.ui.MainWindow;
 import server.actions.Action;
+import server.actions.ChatMessageAction;
 import shared.BoardModel;
 
 public class Controller {
@@ -15,7 +16,7 @@ public class Controller {
 	private LobbyWindow lobbyWindow;
 	private Connection connection;
 	private MainWindow mainWindow;
-	public String username;
+	public String username = "NewClient";
 	private BoardModel boardModel;
 
 	public Controller() {
@@ -62,8 +63,40 @@ public class Controller {
 		return username;
 	}
 	
-	public BoardModel getBoardModel()
-	{
+	public void appendChatLine(String line) {
+		mainWindow.appendChatLine(line);
+	}
+	
+	/**
+	 * Method that handles all text written in the chat box and sends the appropiate action to the server. 
+	 * 
+	 * @param s
+	 */
+	public void handleMessage(String s) {
+		String[] arr = s.split(" ");
+		
+		if(arr[0].equals("/roll")) { //Roll command
+			//TODO
+		}
+		
+		else 
+			
+		if(arr[0].equals("/w")) { //Whisper msg
+			//TODO
+		}
+		
+		else 
+			
+		if(arr[0].equals("/rp")) { //RP-message
+			//TODO
+		}
+		
+		else { //Normal message
+			pushActionToServer(new ChatMessageAction(username, s));
+		}
+	}
+	
+	public BoardModel getBoardModel() {
 		return this.boardModel;
 	}
 }

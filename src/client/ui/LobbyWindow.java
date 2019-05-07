@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -15,8 +17,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
 import client.Controller;
-import server.actions.JoinSessionRequestAction;
 import server.actions.RefreshAction;
+import server.actions.SessionJoinRequestAction;
 
 public class LobbyWindow extends JFrame {
 	
@@ -85,6 +87,7 @@ public class LobbyWindow extends JFrame {
 		//Final calls
 		setContentPane(pnlContent);
 		pack();
+		setTitle("Lobby");
 		setVisible(true);
 	}
 	
@@ -101,7 +104,7 @@ public class LobbyWindow extends JFrame {
 	}
 
 	/*
-	 * @author Andreas Jönsson
+	 * @author Andreas Jï¿½nsson
 	 **/
 	private static class SessionTableModel extends DefaultTableModel {
 
@@ -132,7 +135,7 @@ public class LobbyWindow extends JFrame {
 				
 				if(index != -1) {
 					String name = (String) table.getModel().getValueAt(index, 0);
-					controller.pushActionToServer(new JoinSessionRequestAction(controller.username, name));
+					controller.pushActionToServer(new SessionJoinRequestAction(controller.username, name));
 				}
 			}
 			
@@ -148,5 +151,20 @@ public class LobbyWindow extends JFrame {
 				controller.pushActionToServer(new RefreshAction(controller.username));
 			}
 		}
+	}
+	
+	private class wListener implements WindowListener {
+		
+		public void windowOpened(WindowEvent e) {
+			controller.pushActionToServer(new RefreshAction(controller.username));
+		}
+
+		public void windowClosing(WindowEvent e) {}
+		public void windowClosed(WindowEvent e) {}
+		public void windowIconified(WindowEvent e) {}
+		public void windowDeiconified(WindowEvent e) {}
+		public void windowActivated(WindowEvent e) {}
+		public void windowDeactivated(WindowEvent e) {}
+		
 	}
 }

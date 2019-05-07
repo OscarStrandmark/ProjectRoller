@@ -19,11 +19,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
@@ -45,12 +44,14 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 import client.Controller;
+import server.actions.QuitAction;
+import server.actions.SessionLeaveAction;
+import server.actions.UsernameChangeAction;
 import shared.BoardModel;
 import shared.CharacterIcon;
 
@@ -102,6 +103,10 @@ public class MainWindow extends JFrame {
 
 	//Components for settings-panel
 
+	private JTextField settingsJTFUsername;
+
+	private JButton settingsBtnSave;
+	private JButton settingsBtnLeave;
 
 	public MainWindow(Controller controller) {
 		this.controller = controller;
@@ -109,6 +114,7 @@ public class MainWindow extends JFrame {
 		repaint();
 		setVisible(true);
 		//		IconMovement iconMovement = new IconMovement(getComponents());
+		settingsJTFUsername.setText(controller.username);
 	}
 
 	private void init() {
@@ -116,7 +122,6 @@ public class MainWindow extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(new BorderLayout());
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
-
 		//Code below sets the board-view to always be 80% of the screen.
 		addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent e) {
@@ -142,6 +147,18 @@ public class MainWindow extends JFrame {
 		chatJTA = new JTextArea();
 		chatJTA.setEditable(false);
 		scrollPane1.setViewportView(chatJTA);
+		String welcomeMsg = "";
+		welcomeMsg += "Welcome to ProjectRoller!" + "\n";
+		welcomeMsg += "This chat-tab can be used to communicate with other players or excecute commands." + "\n";
+		welcomeMsg += "Commands :" + "\n";
+		welcomeMsg += "/roll xdy + n - Used to roll a dice." + "\n";
+		welcomeMsg += "/dmroll xdy + n - same as /roll, but only you can see the result." + "\n";
+		welcomeMsg += "/rp [name] [text] - Used to write a message as a character with the specified name." + "\n";
+		welcomeMsg += "/w [name] [text] - Used to write a private message to another player."+ "\n";
+		welcomeMsg += "-------------------------------------------" + "\n";
+		welcomeMsg += "Dont forget to change your username before you start!" + "\n";
+		welcomeMsg += "-------------------------------------------" + "\n";
+		chatJTA.setText(welcomeMsg);
 		chatPanel.add(scrollPane1, BorderLayout.CENTER);
 
 		JPanel textBoxPane = new JPanel(new BorderLayout());
@@ -209,7 +226,22 @@ public class MainWindow extends JFrame {
 
 		// ---------- SETTINGS ----------
 		JPanel settingsPanel = new JPanel();
+		JPanel settingsGrid = new JPanel(new GridLayout(1, 2)); //Grid is always 2 wide and 
+		
+		settingsBtnSave = new JButton("Save settings");
+		settingsBtnLeave = new JButton("LEAVE SESSION");
 
+		settingsJTFUsername = new JTextField();
+		settingsJTFUsername.setColumns(15);
+		
+		settingsGrid.add(new JLabel("Username:"));
+		settingsGrid.add(settingsJTFUsername);
+		
+		//TODO:Settings n stuff
+		
+		settingsPanel.add(settingsGrid);
+		settingsPanel.add(settingsBtnSave);
+		settingsPanel.add(settingsBtnLeave);
 		/*
 		 * ==============================================================
 		 * ======================MAIN PANELS=============================
@@ -246,8 +278,19 @@ public class MainWindow extends JFrame {
 
 		importBtnIconFileChooser.addActionListener(e -> openFileChooser());
 		importBtnIconImport.addActionListener(e -> setIconImage());
+		
+		settingsBtnSave.addActionListener(listener);
+		settingsBtnLeave.addActionListener(listener);
+		
+		this.addWindowListener(new wListener());
 	}
 
+	public void appendChatLine(String line) {
+		System.out.println("append");
+		String current = chatJTA.getText();
+		chatJTA.setText(current + line + "\n");
+	}
+	
 	/**
 	 * When the "Choose Image"-button is clicked, show a FileChooser from which
 	 * a user can choose an image for an icon
@@ -346,8 +389,7 @@ public class MainWindow extends JFrame {
 
 		public void actionPerformed(ActionEvent e) {
 			if(e.getSource() == chatBtnSend) {
-				//TODO: Push new message action
-				//controller.pushActionToServer(act);
+				controller.handleMessage(chatBox.getText());
 				chatBox.setText("");
 			}
 
@@ -369,8 +411,37 @@ public class MainWindow extends JFrame {
 				boardPanel.add(backgroundIcon);
 				backgroundPriorityLogic(backgroundIcon);
 				boardPanel.repaint();
+			} 
+			
+			if(e.getSource() == settingsBtnSave) {
+				String username = settingsJTFUsername.getText();
+				if(username != controller.username) {
+					controller.pushActionToServer(new UsernameChangeAction(controller.username, username));
+					controller.username = username;
+				}
+			}
+			
+			if(e.getSource() == settingsBtnLeave) {
+				controller.pushActionToServer(new SessionLeaveAction(controller.username));
+				controller.sessionLeft();
 			}
 		}
+	}
+	
+	private class wListener implements WindowListener {
+		
+		//Called when user exits program via the red X.
+		public void windowClosing(WindowEvent e) {
+			controller.pushActionToServer(new QuitAction(controller.username));
+		}
+		
+		public void windowClosed(WindowEvent e) {}
+		public void windowIconified(WindowEvent e) {}
+		public void windowDeiconified(WindowEvent e) {}
+		public void windowActivated(WindowEvent e) {}
+		public void windowDeactivated(WindowEvent e) {}
+		public void windowOpened(WindowEvent e) {}
+			
 	}
 
 	private void backgroundPriorityLogic(JLabel img) {
@@ -391,15 +462,8 @@ public class MainWindow extends JFrame {
 			event.getComponent().setLocation((event.getX() + event.getComponent().getX()-x), (event.getY() + event.getComponent().getY()-y));
 		}
 
-		@Override
-		public void mouseMoved(MouseEvent event) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent event) {
-		}
+		public void mouseMoved(MouseEvent event) {}
+		public void mouseClicked(MouseEvent event) {}
 
 		@Override
 		public void mousePressed(MouseEvent event) {
@@ -414,18 +478,9 @@ public class MainWindow extends JFrame {
 				popMenu.show(event.getComponent(), event.getX(), event.getY());
 			}
 		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-			// TODO Auto-generated method stub
-
-		}
+		
+		public void mouseEntered(MouseEvent e) {}
+		public void mouseExited(MouseEvent e) {}
 	}
 
 	private class PopAltMenu extends JPopupMenu {
