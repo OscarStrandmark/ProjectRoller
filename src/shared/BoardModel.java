@@ -114,6 +114,9 @@ public class BoardModel implements Serializable {
 	}
 	
 	public void synchToServer() {
+		if(background == null) {
+			background = new JLabel();
+		}
 		controller.pushActionToServer(new SynchAction(controller.username, iconMap, background));
 	}
 }
