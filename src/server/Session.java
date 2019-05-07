@@ -105,6 +105,15 @@ import server.actions.SynchAction;
 		}
 	}
 	
+	public void sendWhisper(String sender ,String receiver ,String text) {
+		for(Client c : connectedClients) {
+			if(c.getUsername().equals(receiver)) {
+				text = "Whisper from " + sender + ": " + text;
+				c.sendAction(new ChatDisplayTextAction(sender, text));
+			}
+		}
+	}
+	
  	/**
 	 * Get the maximum amount of allowed connections.
 	 * @return The amount.
