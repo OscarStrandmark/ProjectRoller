@@ -8,18 +8,24 @@ import java.net.SocketException;
 import java.util.ArrayList;
 
 import server.actions.Action;
+import server.actions.ChatDisplayTextAction;
 import server.actions.ChatMessageAction;
+import server.actions.ChatRPAction;
+import server.actions.ChatWhisperAction;
 import server.actions.CheckPasswordAction;
-import server.actions.SessionCreateAction;
-import server.actions.SessionJoinRequestAction;
+import server.actions.DiceRollAction;
+import server.actions.DiceRollHiddenAction;
 import server.actions.JoinedAction;
 import server.actions.QuitAction;
-import server.actions.SessionLeaveAction;
-import server.actions.UsernameChangeAction;
 import server.actions.RefreshAction;
 import server.actions.RequestPasswordAction;
+import server.actions.SessionCreateAction;
+import server.actions.SessionJoinRequestAction;
+import server.actions.SessionLeaveAction;
+import server.actions.UsernameChangeAction;
 import server.actions.WrongPasswordAction;
 import shared.Buffer;
+import shared.Diceroll;
 
 public class Client {
 
@@ -214,6 +220,51 @@ public class Client {
 						session.leave(thisClient);
 						kill();
 						session.pushChatText("USER LEFT: " + action.getUsername());
+					}
+					
+					else
+						
+					if(action instanceof DiceRollAction) {
+						DiceRollAction act = (DiceRollAction) action;
+						
+						Diceroll dr = act.getDiceroll();
+						
+						String diceString = dr.getDiceString();
+						
+						int result = dr.roll();
+						String printString = "User: " + act.getUsername() + " rolled dice: " + diceString + dr.getConstant() + " = " + result;
+						session.pushChatText(printString);
+						
+					}
+					
+					else 
+					
+					if(action instanceof DiceRollHiddenAction) {
+						DiceRollHiddenAction act = (DiceRollHiddenAction) action;
+						
+						Diceroll dr = act.getDiceroll();
+						
+						String diceString = dr.getDiceString();
+						
+						int result = dr.roll();
+						String printString = "Hidden diceroll: " + diceString + dr.getConstant() + " = " + result;
+						
+						thisClient.sendAction(new ChatDisplayTextAction("SERVER", printString));
+					}
+					
+					else
+						
+					if(action instanceof ChatWhisperAction) {
+						ChatWhisperAction act = (ChatWhisperAction) action;
+						session.sendWhisper(act.getUsername(), act.getReciever(), act.getContent());
+					}
+					
+					else
+						
+					if(action instanceof ChatRPAction) {
+						ChatRPAction act = (ChatRPAction) action;
+						String contentString = "RP: " + act.getName() + ": " + act.getContent();
+						session.pushChatText(contentString);
 					}
 					//TODO: Implement what to do when recieving an action.
 				} catch (SocketException se) {
