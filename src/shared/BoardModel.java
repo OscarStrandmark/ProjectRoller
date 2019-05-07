@@ -21,8 +21,6 @@ import server.actions.SynchAction;
  */
 public class BoardModel implements Serializable {
 
-	private long lastUpdatedEpoch;
-
 	private HashMap<JLabel,CharacterIcon> iconMap;
 	
 	private JPanel board;

@@ -153,6 +153,7 @@ public class Connection {
 					if(action instanceof SynchAction) {
 						SynchAction act = (SynchAction) action;
 						controller.getBoardModel().synchClient(act.getMap(), act.getBackground());
+						System.out.println("received synch on client");
 					}
 				} catch (SocketException se) {
 					se.printStackTrace();

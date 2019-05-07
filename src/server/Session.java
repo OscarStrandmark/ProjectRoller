@@ -139,6 +139,7 @@ import shared.CharacterIcon;
 	public synchronized void synchBoard(HashMap<JLabel,CharacterIcon> map, JLabel background) {
 		model.synchServer(map, background);
 		for(Client c : connectedClients) {
+			System.out.println("Sent synch from server to " + c.getUsername());
 			c.sendAction(new SynchAction("SERVER", map, background));
 		}
 	}

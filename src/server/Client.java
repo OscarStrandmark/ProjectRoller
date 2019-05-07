@@ -99,6 +99,7 @@ public class Client {
 					Action act = buffer.get();
 					oos.writeObject(act);
 					oos.flush();
+					oos.reset();
 				} catch (Exception e) {
 					System.err.println("ERROR IN: CLIENT.SENDER");
 					e.printStackTrace();
@@ -273,6 +274,7 @@ public class Client {
 					if(action instanceof SynchAction) {
 						SynchAction act = (SynchAction) action;
 						session.synchBoard(act.getMap(),act.getBackground());
+						System.out.println("Recieved synch on server");
 					}
 					
 				} catch (SocketException se) {
