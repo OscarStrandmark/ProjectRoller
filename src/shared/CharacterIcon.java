@@ -6,29 +6,29 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-
-import client.Controller;
 
 public class CharacterIcon implements Serializable {
 
 	private static final long serialVersionUID = 197612831996384393L;
 
-	private JLabel image;
+	private ImageIcon image;
+	private JLabel lblRef;
 	private int x;
 	private int y;
 	
 	private ArrayList<Value> values;
 
 	public CharacterIcon(JLabel image) {
-		this.image = image;
+		this.image = (ImageIcon)image.getIcon();
 		this.x = image.getX();
 		this.y = image.getY();
 		values = new ArrayList<Value>();
 		image.addComponentListener(new IconListener());
 	}
 
-	public JLabel getImage() {
+	public ImageIcon getImage() {
 		return image;
 	}
 
@@ -43,10 +43,6 @@ public class CharacterIcon implements Serializable {
 	
 	public int getY() {
 		return y;
-	}
-	
-	public void setImage(JLabel image) {
-		this.image = image;
 	}
 
 	/**
@@ -64,8 +60,8 @@ public class CharacterIcon implements Serializable {
 
 	private class IconListener implements ComponentListener {
 		public void componentMoved(ComponentEvent e) {
-			x = image.getX();
-			y = image.getY();
+			x = lblRef.getX();
+			y = lblRef.getY();
 			System.out.println(x+","+y);
 		}
 		public void componentResized(ComponentEvent e) {}

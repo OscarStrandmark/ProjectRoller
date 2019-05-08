@@ -1,11 +1,10 @@
 package server;
 
- import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.swing.JLabel;
+import javax.swing.ImageIcon;
 
-import server.actions.Action;
 import server.actions.ChatDisplayTextAction;
 import server.actions.JoinedAction;
 import server.actions.SynchAction;
@@ -136,7 +135,7 @@ import shared.CharacterIcon;
 		return currentPlayers;
 	}
 	
-	public synchronized void synchBoard(HashMap<JLabel,CharacterIcon> map, JLabel background) {
+	public synchronized void synchBoard(HashMap<ImageIcon,CharacterIcon> map, ImageIcon background) {
 		model.synchServer(map, background);
 		for(Client c : connectedClients) {
 			System.out.println("Sent synch from server to " + c.getUsername());
