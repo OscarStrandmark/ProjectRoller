@@ -1,112 +1,170 @@
 package client.ui;
 
-import javax.swing.JFrame;
-
-import client.Controller;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.ArrayList;
 
-public class LobbyWindow extends JFrame
-{
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableModel;
 
+import client.Controller;
+import server.actions.RefreshAction;
+import server.actions.SessionJoinRequestAction;
 
-	private JSplitPane pnlLobby;
-	private JPanel pnlLobbyCreate;
+public class LobbyWindow extends JFrame {
 	
+	private JPanel pnlContent;
+	private JScrollPane pnlScroll;
 	
-	private JButton joinButton;
-	private JButton createButton;
+	private JTable table;
 	
-	private JList<String> serverList;
-	private DefaultListModel<String> listModel;
+	private JButton btnJoin;
+	private JButton btnCreate;
+	private JButton btnRefresh;
 	
-	
-	public LobbyWindow()
-	{
-		init();
-		
-	}
-	
-	public void init()
-	{
-		setTitle("Project Roller");
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setLayout(new BorderLayout());
-		setVisible(true);
-		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		//this.setResizable(false);
-		
-
-		this.pnlLobby = new JSplitPane();
-				
-		this.pnlLobbyCreate = new JPanel();
-
-		this.joinButton = new JButton("Join Session");
-		this.createButton = new JButton("Create Session");
-		this.joinButton.addActionListener(new ButtonListener());
-		this.createButton.addActionListener(new ButtonListener());
-
-		
-		this.pnlLobbyCreate.setLayout(new BoxLayout(this.pnlLobbyCreate, BoxLayout.PAGE_AXIS));
-		this.pnlLobbyCreate.add(this.joinButton);
-		this.pnlLobbyCreate.add(this.createButton);
-
-
-		this.listModel = new DefaultListModel<String>();
-		this.listModel.addElement("Server1");
-		this.listModel.addElement("Server2");
-		this.listModel.addElement("Server3");
-		this.listModel.addElement("Server4");
-		this.listModel.addElement("Server5");
-		
-		this.serverList = new JList<String>(listModel);
-
-		
-		
-		
-		
-		
-		
-		
-		this.pnlLobby.setLeftComponent(this.serverList);
-		this.pnlLobby.setRightComponent(this.pnlLobbyCreate);
-		this.pnlLobby.setEnabled(false);
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		int width = (int) (screenSize.width * 0.9);
-		this.pnlLobby.setDividerLocation(width);
-
-		
-		add(this.pnlLobby, BorderLayout.CENTER);
-		
-	}
-	
-	
-	private class ButtonListener implements ActionListener
-	{
-
-		@Override
-		public void actionPerformed(ActionEvent e) 
-		{
-			
-			createServer();
-		}
-		
-		private void createServer()
-		{
-			
-		}
-		
-		private void joinServer()
-		{
-			
-		}
-		
-	}
+	private Controller controller;
 	
 	public static void main(String[] args) {
-		new LobbyWindow();
+		new LobbyWindow(null);
+	}
+	
+	public LobbyWindow(Controller controller) {
+		
+		this.controller = controller;
+		
+		init();
+	}
+
+	
+	private void init() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		//Init components
+		pnlContent = new JPanel(new BorderLayout());
+		pnlScroll = new JScrollPane();
+		
+		btnJoin = new JButton("Join selected session");
+		btnCreate = new JButton("Create new session");
+		btnRefresh = new JButton("Refresh session list");
+		
+		table = new JTable(new SessionTableModel());
+		
+		//Config table.
+		table.getTableHeader().setReorderingAllowed(false);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		//Add components to panels
+		
+		//Scrollpane + table
+		pnlScroll.setViewportView(table);
+
+		pnlContent.add(pnlScroll,BorderLayout.CENTER);
+		
+		//Panel for buttons
+		JPanel pnlButtons = new JPanel(new GridLayout(3,1));
+		pnlButtons.add(btnJoin);
+		pnlButtons.add(btnCreate);
+		pnlButtons.add(btnRefresh);
+		
+		pnlContent.add(pnlButtons,BorderLayout.EAST);
+		
+		//Button listeners
+		ButtonListener listener = new ButtonListener();
+		
+		btnJoin.addActionListener(listener);
+		btnCreate.addActionListener(listener);
+		btnRefresh.addActionListener(listener);
+		
+		//Final calls
+		setContentPane(pnlContent);
+		pack();
+		setTitle("Lobby");
+		setVisible(true);
+	}
+	
+	
+	public void updateSessionList(ArrayList<String> sessionList) {
+		SessionTableModel model = new SessionTableModel();
+		
+		for(String s : sessionList) {
+			String[] sessionString = s.split(":");
+			model.addRow(sessionString);
+		}
+		
+		table.setModel(model);
+	}
+
+	/*
+	 * @author Andreas J�nsson
+	 **/
+	private static class SessionTableModel extends DefaultTableModel {
+
+		// The names of the columns
+		private static final String[] columnNames = { "Session Name", "Current players", "Maximum allowed"};
+
+		public SessionTableModel() {
+			super(columnNames, 0);
+		}
+
+		public String[] getColumnNames() {
+			return columnNames;
+		}
+		
+		@Override
+		public boolean isCellEditable(int row, int column) {
+			return false;
+		}
+	}
+	
+	private class ButtonListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+
+			if(e.getSource() == btnJoin) {
+				int index = table.getSelectedRow();
+				
+				if(index != -1) {
+					String name = (String) table.getModel().getValueAt(index, 0);
+					controller.pushActionToServer(new SessionJoinRequestAction(controller.username, name));
+				}
+			}
+			
+			else
+				
+			if(e.getSource() == btnCreate) {
+				new NewSessionWindow(controller);
+			}
+			
+			else
+				
+			if(e.getSource() == btnRefresh) {
+				controller.pushActionToServer(new RefreshAction(controller.username));
+			}
+		}
+	}
+	
+	private class wListener implements WindowListener {
+		
+		public void windowOpened(WindowEvent e) {
+			controller.pushActionToServer(new RefreshAction(controller.username));
+		}
+
+		public void windowClosing(WindowEvent e) {}
+		public void windowClosed(WindowEvent e) {}
+		public void windowIconified(WindowEvent e) {}
+		public void windowDeiconified(WindowEvent e) {}
+		public void windowActivated(WindowEvent e) {}
+		public void windowDeactivated(WindowEvent e) {}
+		
 	}
 }
