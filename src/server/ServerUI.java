@@ -30,7 +30,7 @@ public class ServerUI extends JFrame {
 	}
 	
 	private void init() {
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(333, 333);
 
 		pnlContent = new JPanel();
@@ -43,6 +43,7 @@ public class ServerUI extends JFrame {
 		pnlContent.add(new JLabel("ACTIVE SESSIONS"));
 		pnlContent.add(pnlScroll);
 		pnlContent.add(btnRefresh);
+		pnlContent.add(new JLabel("((Closing this window will kill the server))"));
 		
 		btnRefresh.addActionListener(e -> updateList());
 		

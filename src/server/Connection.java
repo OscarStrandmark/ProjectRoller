@@ -65,7 +65,8 @@ public class Connection {
 	public void joinSession(String sessionName, Client client) {
 		for(Session s : sessions) {
 			if(s.getSessionName().equals(sessionName)) {
-				clientsInLobby.remove(client);
+				//clientsInLobby.remove(client);
+				//TODO:REMOVE COMMENTED
 				s.join(client);
 			}
 		}
@@ -87,7 +88,8 @@ public class Connection {
 	}
 	
 	public void joinLobby(Client c) {
-		clientsInLobby.add(c);
+		//clientsInLobby.add(c);
+		//TODO:REMOVE COMMENT
 	}
 	
 	/**
@@ -132,7 +134,7 @@ public class Connection {
 						Client newClient = new Client(socket, thisClass); //Create a client for the incoming connection.
 						
 						clientsInLobby.add(newClient); //Add the Client object to the list containing all clients in the lobby.
-
+						
 						//Create a list for all session names.
 						ArrayList<String> sessionNames = new ArrayList<String>();
 
