@@ -42,7 +42,7 @@ public class Controller {
 	}
 	
 	public void sessionEntered() {
-		lobbyWindow.setVisible(true);
+		lobbyWindow.setVisible(false);
 		mainWindow.setVisible(true);
 	}
 	

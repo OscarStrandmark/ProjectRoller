@@ -65,8 +65,7 @@ public class Connection {
 	public void joinSession(String sessionName, Client client) {
 		for(Session s : sessions) {
 			if(s.getSessionName().equals(sessionName)) {
-				//clientsInLobby.remove(client);
-				//TODO:REMOVE COMMENTED
+				clientsInLobby.remove(client);
 				s.join(client);
 			}
 		}
@@ -88,8 +87,7 @@ public class Connection {
 	}
 	
 	public void joinLobby(Client c) {
-		//clientsInLobby.add(c);
-		//TODO:REMOVE COMMENT
+		clientsInLobby.add(c);
 	}
 	
 	/**
