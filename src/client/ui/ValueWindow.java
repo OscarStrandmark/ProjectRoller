@@ -108,7 +108,7 @@ public class ValueWindow extends JFrame {
 		}
 		
 		icon.setValues(list);
-		this.model.synchToServer();
+		//this.model.synchToServer();
 	}
 	
 	private class Listener implements ActionListener {

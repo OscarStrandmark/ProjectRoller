@@ -25,7 +25,7 @@ public class CharacterIcon implements Serializable {
 		this.x = image.getX();
 		this.y = image.getY();
 		values = new ArrayList<Value>();
-		image.addComponentListener(new IconListener());
+		//image.addComponentListener(new IconListener());
 	}
 
 	public ImageIcon getImage() {

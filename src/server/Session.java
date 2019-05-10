@@ -17,7 +17,6 @@ import shared.CharacterIcon;
 	private String password;
 	private String sessionName;
 	private int maxPlayers;
-	private int currentPlayers;
 	private ArrayList<Client> connectedClients;
 	private Connection connection;
 	private BoardModel model;
@@ -132,7 +131,7 @@ import shared.CharacterIcon;
 	 * @return The amount of sessions.
 	 */
 	public int getCurrentConnections() {
-		return currentPlayers;
+		return connectedClients.size();
 	}
 	
 	public synchronized void synchBoard(HashMap<ImageIcon,CharacterIcon> map, ImageIcon background) {

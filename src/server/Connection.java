@@ -132,7 +132,7 @@ public class Connection {
 						Client newClient = new Client(socket, thisClass); //Create a client for the incoming connection.
 						
 						clientsInLobby.add(newClient); //Add the Client object to the list containing all clients in the lobby.
-
+						
 						//Create a list for all session names.
 						ArrayList<String> sessionNames = new ArrayList<String>();
 

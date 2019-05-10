@@ -67,7 +67,7 @@ public class BoardModel implements Serializable {
 		backgroundReference = img;
 		this.background = (ImageIcon)img.getIcon();
 		board.setComponentZOrder(img, board.getComponentCount()-1);
-		synchToServer();
+		//synchToServer();
 	}
 	
 	public void addIcon(JLabel icon) {
@@ -76,14 +76,14 @@ public class BoardModel implements Serializable {
 		iconMap.put(imgIcon, cIcon);
 		board.setComponentZOrder(icon, 0);
 		board.repaint();
-		synchToServer();
+		//synchToServer();
 	}
 	
 	public void removeIcon(JLabel icon) {
 		iconMap.remove((ImageIcon)icon.getIcon());
 		board.remove(icon);
 		board.repaint();
-		synchToServer();
+		//synchToServer();
 		
 	}
 	
@@ -95,6 +95,7 @@ public class BoardModel implements Serializable {
 		this.background = background;
 	}
 
+	//TODO: FIXA SYNK
 	public void synchClient(HashMap<ImageIcon,CharacterIcon> map, ImageIcon background) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {

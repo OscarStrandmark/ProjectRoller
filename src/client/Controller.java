@@ -61,8 +61,12 @@ public class Controller {
 	}
 	
 	public void disposeAll() {
-		lobbyWindow.dispose();
-		mainWindow.dispose();
+		if(lobbyWindow != null) {
+			lobbyWindow.dispose();
+		}
+		if(mainWindow != null) {
+			mainWindow.dispose();
+		}
 	}
 	
 	public String getUsername() {

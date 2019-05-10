@@ -240,7 +240,7 @@ public class MainWindow extends JFrame {
 
 		sidePanel.addTab("Chat", chatPanel);
 		sidePanel.addTab("Notes", notePanel);
-		sidePanel.addTab("Import", importPanel);
+		sidePanel.addTab("Import / Create", importPanel);
 		sidePanel.addTab("Settings", settingsPanel);
 		sidePanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		sidePanel.setMinimumSize(new Dimension(800, 800));
