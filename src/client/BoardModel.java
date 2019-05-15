@@ -13,6 +13,7 @@ import server.actions.BoardIconCreateAction;
 import server.actions.BoardIconMoveAction;
 import server.actions.BoardIconRemoveAction;
 import server.actions.BoardIconValueUpdateAction;
+import server.actions.BoardResyncRequestAction;
 import shared.CharacterIcon;
 import shared.Value;
 
@@ -88,6 +89,8 @@ public class BoardModel implements Serializable {
 		icon.addMouseListener(new IconMovement(this));
 		icon.addMouseMotionListener(new IconMovement(this));
 		listLabl.add(icon);
+		
+		board.setComponentZOrder(backgroundReference, board.getComponentCount()-1);
 	}
 	
 	public void moveIcon(int index, int x, int y) {
@@ -96,7 +99,6 @@ public class BoardModel implements Serializable {
 	}
 	
 	public void removeIcon(int index) {
-		System.out.println("REMOVED ICON");
 		listChar.remove(index);
 		listIcon.remove(index);
 		board.remove(listLabl.get(index));
@@ -107,6 +109,36 @@ public class BoardModel implements Serializable {
 	public void setValues(int index, ArrayList<Value> list) {
 		listChar.get(index).setValues(list);
 		System.out.println("values updated");
+	}
+	
+	public void resync(ImageIcon background, ArrayList<ImageIcon> iconList, ArrayList<CharacterIcon> charList) {
+		
+		this.listIcon = new ArrayList<ImageIcon>();
+		this.listChar = new ArrayList<CharacterIcon>();
+		this.listLabl = new ArrayList<JLabel>();
+		
+		board.removeAll();
+		board.repaint();
+		
+		for (int i = 0; i < iconList.size(); i++) {
+			this.listIcon.add(iconList.get(i));
+			this.listChar.add(charList.get(i));
+			
+			JLabel icon = new JLabel(iconList.get(i));
+			icon.setBounds(0,0,iconList.get(i).getIconWidth(),iconList.get(i).getIconHeight());
+			
+			board.add(icon);
+			icon.setLocation(charList.get(i).getX(), charList.get(i).getY());
+			board.repaint();
+			
+			icon.addMouseListener(new IconMovement(this));
+			icon.addMouseMotionListener(new IconMovement(this));
+			listLabl.add(icon);
+		}
+		
+		if(background != null) {
+			setBackground(background);
+		}
 	}
 	
 	public void sendBackground(ImageIcon img) {
@@ -127,6 +159,10 @@ public class BoardModel implements Serializable {
 	
 	public void sendValueUpdate(int index, ArrayList<Value> list) {
 		controller.pushActionToServer(new BoardIconValueUpdateAction(controller.username, index, list));
+	}
+	
+	public void sendResyncReq() {
+		controller.pushActionToServer(new BoardResyncRequestAction(controller.username));
 	}
 	
 	public int lookupIndex(ImageIcon img) {

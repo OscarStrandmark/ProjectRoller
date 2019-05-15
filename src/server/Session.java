@@ -9,6 +9,7 @@ import server.actions.BoardIconCreateAction;
 import server.actions.BoardIconMoveAction;
 import server.actions.BoardIconRemoveAction;
 import server.actions.BoardIconValueUpdateAction;
+import server.actions.BoardResyncAction;
 import server.actions.ChatDisplayTextAction;
 import server.actions.JoinedAction;
 import shared.Value;
@@ -169,5 +170,9 @@ import shared.Value;
 		for(Client c : connectedClients) {
 			c.sendAction(new BoardIconValueUpdateAction("SERVER", index, list));
 		}
+	}
+	
+	public BoardResyncAction getSyncAction() {
+		return new BoardResyncAction("SERVER", model.getBackground(), model.getChars(), model.getIcons());
 	}
 }

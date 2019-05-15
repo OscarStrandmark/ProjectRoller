@@ -46,6 +46,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import client.BoardModel;
 import client.Controller;
 import server.actions.BoardBackgroundChangeAction;
+import server.actions.BoardResyncRequestAction;
 import server.actions.QuitAction;
 import server.actions.SessionLeaveAction;
 import server.actions.UsernameChangeAction;
@@ -95,6 +96,7 @@ public class MainWindow extends JFrame {
 
 	private JButton settingsBtnSave;
 	private JButton settingsBtnLeave;
+	private JButton settingsBtnResync;
 
 	public MainWindow(Controller controller, BoardModel model) {
 		this.controller = controller;
@@ -138,6 +140,7 @@ public class MainWindow extends JFrame {
 		scrollPane1.setViewportView(chatJTA);
 		String welcomeMsg = "";
 		welcomeMsg += "Welcome to ProjectRoller!" + "\n";
+		welcomeMsg += "If you get de-synced use the resync-button in the settings" + "\n";
 		welcomeMsg += "This chat-tab can be used to communicate with other players or excecute commands." + "\n";
 		welcomeMsg += "Commands :" + "\n";
 		welcomeMsg += "/roll xdy + n - Used to roll a dice." + "\n";
@@ -219,7 +222,8 @@ public class MainWindow extends JFrame {
 		
 		settingsBtnSave = new JButton("Save settings");
 		settingsBtnLeave = new JButton("LEAVE SESSION");
-
+		settingsBtnResync = new JButton("Resync");
+		
 		settingsJTFUsername = new JTextField();
 		settingsJTFUsername.setColumns(15);
 		
@@ -229,6 +233,7 @@ public class MainWindow extends JFrame {
 		settingsPanel.add(settingsGrid);
 		settingsPanel.add(settingsBtnSave);
 		settingsPanel.add(settingsBtnLeave);
+		settingsPanel.add(settingsBtnResync);
 		/*
 		 * ==============================================================
 		 * ======================MAIN PANELS=============================
@@ -268,6 +273,7 @@ public class MainWindow extends JFrame {
 		
 		settingsBtnSave.addActionListener(listener);
 		settingsBtnLeave.addActionListener(listener);
+		settingsBtnResync.addActionListener(listener);
 		
 		this.addWindowListener(new wListener());
 	}
@@ -376,6 +382,11 @@ public class MainWindow extends JFrame {
 			if(e.getSource() == settingsBtnLeave) {
 				controller.pushActionToServer(new SessionLeaveAction(controller.username));
 				controller.sessionLeft();
+			}
+			
+			//Resync request
+			if(e.getSource() == settingsBtnResync) {
+				controller.pushActionToServer(new BoardResyncRequestAction(controller.username));
 			}
 		}
 	}

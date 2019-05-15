@@ -55,6 +55,10 @@ public class ServerBoardModel {
 		return charList.get(index);
 	}
 	
+	public ImageIcon getBackground() {
+		return background;
+	}
+	
 	public ArrayList<ImageIcon> getIcons() {
 		return iconList;
 	}

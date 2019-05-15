@@ -123,6 +123,7 @@ public class Connection {
 					
 					if(action instanceof JoinedAction) {
 						controller.sessionEntered();
+						controller.pushActionToServer(new BoardResyncRequestAction(controller.username));
 					}
 					
 					else
@@ -181,6 +182,13 @@ public class Connection {
 					if(action instanceof BoardIconValueUpdateAction) {
 						BoardIconValueUpdateAction act = (BoardIconValueUpdateAction) action;
 						controller.getBoardModel().setValues(act.getIndex(), act.getList());
+					}
+					
+					else
+						
+					if(action instanceof BoardResyncAction) {
+						BoardResyncAction act = (BoardResyncAction) action;
+						controller.getBoardModel().resync(act.getBackground(), act.getIconList(),act.getCharList());
 					}
 				} catch (SocketException se) {
 					se.printStackTrace();

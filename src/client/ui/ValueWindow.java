@@ -42,6 +42,7 @@ public class ValueWindow extends JFrame {
 	
 	private void init() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setAlwaysOnTop(true);
 		setTitle("Values");
 		setSize(600, 400);
 		

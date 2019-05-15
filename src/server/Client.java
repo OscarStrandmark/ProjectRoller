@@ -13,6 +13,8 @@ import server.actions.BoardIconCreateAction;
 import server.actions.BoardIconMoveAction;
 import server.actions.BoardIconRemoveAction;
 import server.actions.BoardIconValueUpdateAction;
+import server.actions.BoardResyncAction;
+import server.actions.BoardResyncRequestAction;
 import server.actions.ChatDisplayTextAction;
 import server.actions.ChatMessageAction;
 import server.actions.ChatRPAction;
@@ -27,7 +29,6 @@ import server.actions.RequestPasswordAction;
 import server.actions.SessionCreateAction;
 import server.actions.SessionJoinRequestAction;
 import server.actions.SessionLeaveAction;
-import server.actions.SynchAction;
 import server.actions.UsernameChangeAction;
 import server.actions.WrongPasswordAction;
 import shared.Buffer;
@@ -307,6 +308,14 @@ public class Client {
 					if(action instanceof BoardIconValueUpdateAction) {
 						BoardIconValueUpdateAction act = (BoardIconValueUpdateAction) action;
 						session.updateValue(act.getIndex(), act.getList());
+					}
+					
+					else
+						
+					if(action instanceof BoardResyncRequestAction) {
+						BoardResyncRequestAction act = (BoardResyncRequestAction) action;
+						BoardResyncAction a = session.getSyncAction();
+						sendAction(a);
 					}
 					
 				} catch (SocketException se) {
