@@ -154,6 +154,34 @@ public class Connection {
 						BoardBackgroundChangeAction act = (BoardBackgroundChangeAction) action;
 						controller.getBoardModel().setBackground(act.getImage());
 					}
+					
+					else
+						
+					if(action instanceof BoardIconCreateAction) {
+						BoardIconCreateAction act = (BoardIconCreateAction) action;
+						controller.getBoardModel().addIcon(act.getImage());
+					}
+					
+					else
+						
+					if(action instanceof BoardIconMoveAction) {
+						BoardIconMoveAction act = (BoardIconMoveAction) action;
+						controller.getBoardModel().moveIcon(act.getIndex(), act.getX(), act.getY());
+					}
+					
+					else
+						
+					if(action instanceof BoardIconRemoveAction) {
+						BoardIconRemoveAction act = (BoardIconRemoveAction) action;
+						controller.getBoardModel().removeIcon(act.getIndex());
+					}
+					
+					else
+						
+					if(action instanceof BoardIconValueUpdateAction) {
+						BoardIconValueUpdateAction act = (BoardIconValueUpdateAction) action;
+						controller.getBoardModel().setValues(act.getIndex(), act.getList());
+					}
 				} catch (SocketException se) {
 					se.printStackTrace();
 					kill();

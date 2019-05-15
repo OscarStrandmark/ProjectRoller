@@ -43,12 +43,12 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import client.BoardModel;
 import client.Controller;
 import server.actions.BoardBackgroundChangeAction;
 import server.actions.QuitAction;
 import server.actions.SessionLeaveAction;
 import server.actions.UsernameChangeAction;
-import shared.BoardModel;
 
 public class MainWindow extends JFrame {
 
@@ -359,13 +359,7 @@ public class MainWindow extends JFrame {
 					Image image = new ImageIcon(imagePath).getImage();
 					Image newIconImage = getScaledImage(image, iconWidth, iconHeight);
 					
-					JLabel icon = new JLabel(new ImageIcon(newIconImage));
-					icon.setBounds(0,0,iconWidth,iconHeight);
-					boardPanel.add(icon);
-					model.addIcon(icon);
-					boardPanel.repaint();
-					icon.addMouseListener(new IconMovement());
-					icon.addMouseMotionListener(new IconMovement());
+					model.sendIconNew(new ImageIcon(newIconImage));
 				}
 			}
 			
@@ -399,80 +393,5 @@ public class MainWindow extends JFrame {
 		public void windowActivated(WindowEvent e) {}
 		public void windowDeactivated(WindowEvent e) {}
 		public void windowOpened(WindowEvent e) {}
-	}
-
-	private class IconMovement implements MouseListener, MouseMotionListener {
-		private int x,y;
-		private JLabel c;
-		
-		public void mouseDragged(MouseEvent event) {
-			event.getComponent().setLocation((event.getX() + event.getComponent().getX()-x), (event.getY() + event.getComponent().getY()-y));
-		}
-
-		public void mousePressed(MouseEvent event) {
-			x = event.getX();
-			y = event.getY();
-			c = (JLabel) event.getComponent();
-		}
-
-		public void mouseReleased(MouseEvent event) {
-			
-			if(event.getButton() == 1 && c != null) {
-				
-				//TODO: push move action.
-				c = null;
-			}
-			
-			if(event.getButton() == 3) {
-				PopAltMenu popMenu = new PopAltMenu(event.getComponent());
-				popMenu.show(event.getComponent(), event.getX(), event.getY());
-			}
-		}
-		
-		public void mouseMoved(MouseEvent event) {}
-		public void mouseClicked(MouseEvent event) {}
-		public void mouseEntered(MouseEvent e) {}
-		public void mouseExited(MouseEvent e) {}
-	}
-
-	private class PopAltMenu extends JPopupMenu {
-		private static final long serialVersionUID = 1L;
-
-		public PopAltMenu(Component c) {
-			JMenuItem altMenuValue = new JMenuItem(new OpenValue(c));
-			add(altMenuValue);
-			
-			JMenuItem altMenuDelete = new JMenuItem(new DeleteIcon(c));
-			add(altMenuDelete);
-
-		}
-	}
-
-	private class OpenValue extends AbstractAction {
-
-		private Component c;
-
-		public OpenValue(Component c) {
-			super("Open Value-menu");
-			this.c = c;
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			new ValueWindow(model, (JLabel)c);
-		}
-	}
-	
-	private class DeleteIcon extends AbstractAction {
-
-		private Component c;
-		
-		public DeleteIcon(Component c) {
-			super("Delete Icon");
-			this.c = c;
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			model.removeIcon((JLabel)c);
-		}
 	}
 }

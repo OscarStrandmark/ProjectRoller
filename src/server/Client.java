@@ -8,6 +8,11 @@ import java.net.SocketException;
 import java.util.ArrayList;
 
 import server.actions.Action;
+import server.actions.BoardBackgroundChangeAction;
+import server.actions.BoardIconCreateAction;
+import server.actions.BoardIconMoveAction;
+import server.actions.BoardIconRemoveAction;
+import server.actions.BoardIconValueUpdateAction;
 import server.actions.ChatDisplayTextAction;
 import server.actions.ChatMessageAction;
 import server.actions.ChatRPAction;
@@ -269,12 +274,39 @@ public class Client {
 						session.pushChatText(contentString);
 					}
 					
+					else
+						
+					if(action instanceof BoardBackgroundChangeAction) {
+						BoardBackgroundChangeAction act = (BoardBackgroundChangeAction) action;
+						session.setBackground(act.getImage());
+					}
+					
 					else 
 						
-					if(action instanceof SynchAction) {
-						SynchAction act = (SynchAction) action;
-						session.
-						System.out.println("Recieved synch on server");
+					if(action instanceof BoardIconCreateAction) {
+						BoardIconCreateAction act = (BoardIconCreateAction) action;
+						session.createIcon(act.getImage());
+					}
+					
+					else
+						
+					if(action instanceof BoardIconMoveAction) {
+						BoardIconMoveAction act = (BoardIconMoveAction) action;
+						session.moveIcon(act.getIndex(), act.getX(), act.getY());
+					}
+					
+					else
+						
+					if(action instanceof BoardIconRemoveAction) {
+						BoardIconRemoveAction act = (BoardIconRemoveAction) action;
+						session.removeIcon(act.getIndex());
+					}
+					
+					else
+						
+					if(action instanceof BoardIconValueUpdateAction) {
+						BoardIconValueUpdateAction act = (BoardIconValueUpdateAction) action;
+						session.updateValue(act.getIndex(), act.getList());
 					}
 					
 				} catch (SocketException se) {

@@ -5,18 +5,17 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import shared.BoardModel;
+import client.BoardModel;
 import shared.CharacterIcon;
 import shared.Value;
 
@@ -31,11 +30,12 @@ public class ValueWindow extends JFrame {
 	private JButton btnClose;
 	
 	private BoardModel model;
-	private JLabel label;
+	private ImageIcon img;
+	private int index;
 	
-	public ValueWindow(BoardModel model, JLabel label) {
+	public ValueWindow(BoardModel model, ImageIcon img) {
 		this.model = model;
-		this.label = label;
+		this.img = img;
 		init();
 		getValues();
 	}
@@ -81,8 +81,9 @@ public class ValueWindow extends JFrame {
 	}
 	
 	private void getValues() {
-		CharacterIcon icon = model.lookup(label);
-		ArrayList<Value> list = icon.getValueList();
+		index = model.lookupIndex(img);
+		CharacterIcon c = model.getChar(index);
+		ArrayList<Value> list = c.getValueList();
 		
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 
@@ -94,19 +95,17 @@ public class ValueWindow extends JFrame {
 	}
 	
 	private void setValues() {
-		CharacterIcon icon = model.lookup(label);
 		ArrayList<Value> list = new ArrayList<Value>();
 		
-		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
 
-		for (int i = 0; i < model.getRowCount(); i++) {
-			String name = (String)model.getValueAt(i, 0);
-			String value =(String)model.getValueAt(i, 1);
+		for (int i = 0; i < tableModel.getRowCount(); i++) {
+			String name = (String)tableModel.getValueAt(i, 0);
+			String value =(String)tableModel.getValueAt(i, 1);
 			list.add(new Value(value, name));
 		}
 		
-		icon.setValues(list);
-		//this.model.synchToServer();
+		model.sendValueUpdate(index, list);
 	}
 	
 	private class Listener implements ActionListener {
