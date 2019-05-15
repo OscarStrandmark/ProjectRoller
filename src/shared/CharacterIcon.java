@@ -25,7 +25,6 @@ public class CharacterIcon implements Serializable {
 		this.x = image.getX();
 		this.y = image.getY();
 		values = new ArrayList<Value>();
-		//image.addComponentListener(new IconListener());
 	}
 
 	public ImageIcon getImage() {
@@ -50,23 +49,15 @@ public class CharacterIcon implements Serializable {
 	 *
 	 * @return Returns an iterator over all values in the list.
 	 */
-	public Iterator<Value> getValueIterator() {
-		return values.iterator();
+	public ArrayList<Value> getValueList() {
+		ArrayList<Value> clone = new ArrayList<Value>();
+		for(Value v : values) {
+			clone.add(v);
+		}
+		return clone;
 	}
 	
 	public void setValues(ArrayList<Value> valueList) {
 		values = valueList;
-	}
-
-	private class IconListener implements ComponentListener {
-		public void componentMoved(ComponentEvent e) {
-			x = lblRef.getX();
-			y = lblRef.getY();
-			System.out.println(x+","+y);
-		}
-		public void componentResized(ComponentEvent e) {}
-		public void componentShown(ComponentEvent e) {}
-		public void componentHidden(ComponentEvent e) {}
-
 	}
 }

@@ -82,14 +82,12 @@ public class ValueWindow extends JFrame {
 	
 	private void getValues() {
 		CharacterIcon icon = model.lookup(label);
-		Iterator<Value> iter = icon.getValueIterator();
+		ArrayList<Value> list = icon.getValueList();
 		
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 
-		while(iter.hasNext()) {
-			Value val = iter.next();
-			
-			model.addRow(new String[] {val.getName(),val.getValue()});
+		for(Value v : list) {
+			model.addRow(new String[] {v.getName(),v.getValue()});
 		}
 		
 		table.setModel(model);

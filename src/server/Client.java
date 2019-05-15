@@ -273,7 +273,7 @@ public class Client {
 						
 					if(action instanceof SynchAction) {
 						SynchAction act = (SynchAction) action;
-						session.synchBoard(act.getMap(),act.getBackground());
+						session.
 						System.out.println("Recieved synch on server");
 					}
 					

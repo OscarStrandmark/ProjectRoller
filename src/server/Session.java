@@ -133,12 +133,4 @@ import shared.CharacterIcon;
 	public int getCurrentConnections() {
 		return connectedClients.size();
 	}
-	
-	public synchronized void synchBoard(HashMap<ImageIcon,CharacterIcon> map, ImageIcon background) {
-		model.synchServer(map, background);
-		for(Client c : connectedClients) {
-			System.out.println("Sent synch from server to " + c.getUsername());
-			c.sendAction(new SynchAction("SERVER", map, background));
-		}
-	}
 }

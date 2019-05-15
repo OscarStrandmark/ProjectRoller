@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 
 import client.Controller;
 import server.Session;
+import server.actions.BoardBackgroundChangeAction;
 import server.actions.SynchAction;
 
 
@@ -60,14 +61,20 @@ public class BoardModel implements Serializable {
 	 * 
 	 * @param img An {@link ImageIcon} of the background image.
 	 */
-	public void setBackground(JLabel img) {
+	public void setBackground(ImageIcon img) {
+		JLabel newBG = new JLabel(img);
+		newBG.setBounds(0, 0, board.getWidth(), board.getHeight());
+		
 		if(background != null) {
 			board.remove(backgroundReference);
 		}
-		backgroundReference = img;
-		this.background = (ImageIcon)img.getIcon();
-		board.setComponentZOrder(img, board.getComponentCount()-1);
-		//synchToServer();
+		
+		backgroundReference = newBG;
+		this.background = img;
+		
+		board.add(newBG);
+		board.setComponentZOrder(newBG, board.getComponentCount()-1);
+		board.repaint();
 	}
 	
 	public void addIcon(JLabel icon) {
@@ -76,14 +83,12 @@ public class BoardModel implements Serializable {
 		iconMap.put(imgIcon, cIcon);
 		board.setComponentZOrder(icon, 0);
 		board.repaint();
-		//synchToServer();
 	}
 	
 	public void removeIcon(JLabel icon) {
 		iconMap.remove((ImageIcon)icon.getIcon());
 		board.remove(icon);
 		board.repaint();
-		//synchToServer();
 		
 	}
 	
@@ -124,17 +129,5 @@ public class BoardModel implements Serializable {
 				board.repaint();
 			}
 		});
-	}
-	
-	public void synchServer(HashMap<ImageIcon,CharacterIcon> map, ImageIcon background) {
-		iconMap = map;
-		this.background = background;
-	}
-	
-	public void synchToServer() {
-		if(background == null) {
-			background = new ImageIcon();
-		}
-		controller.pushActionToServer(new SynchAction(controller.username, iconMap, background));
 	}
 }

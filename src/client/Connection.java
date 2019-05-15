@@ -150,10 +150,9 @@ public class Connection {
 					
 					else
 						
-					if(action instanceof SynchAction) {
-						SynchAction act = (SynchAction) action;
-						controller.getBoardModel().synchClient(act.getMap(), act.getBackground());
-						System.out.println("received synch on client");
+					if(action instanceof BoardBackgroundChangeAction) {
+						BoardBackgroundChangeAction act = (BoardBackgroundChangeAction) action;
+						controller.getBoardModel().setBackground(act.getImage());
 					}
 				} catch (SocketException se) {
 					se.printStackTrace();

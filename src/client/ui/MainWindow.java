@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -43,6 +44,7 @@ import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import client.Controller;
+import server.actions.BoardBackgroundChangeAction;
 import server.actions.QuitAction;
 import server.actions.SessionLeaveAction;
 import server.actions.UsernameChangeAction;
@@ -271,7 +273,6 @@ public class MainWindow extends JFrame {
 	}
 
 	public void appendChatLine(String line) {
-		System.out.println("append");
 		String current = chatJTA.getText();
 		chatJTA.setText(current + line + "\n");
 	}
@@ -312,14 +313,9 @@ public class MainWindow extends JFrame {
 			//Import selected file as a background
 			if(e.getSource() == importBtnBackgoundImport) {
 				ImageIcon background = new ImageIcon(importJTFFilePath.getText());
-				Image backgroundImage = background.getImage();
-				Image newBackgroundImage = getScaledImage(backgroundImage, boardPanel.getWidth(), boardPanel.getHeight()); //mer parametrar i metoden
+				Image newBackgroundImage = getScaledImage(background.getImage(), boardPanel.getWidth(), boardPanel.getHeight()); //mer parametrar i metoden
 				ImageIcon finalBackground = new ImageIcon(newBackgroundImage);
-				backgroundIcon = new JLabel(finalBackground);
-				backgroundIcon.setBounds(0,0,boardPanel.getWidth(), boardPanel.getHeight());
-				boardPanel.add(backgroundIcon);
-				model.setBackground(backgroundIcon);
-				boardPanel.repaint();
+				controller.pushActionToServer(new BoardBackgroundChangeAction(controller.username, finalBackground));
 			} 
 			
 			//Open file picker for importing new icons.
@@ -407,7 +403,8 @@ public class MainWindow extends JFrame {
 
 	private class IconMovement implements MouseListener, MouseMotionListener {
 		private int x,y;
-
+		private JLabel c;
+		
 		public void mouseDragged(MouseEvent event) {
 			event.getComponent().setLocation((event.getX() + event.getComponent().getX()-x), (event.getY() + event.getComponent().getY()-y));
 		}
@@ -415,9 +412,17 @@ public class MainWindow extends JFrame {
 		public void mousePressed(MouseEvent event) {
 			x = event.getX();
 			y = event.getY();
+			c = (JLabel) event.getComponent();
 		}
 
 		public void mouseReleased(MouseEvent event) {
+			
+			if(event.getButton() == 1 && c != null) {
+				
+				//TODO: push move action.
+				c = null;
+			}
+			
 			if(event.getButton() == 3) {
 				PopAltMenu popMenu = new PopAltMenu(event.getComponent());
 				popMenu.show(event.getComponent(), event.getX(), event.getY());
