@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -25,6 +26,7 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -35,6 +37,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
@@ -80,6 +83,14 @@ public class MainWindow extends JFrame {
 	private JButton importBtnBackgoundImport;
 	private JButton importBtnIconFileChooser;
 	private JButton importBtnIconImport;
+	
+	private JLabel lblIconPreviewer;
+	
+	
+	private JLabel lblBackgroundPreviewer;
+	
+	private JSlider sldrIconSize;
+
 
 	private JTextField scaleIcon;
 
@@ -169,51 +180,93 @@ public class MainWindow extends JFrame {
 		notePanel.setViewportView(noteJTA);
 
 		// ---------- IMPORT ----------
-		JPanel importPanel = new JPanel(new GridLayout(3, 1));
+		JPanel importPanel = new JPanel(new GridLayout(2, 1));
 
 		JPanel importIconPane = new JPanel();
-		importIconPane.setLayout(new GridLayout(2,2));
+		importIconPane.setLayout(new GridLayout(2,1));
 
-		JPanel importBGPane = new JPanel(new GridLayout(4,1)); //Panel for importing a background.
+		JPanel infoBGPane = new JPanel();
+		infoBGPane.setLayout(new BoxLayout(infoBGPane, BoxLayout.Y_AXIS));
+		JPanel buttonsBGPane = new JPanel(new GridLayout(1,2));
+		JPanel importBGPane = new JPanel(new GridLayout(2,1)); //Panel for importing a background.
 		importBGPane.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); //Creates a border for the panel
-
+		JPanel importBGControllPane = new JPanel(new GridLayout(2,1));
+		this.lblBackgroundPreviewer = new JLabel();
+		this.lblBackgroundPreviewer.setSize(importBGControllPane.getWidth(), importBGControllPane.getHeight()/3);
+		
 		importJTFFilePath = new JTextField();
 		importJTFFilePath.setEditable(false);
 		importJTFFilePath.setText("File path ");
 
 		importJFCBackground = new JFileChooser();
-		importBtnBackgoundImport = new JButton("Import");
-		importBtnBackgroundFileChooser = new JButton("Pick file");
+		importBtnBackgoundImport = new JButton("Load Background");
+		importBtnBackgroundFileChooser = new JButton("Choose Background");
 
 
 		importJFCBackground.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		importJFCBackground.setFileFilter(new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes())); //Accept all image files supported on the system the program is ran on.
 
-		importBGPane.add(new JLabel("Import an image as a background", SwingConstants.CENTER));
-		importBGPane.add(importBtnBackgroundFileChooser);
-		importBGPane.add(importJTFFilePath);
-		importBGPane.add(importBtnBackgoundImport);
-
-		JPanel importSaveLoadSessionPane = new JPanel(); //For future implementation of importing saved session data.
+		infoBGPane.add(new JLabel("Background", SwingConstants.CENTER));
+		infoBGPane.add(new JLabel("Import an image as a background", SwingConstants.CENTER));
+		//infoBGPane.add(importJTFFilePath);
+		
+		//importBGPane.add(infoBGPane);
+		buttonsBGPane.add(importBtnBackgroundFileChooser);
+		buttonsBGPane.add(importBtnBackgoundImport);
+		//importBGPane.add(buttonsBGPane);
+		
+		importBGControllPane.add(infoBGPane);
+		importBGControllPane.add(buttonsBGPane);
+		importBGPane.add(importBGControllPane);
+		importBGPane.add(this.lblBackgroundPreviewer);
+		this.lblBackgroundPreviewer.setBounds(this.getX(), this.getY(), importBGControllPane.getWidth(), importBGControllPane.getHeight());
 
 		importPanel.add(importIconPane);
 		importPanel.add(importBGPane);
-		importPanel.add(importSaveLoadSessionPane);
+
 
 		// ------- IMPORT ICON --------
 
+		JPanel infoPane = new JPanel();
+		infoPane.setLayout(new BoxLayout(infoPane, BoxLayout.Y_AXIS));
 		scaleIcon = new JTextField();
-		JLabel setSizeIcon = new JLabel("Set size for Icon (1-15):", SwingConstants.CENTER);
+		JLabel setSizeIcon = new JLabel("Set pixel size for icon", SwingConstants.CENTER);
+		JPanel buttonsPanel = new JPanel(new GridLayout(1,2));
+		JPanel sizePanel = new JPanel();
+		sizePanel.setLayout(new BoxLayout( sizePanel, BoxLayout.Y_AXIS));
+		JPanel importIconControllPane = new JPanel(new GridLayout(3, 1));
 
+	
+		this.lblIconPreviewer = new JLabel();
+		
+		this.sldrIconSize = new JSlider();
+		this.sldrIconSize.setMajorTickSpacing(40);
+		this.sldrIconSize.setMinorTickSpacing(10);
+		this.sldrIconSize.setPaintTicks(true);
+		this.sldrIconSize.setSnapToTicks(true);
+		this.sldrIconSize.setMinimum(20);
+		this.sldrIconSize.setMaximum(300);
+		this.sldrIconSize.setPaintLabels(true);
+		
 		Border borderImport = BorderFactory.createLineBorder(Color.black);
 
-		importBtnIconFileChooser = new JButton("Choose Image");
-		importBtnIconImport = new JButton("Import Icon");
+		importBtnIconFileChooser = new JButton("Choose Icon");
+		importBtnIconImport = new JButton("Load Icon");
 
-		importIconPane.add(importBtnIconFileChooser);
-		importIconPane.add(importBtnIconImport);
-		importIconPane.add(setSizeIcon);
-		importIconPane.add(scaleIcon);
+		infoPane.add(new JLabel("Icon", SwingConstants.CENTER));
+		infoPane.add(new JLabel("Import an image as a icon", SwingConstants.CENTER));
+		importIconControllPane.add(infoPane);
+		
+		sizePanel.add(setSizeIcon);
+		sizePanel.add(this.sldrIconSize);	
+		importIconControllPane.add(sizePanel);
+		
+		buttonsPanel.add(importBtnIconFileChooser);
+		buttonsPanel.add(importBtnIconImport);
+		importIconControllPane.add(buttonsPanel);
+		
+		importIconPane.add(importIconControllPane);
+		importIconPane.add(lblIconPreviewer);
 		importIconPane.setBorder(borderImport);
 
 		// ---------- SETTINGS ----------
@@ -314,8 +367,16 @@ public class MainWindow extends JFrame {
 				File file = importJFCBackground.getSelectedFile();
 
 				importJTFFilePath.setText(file.getPath());
-			}
+				
 
+			
+				ImageIcon image = new ImageIcon(importJTFFilePath.getText());
+				
+				lblBackgroundPreviewer.setIcon(new ImageIcon(image.getImage().getScaledInstance(lblIconPreviewer.getWidth(), lblIconPreviewer.getHeight(), Image.SCALE_DEFAULT)));
+				lblBackgroundPreviewer.setBounds(0, 0, image.getIconWidth(), image.getIconHeight());
+				lblBackgroundPreviewer.repaint();
+				
+			}
 			//Import selected file as a background
 			if(e.getSource() == importBtnBackgoundImport) {
 				ImageIcon background = new ImageIcon(importJTFFilePath.getText());
@@ -339,6 +400,10 @@ public class MainWindow extends JFrame {
 				if(fileOk == JFileChooser.APPROVE_OPTION) {
 					imagePath = fileChooser.getSelectedFile().getPath();
 				}
+				
+				ImageIcon image = new ImageIcon(imagePath);
+				lblIconPreviewer.setIcon(new ImageIcon(image.getImage().getScaledInstance(lblIconPreviewer.getWidth(), lblIconPreviewer.getHeight(), Image.SCALE_DEFAULT)));
+				lblIconPreviewer.repaint();
 			}
 			
 			//Import the chosen file for icon import. 
@@ -346,19 +411,17 @@ public class MainWindow extends JFrame {
 				
 				boolean scaled = false;
 				
-				if(scaleIcon.getText().length() != 0) {
-					int scale = Integer.parseInt(scaleIcon.getText());
+				
 					
-					if( scale < 0 || scale > 15 ) {
-						JOptionPane.showMessageDialog(null, "Enter a valid number between 0-15, or leave the field empty for a standard size of 150 by 150 ");
-					} else if(scale >= 1 && scale <= 15 ) {
-						iconWidth = scale * 20;
-						iconHeight = scale * 20;
-						scaled = true;
-					}
-				} else {
-					JOptionPane.showMessageDialog(null, "Enter a valid number between 0-15, or leave the field empty for a standard size of 150 by 150 ");
-				}
+						int scale = sldrIconSize.getValue();
+						
+						
+						
+							iconWidth = scale;
+							iconHeight = scale;
+							scaled = true;
+						
+				
 				
 				if(scaled) {
 					
