@@ -87,10 +87,7 @@ public class Controller {
 		if(arr[0].equals("/roll")) { //Roll command
 			
 			try {
-				for(String r : arr) {
-					System.out.print(s);
-				}
-				System.out.println();
+								
 				Diceroll roll = new Diceroll(Integer.parseInt(arr[arr.length-1]));
 				
 				for (int i = 0; i < arr.length; i++) {
@@ -112,14 +109,11 @@ public class Controller {
 			
 		if(arr[0].equals("/dmroll")) {
 			try {
-				for(String r : arr) {
-					System.out.print(s);
-				}
-				System.out.println();
+
 				Diceroll roll = new Diceroll(Integer.parseInt(arr[arr.length-1]));
 				
 				for (int i = 0; i < arr.length; i++) {
-					if(arr[i].contains("d")) {
+					if(arr[i].contains("d") && i != 0) {
 						String[] diceString = arr[i].split("d"); //index 0 = amount of dice, index 1 = dice sides.
 						for (int j = 0; j < Integer.parseInt(diceString[0]); j++) {
 							roll.addDice(new Dice(Integer.parseInt(diceString[1])));
