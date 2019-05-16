@@ -12,7 +12,6 @@ import server.actions.ChatRPAction;
 import server.actions.ChatWhisperAction;
 import server.actions.DiceRollAction;
 import server.actions.DiceRollHiddenAction;
-import shared.BoardModel;
 import shared.Dice;
 import shared.Diceroll;
 
