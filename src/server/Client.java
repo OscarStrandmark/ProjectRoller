@@ -161,6 +161,7 @@ public class Client {
 									connection.joinSession(sessionName, thisClient);
 									setSession(s);
 									sendAction(new JoinedAction("SERVER", sessionName));
+									session.pushChatText("USER JOINED SESSION");
 								}
 							}
 						}
@@ -188,6 +189,7 @@ public class Client {
 								if(s.checkPassword(password)) { //Password ok
 									connection.joinSession(sessionName, thisClient);
 									setSession(s);
+									session.pushChatText("USER JOINED SESSION");
 								} else { //Password not ok.
 									sendAction(new WrongPasswordAction("SERVER"));
 								}
