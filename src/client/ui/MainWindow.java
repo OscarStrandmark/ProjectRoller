@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -177,7 +178,7 @@ public class MainWindow extends JFrame {
 		JPanel importPanel = new JPanel(new GridLayout(2, 1));
 
 		JPanel importIconPane = new JPanel();
-		importIconPane.setLayout(new GridLayout(4,1));
+		importIconPane.setLayout(new GridLayout(2,1));
 
 		JPanel infoBGPane = new JPanel();
 		infoBGPane.setLayout(new BoxLayout(infoBGPane, BoxLayout.Y_AXIS));
@@ -186,6 +187,7 @@ public class MainWindow extends JFrame {
 		importBGPane.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); //Creates a border for the panel
 		JPanel importBGControllPane = new JPanel(new GridLayout(2,1));
 		this.lblBackgroundPreviewer = new JLabel();
+		this.lblBackgroundPreviewer.setSize(importBGControllPane.getWidth(), importBGControllPane.getHeight()/3);
 		
 		importJTFFilePath = new JTextField();
 		importJTFFilePath.setEditable(false);
@@ -212,13 +214,11 @@ public class MainWindow extends JFrame {
 		importBGControllPane.add(buttonsBGPane);
 		importBGPane.add(importBGControllPane);
 		importBGPane.add(this.lblBackgroundPreviewer);
-		
-
-		//JPanel importSaveLoadSessionPane = new JPanel(); //For future implementation of importing saved session data.
+		this.lblBackgroundPreviewer.setBounds(this.getX(), this.getY(), importBGControllPane.getWidth(), importBGControllPane.getHeight());
 
 		importPanel.add(importIconPane);
 		importPanel.add(importBGPane);
-		//importPanel.add(importSaveLoadSessionPane);
+
 
 		// ------- IMPORT ICON --------
 
@@ -227,8 +227,11 @@ public class MainWindow extends JFrame {
 		scaleIcon = new JTextField();
 		JLabel setSizeIcon = new JLabel("Set pixel size for icon", SwingConstants.CENTER);
 		JPanel buttonsPanel = new JPanel(new GridLayout(1,2));
-		JPanel sizePanel = new JPanel(new GridLayout(2,1));
-		
+		JPanel sizePanel = new JPanel();
+		sizePanel.setLayout(new BoxLayout( sizePanel, BoxLayout.Y_AXIS));
+		JPanel importIconControllPane = new JPanel(new GridLayout(3, 1));
+
+	
 		this.lblIconPreviewer = new JLabel();
 		
 		this.sldrIconSize = new JSlider();
@@ -247,13 +250,17 @@ public class MainWindow extends JFrame {
 
 		infoPane.add(new JLabel("Icon", SwingConstants.CENTER));
 		infoPane.add(new JLabel("Import an image as a icon", SwingConstants.CENTER));
-		importIconPane.add(infoPane);
+		importIconControllPane.add(infoPane);
+		
 		sizePanel.add(setSizeIcon);
 		sizePanel.add(this.sldrIconSize);	
-		importIconPane.add(sizePanel);
+		importIconControllPane.add(sizePanel);
+		
 		buttonsPanel.add(importBtnIconFileChooser);
 		buttonsPanel.add(importBtnIconImport);
-		importIconPane.add(buttonsPanel);
+		importIconControllPane.add(buttonsPanel);
+		
+		importIconPane.add(importIconControllPane);
 		importIconPane.add(lblIconPreviewer);
 		importIconPane.setBorder(borderImport);
 
@@ -355,11 +362,12 @@ public class MainWindow extends JFrame {
 				importJTFFilePath.setText(file.getPath());
 				
 
-				
+			
 				ImageIcon image = new ImageIcon(importJTFFilePath.getText());
+				
 				lblBackgroundPreviewer.setIcon(new ImageIcon(image.getImage().getScaledInstance(lblIconPreviewer.getWidth(), lblIconPreviewer.getHeight(), Image.SCALE_DEFAULT)));
 				lblBackgroundPreviewer.setBounds(0, 0, image.getIconWidth(), image.getIconHeight());
-				
+				lblBackgroundPreviewer.repaint();
 				
 			}
 			//Import selected file as a background
@@ -393,6 +401,7 @@ public class MainWindow extends JFrame {
 				
 				ImageIcon image = new ImageIcon(imagePath);
 				lblIconPreviewer.setIcon(new ImageIcon(image.getImage().getScaledInstance(lblIconPreviewer.getWidth(), lblIconPreviewer.getHeight(), Image.SCALE_DEFAULT)));
+				lblIconPreviewer.repaint();
 			}
 			
 			//Import the chosen file for icon import. 
