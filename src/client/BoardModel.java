@@ -89,8 +89,9 @@ public class BoardModel implements Serializable {
 		icon.addMouseListener(new IconMovement(this));
 		icon.addMouseMotionListener(new IconMovement(this));
 		listLabl.add(icon);
-		
-		board.setComponentZOrder(backgroundReference, board.getComponentCount()-1);
+		if(backgroundReference != null) {
+			board.setComponentZOrder(backgroundReference, board.getComponentCount()-1);
+		}
 	}
 	
 	public void moveIcon(int index, int x, int y) {
