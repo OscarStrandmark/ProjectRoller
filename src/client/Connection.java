@@ -123,6 +123,7 @@ public class Connection {
 					
 					if(action instanceof JoinedAction) {
 						controller.sessionEntered();
+						controller.pushActionToServer(new BoardResyncRequestAction(controller.username));
 					}
 					
 					else
@@ -150,10 +151,44 @@ public class Connection {
 					
 					else
 						
-					if(action instanceof SynchAction) {
-						SynchAction act = (SynchAction) action;
-						controller.getBoardModel().synchClient(act.getMap(), act.getBackground());
-						System.out.println("received synch on client");
+					if(action instanceof BoardBackgroundChangeAction) {
+						BoardBackgroundChangeAction act = (BoardBackgroundChangeAction) action;
+						controller.getBoardModel().setBackground(act.getImage());
+					}
+					
+					else
+						
+					if(action instanceof BoardIconCreateAction) {
+						BoardIconCreateAction act = (BoardIconCreateAction) action;
+						controller.getBoardModel().addIcon(act.getImage());
+					}
+					
+					else
+						
+					if(action instanceof BoardIconMoveAction) {
+						BoardIconMoveAction act = (BoardIconMoveAction) action;
+						controller.getBoardModel().moveIcon(act.getIndex(), act.getX(), act.getY());
+					}
+					
+					else
+						
+					if(action instanceof BoardIconRemoveAction) {
+						BoardIconRemoveAction act = (BoardIconRemoveAction) action;
+						controller.getBoardModel().removeIcon(act.getIndex());
+					}
+					
+					else
+						
+					if(action instanceof BoardIconValueUpdateAction) {
+						BoardIconValueUpdateAction act = (BoardIconValueUpdateAction) action;
+						controller.getBoardModel().setValues(act.getIndex(), act.getList());
+					}
+					
+					else
+						
+					if(action instanceof BoardResyncAction) {
+						BoardResyncAction act = (BoardResyncAction) action;
+						controller.getBoardModel().resync(act.getBackground(), act.getIconList(),act.getCharList());
 					}
 				} catch (SocketException se) {
 					se.printStackTrace();

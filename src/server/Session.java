@@ -1,15 +1,18 @@
 package server;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 
+import server.actions.BoardBackgroundChangeAction;
+import server.actions.BoardIconCreateAction;
+import server.actions.BoardIconMoveAction;
+import server.actions.BoardIconRemoveAction;
+import server.actions.BoardIconValueUpdateAction;
+import server.actions.BoardResyncAction;
 import server.actions.ChatDisplayTextAction;
 import server.actions.JoinedAction;
-import server.actions.SynchAction;
-import shared.BoardModel;
-import shared.CharacterIcon;
+import shared.Value;
 
  public class Session {
 
@@ -19,7 +22,7 @@ import shared.CharacterIcon;
 	private int maxPlayers;
 	private ArrayList<Client> connectedClients;
 	private Connection connection;
-	private BoardModel model;
+	private ServerBoardModel model;
 
  	/**
 	 * Constructor to use when creating a session without a password.
@@ -33,7 +36,7 @@ import shared.CharacterIcon;
 		this.maxPlayers = maxPlayers;
 		this.connection = connection;
 		connectedClients = new ArrayList<Client>();
-		model = new BoardModel(this);
+		model = new ServerBoardModel(this);
 	}
 
  	/**
@@ -65,7 +68,7 @@ import shared.CharacterIcon;
 	 * @param password
 	 * @return True if password is correct, false if it isn't.
 	 */
-	public boolean checkPassword(String password) { //TODO: Hash & salt, handle password correctly?
+	public boolean checkPassword(String password) { 
 		if(this.password.equals(password)) {
 			return true;
 		} else {
@@ -134,11 +137,42 @@ import shared.CharacterIcon;
 		return connectedClients.size();
 	}
 	
-	public synchronized void synchBoard(HashMap<ImageIcon,CharacterIcon> map, ImageIcon background) {
-		model.synchServer(map, background);
+	public void setBackground(ImageIcon img) {
+		model.setBackground(img);
 		for(Client c : connectedClients) {
-			System.out.println("Sent synch from server to " + c.getUsername());
-			c.sendAction(new SynchAction("SERVER", map, background));
+			c.sendAction(new BoardBackgroundChangeAction("SERVER", img));
 		}
+	}
+	
+	public void createIcon(ImageIcon img) {
+		model.addIcon(img);
+		for(Client c : connectedClients) {
+			c.sendAction(new BoardIconCreateAction("SERVER", img));
+		}
+	}
+	
+	public void moveIcon(int index, int x, int y) {
+		model.moveIcon(index, x, y);
+		for(Client c : connectedClients) {
+			c.sendAction(new BoardIconMoveAction("SERVER", index, x, y));
+		}
+	}
+	
+	public void removeIcon(int index) {
+		model.removeIcon(index);
+		for(Client c : connectedClients) {
+			c.sendAction(new BoardIconRemoveAction("SERVER", index));
+		}
+	}
+	
+	public void updateValue(int index, ArrayList<Value> list) {
+		model.setValue(index, list);
+		for(Client c : connectedClients) {
+			c.sendAction(new BoardIconValueUpdateAction("SERVER", index, list));
+		}
+	}
+	
+	public BoardResyncAction getSyncAction() {
+		return new BoardResyncAction("SERVER", model.getBackground(), model.getChars(), model.getIcons());
 	}
 }
