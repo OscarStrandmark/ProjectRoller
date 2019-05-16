@@ -10,8 +10,6 @@ import shared.CharacterIcon;
  * @author Oscar Strandmark
  */
 public class BoardResyncAction extends Action {
-
-	private static final long serialVersionUID = 6941390019255352670L;
 	
 	private ImageIcon background;
 	private ArrayList<CharacterIcon> charList;

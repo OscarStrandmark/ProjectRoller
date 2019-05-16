@@ -8,8 +8,6 @@ import shared.Value;
  */
 public class BoardIconValueUpdateAction extends Action {
 
-	private static final long serialVersionUID = 835759847220153599L;
-
 	private int index;
 	private ArrayList<Value> list;
 	

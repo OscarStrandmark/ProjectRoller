@@ -6,8 +6,6 @@ import javax.swing.ImageIcon;
  * @author Oscar Strandmark
  */
 public class BoardIconCreateAction extends Action {
-
-	private static final long serialVersionUID = -3340115659376244409L;	
 	
 	private ImageIcon img;
 	

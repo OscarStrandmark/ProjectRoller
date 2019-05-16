@@ -5,8 +5,6 @@ package server.actions;
  */
 public class BoardIconRemoveAction extends Action {
 
-	private static final long serialVersionUID = -8790683634812865198L;
-
 	private int index;
 	
 	public BoardIconRemoveAction(String username, int index) {

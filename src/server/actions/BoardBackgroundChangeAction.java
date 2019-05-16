@@ -3,8 +3,6 @@ package server.actions;
 import javax.swing.ImageIcon;
 
 public class BoardBackgroundChangeAction extends Action {
-
-	private static final long serialVersionUID = -4957981042216254767L;
 	
 	private ImageIcon img;
 	

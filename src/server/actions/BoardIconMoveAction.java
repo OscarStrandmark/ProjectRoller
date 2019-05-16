@@ -5,8 +5,6 @@ package server.actions;
  */
 public class BoardIconMoveAction extends Action {
 
-	private static final long serialVersionUID = 8654230157182887770L;
-
 	private int x;
 	private int y;
 	private int index;
