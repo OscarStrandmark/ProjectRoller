@@ -10,40 +10,24 @@ public class Log {
 	private FileHandler fileHandler;
 
 	public Log(String fileName) {
-		String directory = "src/server/";
+		String directory = "c:\\dev\\logs\\";
 		File dir = new File(directory);
-		File logFile = new File(dir, fileName);
+		if(!dir.mkdirs()) {
+			dir.getParentFile().mkdirs();
+		}
+		File logFile = new File(dir + fileName);
 		String theLogger = directory + fileName;
-		if(logFile.exists()) {
+		if(!logFile.exists()) {
+			System.out.println("logFile no exists.");
+		} else {
 			System.out.println("logFile exists.");
-		} else {
-			try {
-				System.out.println("logFile no exist so create new.");
-				logFile.createNewFile();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
-		if(dir.exists()) {
-			System.out.println("dir exists.");
-		} else {
-			try {
-				System.out.println("dir no exist so create new.");
-				dir.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
 		try {
 			fileHandler = new FileHandler(theLogger, true);
 			System.out.println(theLogger + "<- test");
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		logger = Logger.getLogger(theLogger);
@@ -52,24 +36,23 @@ public class Log {
 		CustomFormatter formatter = new CustomFormatter();
 		fileHandler.setFormatter(formatter);
 	}
-	
-	public Log() {
 
+	public Log() {
 	}
 
 	public void log(String msg) {
-		logger.info(msg);
+		logger.info(msg + System.lineSeparator());
 	}
 
 	public void logMessage(String msg) {
-		logger.info(msg);
+		logger.info(msg + System.lineSeparator());
 	}
 
 	public void logJoined(String user) {
-		logger.info(user + " has joined the session.");
+		logger.info(user + " has joined the session." + System.lineSeparator());
 	}
 
 	public void logLeft(String user) {
-		logger.info(user + " has left the session.");
+		logger.info(user + " has left the session." + System.lineSeparator());
 	}
 }

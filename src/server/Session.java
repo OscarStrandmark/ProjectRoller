@@ -23,6 +23,7 @@ import shared.Value;
 	private ArrayList<Client> connectedClients;
 	private Connection connection;
 	private ServerBoardModel model;
+	private Log LOGGER;
 
  	/**
 	 * Constructor to use when creating a session without a password.
@@ -37,6 +38,7 @@ import shared.Value;
 		this.connection = connection;
 		connectedClients = new ArrayList<Client>();
 		model = new ServerBoardModel(this);
+		this.LOGGER = new Log(sessionName + ".txt");
 	}
 
  	/**
@@ -53,6 +55,7 @@ import shared.Value;
 		this.maxPlayers = maxPlayers;
 		this.connection = connection;
 		connectedClients = new ArrayList<Client>();
+		this.LOGGER = new Log(sessionName + ".txt");
 	}
 
  	/**
@@ -91,6 +94,7 @@ import shared.Value;
 	public void join(Client client) {
 		connectedClients.add(client);
 		client.sendAction(new JoinedAction("SERVERMESSAGE",sessionName));
+		LOGGER.logMessage("[" + client.getUsername() + "] " + "has joined the session.");
 	}
 
  	/**
@@ -110,6 +114,7 @@ import shared.Value;
 		for(Client c : connectedClients) {
 			c.sendAction(new ChatDisplayTextAction("SERVER", text));
 		}
+		LOGGER.logMessage(text);
 	}
 	
 	public void sendWhisper(String sender ,String receiver ,String text) {
@@ -117,6 +122,7 @@ import shared.Value;
 			if(c.getUsername().equals(receiver)) {
 				text = "Whisper from " + sender + ": " + text;
 				c.sendAction(new ChatDisplayTextAction(sender, text));
+				LOGGER.logMessage(text);
 			}
 		}
 	}
@@ -142,6 +148,7 @@ import shared.Value;
 		for(Client c : connectedClients) {
 			c.sendAction(new BoardBackgroundChangeAction("SERVER", img));
 		}
+		LOGGER.logMessage("New background has been set: " + img.toString());
 	}
 	
 	public void createIcon(ImageIcon img) {
@@ -149,6 +156,7 @@ import shared.Value;
 		for(Client c : connectedClients) {
 			c.sendAction(new BoardIconCreateAction("SERVER", img));
 		}
+		LOGGER.logMessage("New icon has been created: " + img.toString());
 	}
 	
 	public void moveIcon(int index, int x, int y) {
@@ -156,6 +164,7 @@ import shared.Value;
 		for(Client c : connectedClients) {
 			c.sendAction(new BoardIconMoveAction("SERVER", index, x, y));
 		}
+		LOGGER.logMessage("Icon : " + index + " was moved to: " + "X: " + x + " Y:" + y);
 	}
 	
 	public void removeIcon(int index) {
@@ -163,6 +172,7 @@ import shared.Value;
 		for(Client c : connectedClients) {
 			c.sendAction(new BoardIconRemoveAction("SERVER", index));
 		}
+		LOGGER.logMessage("Icon : " + index + " has been removed.");
 	}
 	
 	public void updateValue(int index, ArrayList<Value> list) {
@@ -170,6 +180,7 @@ import shared.Value;
 		for(Client c : connectedClients) {
 			c.sendAction(new BoardIconValueUpdateAction("SERVER", index, list));
 		}
+		LOGGER.logMessage("Value : " + index + " has been updated. " + "TEST - List: " + list.toString());
 	}
 	
 	public BoardResyncAction getSyncAction() {
