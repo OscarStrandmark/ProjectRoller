@@ -8,6 +8,7 @@ import java.net.SocketException;
 
 import javax.swing.JOptionPane;
 
+import client.Controller.STATES;
 import server.actions.*;
 
 import shared.Buffer;
@@ -15,7 +16,7 @@ import shared.Buffer;
 public class Connection {
 
     private static final int PORT = 48361; //Port the server will operate on.
-    public static final String ADDRESS = "localhost"; //Address the server will operate on.
+    public static final String ADDRESS = "192.168.43.162"; //Address the server will operate on.
 
     private Controller controller;
 	private Socket socket;
@@ -122,8 +123,10 @@ public class Connection {
 					else
 					
 					if(action instanceof JoinedAction) {
-						controller.sessionEntered();
-						controller.pushActionToServer(new BoardResyncRequestAction(controller.username));
+						if(controller.state == STATES.LOBBY) {
+							controller.sessionEntered();
+							controller.pushActionToServer(new BoardResyncRequestAction(controller.username));
+						}				
 					}
 					
 					else

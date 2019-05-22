@@ -48,6 +48,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import client.BoardModel;
 import client.Controller;
+import client.Controller.STATES;
 import server.actions.BoardBackgroundChangeAction;
 import server.actions.BoardResyncRequestAction;
 import server.actions.QuitAction;
@@ -445,6 +446,7 @@ public class MainWindow extends JFrame {
 			if(e.getSource() == settingsBtnLeave) {
 				controller.pushActionToServer(new SessionLeaveAction(controller.username));
 				controller.sessionLeft();
+				controller.state = STATES.LOBBY;
 			}
 			
 			//Resync request

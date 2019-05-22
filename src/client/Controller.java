@@ -17,19 +17,20 @@ import shared.Diceroll;
 
 public class Controller {
 
+	
+	public enum STATES {LOBBY, GAME};
+	public STATES state;
+	public String username = "NewClient";
 
 	private LobbyWindow lobbyWindow;
 	private Connection connection;
 	private MainWindow mainWindow;
-	public String username = "NewClient";
 	private BoardModel boardModel;
 
 	public Controller() {
-		boardModel = new BoardModel(this);
 		connection = new Connection(this);
 		lobbyWindow = new LobbyWindow(this);
-		mainWindow = new MainWindow(this,boardModel);
-		mainWindow.setVisible(false);
+		state = STATES.LOBBY;
 	}
 
 	public void pushActionToServer(Action act) {
@@ -41,13 +42,16 @@ public class Controller {
 	}
 	
 	public void sessionEntered() {
+		state = STATES.GAME;
 		lobbyWindow.setVisible(false);
-		mainWindow.setVisible(true);
+		boardModel = new BoardModel(this);
+		mainWindow = new MainWindow(this,boardModel);
 	}
 	
 	public void sessionLeft() {
+		state = STATES.LOBBY;
 		lobbyWindow.setVisible(true);
-		mainWindow.setVisible(false);
+		mainWindow.dispose();
 	}
 
 	public void setUsername(String username) {

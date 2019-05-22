@@ -98,10 +98,7 @@ public class LobbyWindow extends JFrame {
 		for(String s : sessionList) {
 			String[] sessionString = s.split(":");
 			model.addRow(sessionString);
-			for(String sl : sessionList) {
-				System.out.print(sl);
-			}
-			System.out.println();
+			
 		}
 		
 		table.setModel(model);
