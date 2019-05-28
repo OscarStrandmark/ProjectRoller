@@ -13,7 +13,7 @@ import client.BoardModel;
  * This class listens for mouse-input in terms of Icon Movement,
  * and creates movement based on where the left-click button of the 
  * mouse is released after dragging an icon.
- * @author Patrik Skuza
+ * @author Patrik Skuza, Oscar Strandmark
  *
  */
 public class IconMovement implements MouseListener, MouseMotionListener {
