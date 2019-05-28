@@ -6,7 +6,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import client.BoardModel;
-
+/**
+ * Class that handles creating the context-menu for icons.
+ * 
+ * @author Oscar Strandmark
+ */
 public class PopAltMenu extends JPopupMenu {
 		private static final long serialVersionUID = 1L;
 

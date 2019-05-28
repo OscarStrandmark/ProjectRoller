@@ -19,11 +19,13 @@ import shared.Value;
 
 
 /**
- * Class that represents the board.
+ * Class that represents the board on the client.
  * 
  * @author Oscar Strandmark
  */
 public class BoardModel implements Serializable {
+	
+	private static final long serialVersionUID = -5609765582408967782L;
 	
 	private ArrayList<ImageIcon> listIcon;
 	private ArrayList<CharacterIcon> listChar;
@@ -141,6 +143,11 @@ public class BoardModel implements Serializable {
 			setBackground(background);
 		}
 	}
+	
+	/*
+	 * All methods below using the prefix "send" are the methods called whenever the user modifies the board.
+	 * The methods send the correct action-object to the server to use in synchronizing the clients.
+	 */
 	
 	public void sendBackground(ImageIcon img) {
 		controller.pushActionToServer(new BoardBackgroundChangeAction(controller.username, img));

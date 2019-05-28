@@ -13,10 +13,16 @@ import server.actions.*;
 
 import shared.Buffer;
 
+/**
+ * 
+ * class that handles the communication between the server and the client.
+ * 
+ * @author Oscar Strandmark
+ */
 public class Connection {
 
     private static final int PORT = 48361; //Port the server will operate on.
-    public static final String ADDRESS = "192.168.43.162"; //Address the server will operate on.
+    public static final String ADDRESS = "localhost"; //Address the server will operate on.
 
     private Controller controller;
 	private Socket socket;
@@ -33,7 +39,7 @@ public class Connection {
 			sender = new Sender();
 			reciev = new Reciever();
 		} catch (ConnectException ce) {
-			int input = JOptionPane.showConfirmDialog(null, "Server not found", "ERROR", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showConfirmDialog(null, "Server not found", "ERROR", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
 			
 			controller.disposeAll();
 		} catch (Exception e) {

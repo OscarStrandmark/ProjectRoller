@@ -1,26 +1,27 @@
 package server;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 
 import shared.CharacterIcon;
 import shared.Value;
 
+/**
+ * Class that represents the board and its content on the server.
+ * Two diffrent classes are used for the model since nothing needs to be drawn on the board serverside.
+ * @author Oscar Strandmark
+ */
 public class ServerBoardModel {
-
-	private Session session;
 	
 	private ImageIcon background;	
 	private ArrayList<ImageIcon> iconList;
 	private ArrayList<CharacterIcon> charList;
 
 	
-	public ServerBoardModel(Session session) {
+	public ServerBoardModel() {
 		this.charList = new ArrayList<CharacterIcon>();
 		this.iconList = new ArrayList<ImageIcon>();
-		this.session = session;
 	}
 	
 	public void setBackground(ImageIcon img) {

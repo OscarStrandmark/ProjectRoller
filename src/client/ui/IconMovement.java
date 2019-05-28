@@ -9,10 +9,13 @@ import javax.swing.JLabel;
 
 import client.BoardModel;
 
+/**
+ * Listener-class used for movement of icons on the board.
+ * 
+ * @author Oscar Strandmark
+ */
 public class IconMovement implements MouseListener, MouseMotionListener {
 
-		private int x;
-		private int y;
 		private JLabel c;
 		private BoardModel model;
 		
@@ -26,8 +29,6 @@ public class IconMovement implements MouseListener, MouseMotionListener {
 		}
 
 		public void mousePressed(MouseEvent event) {
-			x = event.getX();
-			y = event.getY();
 			c = (JLabel) event.getComponent();
 		}
 

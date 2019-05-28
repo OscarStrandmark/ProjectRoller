@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
-
 public class CustomFormatter extends Formatter {
 
 	private final Date date = new Date();

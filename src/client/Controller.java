@@ -15,9 +15,14 @@ import server.actions.DiceRollHiddenAction;
 import shared.Dice;
 import shared.Diceroll;
 
+/**
+ * 
+ * Class that handles the communication between ui and data structures. This class is the "spine" of the program.
+ * 
+ * @author Oscar Strandmark
+ */
 public class Controller {
 
-	
 	public enum STATES {LOBBY, GAME};
 	public STATES state;
 	public String username = "NewClient";

@@ -9,7 +9,14 @@ import javax.swing.JLabel;
 
 import client.BoardModel;
 
+/**
+ * Class for one of the buttons in the context-menu for icons on the playing field.
+ * 
+ * @author Oscar Strandmark
+ */
 public class OpenValue extends AbstractAction {
+
+	private static final long serialVersionUID = -2181704034224328381L;
 
 	private Component c;
 	private BoardModel model;

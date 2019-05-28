@@ -2,10 +2,7 @@ package client.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -15,16 +12,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
 import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -32,10 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSplitPane;
@@ -55,11 +45,13 @@ import server.actions.QuitAction;
 import server.actions.SessionLeaveAction;
 import server.actions.UsernameChangeAction;
 
+/**
+ * Class used for building the window that is used in session. This window contains the board-view and different tool-tabs.
+ * 
+ * @author Oscar Strandmark
+ */
 public class MainWindow extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	private Controller controller;
@@ -92,12 +84,7 @@ public class MainWindow extends JFrame {
 	
 	private JSlider sldrIconSize;
 
-
-	private JTextField scaleIcon;
-
 	private String imagePath;
-
-	private JLabel backgroundIcon;
 
 	private int iconWidth = 150;
 	private int iconHeight = 150;
@@ -230,7 +217,6 @@ public class MainWindow extends JFrame {
 
 		JPanel infoPane = new JPanel();
 		infoPane.setLayout(new BoxLayout(infoPane, BoxLayout.Y_AXIS));
-		scaleIcon = new JTextField();
 		JLabel setSizeIcon = new JLabel("Set pixel size for icon", SwingConstants.CENTER);
 		JPanel buttonsPanel = new JPanel(new GridLayout(1,2));
 		JPanel sizePanel = new JPanel();

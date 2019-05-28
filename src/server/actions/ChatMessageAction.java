@@ -1,5 +1,9 @@
 package server.actions;
-
+/**
+ * Action for displaying a user sent chat message in the chat.
+ * 
+ * @author Oscar Strandmark
+ */
 public class ChatMessageAction extends Action {
 
 	private static final long serialVersionUID = -6816377779497793586L;
