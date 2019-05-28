@@ -55,37 +55,42 @@ public class MainWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	private Controller controller;
-	private BoardModel model;
+	private BoardModel model; //Model of the board.
 	
 	//Components used in main window.
-	private JPanel boardPanel;
-	private JTabbedPane sidePanel;
-	private JSplitPane contentPane;
+	private JPanel boardPanel; //The jPanel of the board.
+	private JTabbedPane sidePanel; //Sidepanels.
+	private JSplitPane contentPane; //Split the board panel from the side tabs.
 
 	//Components for chat-panel
-	private JTextArea chatJTA;
-	private JTextField chatBox;
-	private JButton chatBtnSend;
+	private JTextArea chatJTA; //JTextArea for chat window.
+	private JTextField chatBox; //Box for chat-messages.
+	private JButton chatBtnSend; //Button for sending messages.
 
 	//Components for import-panel
-	private JTextField importJTFFilePath;
+	private JTextField importJTFFilePath; //Displays file path.
 
-	private JFileChooser importJFCBackground;
+	private JFileChooser importJFCBackground; //FileChooser for background.
 
+	//Buttons for all import-actions.
 	private JButton importBtnBackgroundFileChooser;
 	private JButton importBtnBackgoundImport;
 	private JButton importBtnIconFileChooser;
 	private JButton importBtnIconImport;
 	
+	//Preview for icons.
 	private JLabel lblIconPreviewer;
 	
-	
+	//Preview for backgrounds.
 	private JLabel lblBackgroundPreviewer;
 	
+	//Slider for icon-size.
 	private JSlider sldrIconSize;
 
+	//The image path for icons.
 	private String imagePath;
 
+	//Width and Height for icons.
 	private int iconWidth = 150;
 	private int iconHeight = 150;
 
@@ -97,6 +102,11 @@ public class MainWindow extends JFrame {
 	private JButton settingsBtnLeave;
 	private JButton settingsBtnResync;
 
+	/**
+	 * Construtor for this class
+	 * @param controller Reference to the Controller-class.
+	 * @param model Reference to the BoardModel.
+	 */
 	public MainWindow(Controller controller, BoardModel model) {
 		this.controller = controller;
 		this.model = model;
@@ -107,6 +117,9 @@ public class MainWindow extends JFrame {
 		model.setBoard(boardPanel);
 	}
 
+	/**
+	 * Initialize the window and create bounds for different sections.
+	 */
 	private void init() {
 		setTitle("Project Roller");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -258,7 +271,7 @@ public class MainWindow extends JFrame {
 
 		// ---------- SETTINGS ----------
 		JPanel settingsPanel = new JPanel();
-		JPanel settingsGrid = new JPanel(new GridLayout(1, 2)); //Grid is always 2 wide and 
+		JPanel settingsGrid = new JPanel(new GridLayout(1, 2)); //Grid is always 2 wide. 
 		
 		settingsBtnSave = new JButton("Save settings");
 		settingsBtnLeave = new JButton("LEAVE SESSION");
@@ -303,7 +316,7 @@ public class MainWindow extends JFrame {
 		 * ==============================================================
 		 */
 
-		ButtonListener listener = new ButtonListener();
+		ButtonListener listener = new ButtonListener(); //Listener for buttons
 
 		importBtnBackgroundFileChooser.addActionListener(listener);
 		importBtnBackgoundImport.addActionListener(listener);
@@ -318,6 +331,10 @@ public class MainWindow extends JFrame {
 		this.addWindowListener(new wListener());
 	}
 
+	/**
+	 * Method for appending chat line to the chat JTextArea.
+	 * @param line The line to be appended.
+	 */
 	public void appendChatLine(String line) {
 		String current = chatJTA.getText();
 		chatJTA.setText(current + line + "\n");
@@ -339,6 +356,11 @@ public class MainWindow extends JFrame {
 		return resizedImg;
 	}
 
+	/**
+	 * Inner-class for the ButtonListener which handles all button-functionalities.
+	 * @author Patrik Skuza, Oscar Strandmark, Andreas Jönsson, Haris Obradovac
+	 *
+	 */
 	private class ButtonListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
@@ -354,8 +376,6 @@ public class MainWindow extends JFrame {
 				File file = importJFCBackground.getSelectedFile();
 
 				importJTFFilePath.setText(file.getPath());
-				
-
 			
 				ImageIcon image = new ImageIcon(importJTFFilePath.getText());
 				
@@ -397,24 +417,17 @@ public class MainWindow extends JFrame {
 			if(e.getSource() == importBtnIconImport) {
 				
 				boolean scaled = false;
-				
-				
-					
+			
 						int scale = sldrIconSize.getValue();
-						
-						
-						
+									
 							iconWidth = scale;
 							iconHeight = scale;
 							scaled = true;
-						
-				
-				
+					
 				if(scaled) {
 					
 					Image image = new ImageIcon(imagePath).getImage();
 					Image newIconImage = getScaledImage(image, iconWidth, iconHeight);
-					
 					model.sendIconNew(new ImageIcon(newIconImage));
 				}
 			}
@@ -442,6 +455,11 @@ public class MainWindow extends JFrame {
 		}
 	}
 	
+	/**
+	 * Inner-class for quit-action of the program.
+	 * @author Oscar Strandmark
+	 *
+	 */
 	private class wListener implements WindowListener {
 		
 		//Called when user exits program via the red X.
