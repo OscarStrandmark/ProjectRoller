@@ -25,6 +25,7 @@ import server.actions.SessionJoinRequestAction;
  * Class for building the lobby-window.
  * 
  * @author Oscar Strandmark
+ * @author Andreas Jönsson
  */
 public class LobbyWindow extends JFrame {
 	
