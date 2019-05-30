@@ -18,6 +18,7 @@ import shared.Buffer;
  * class that handles the communication between the server and the client.
  * 
  * @author Oscar Strandmark
+ * @author Andreas Jönsson
  */
 public class Connection {
 
