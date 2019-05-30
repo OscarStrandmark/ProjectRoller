@@ -18,7 +18,7 @@ import client.BoardModel;
  */
 public class IconMovement implements MouseListener, MouseMotionListener {
 
-		private JLabel c; //Component to be moved
+		private JLabel lblComponent; //Component to be moved
 		private BoardModel model; //Model of the board
 		
 	        /**
@@ -37,7 +37,7 @@ public class IconMovement implements MouseListener, MouseMotionListener {
 
 	        // Gets the x and y positions of the component when mouse button is pressed.
 		public void mousePressed(MouseEvent event) {
-			c = (JLabel) event.getComponent();
+			lblComponent = (JLabel) event.getComponent();
 		}
 
 	        /**
@@ -46,10 +46,10 @@ public class IconMovement implements MouseListener, MouseMotionListener {
 		 */
 		public void mouseReleased(MouseEvent event) {
 			
-			if(event.getButton() == 1 && c != null) {
+			if(event.getButton() == 1 && lblComponent != null) {
 				
-				model.sendIconMove((ImageIcon)c.getIcon(), c.getX(), c.getY());
-				c = null;
+				model.sendIconMove((ImageIcon)lblComponent.getIcon(), lblComponent.getX(), lblComponent.getY());
+				lblComponent = null;
 			}
 			
 			// If the mouse-button is a right-click on a component (Icon), show a PopMenu relative to where the
