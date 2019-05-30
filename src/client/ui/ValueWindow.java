@@ -22,7 +22,7 @@ import shared.Value;
 /**
  * Class that handles building the value-window that opens when the user clicks the "Open value-menu" button in the context menu for icons.
  * 
- * @author Oscar Strandmark
+ * @author Oscar Strandmark, Patrik Skuza
  */
 public class ValueWindow extends JFrame {
 
@@ -40,6 +40,7 @@ public class ValueWindow extends JFrame {
 	private ImageIcon img;
 	private int index;
 	
+	// Constructor opens the values for the current icon.
 	public ValueWindow(BoardModel model, ImageIcon img) {
 		this.model = model;
 		this.img = img;
@@ -47,6 +48,7 @@ public class ValueWindow extends JFrame {
 		getValues();
 	}
 	
+	// Initialize value-menu GUI.
 	private void init() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setAlwaysOnTop(true);
@@ -88,6 +90,7 @@ public class ValueWindow extends JFrame {
 		setVisible(true);
 	}
 	
+	// Method for getting values of current icon.
 	private void getValues() {
 		index = model.lookupIndex(img);
 		CharacterIcon c = model.getChar(index);
@@ -102,6 +105,7 @@ public class ValueWindow extends JFrame {
 		table.setModel(model);
 	}
 	
+	//Method for setting values of current icon.
 	private void setValues() {
 		ArrayList<Value> list = new ArrayList<Value>();
 		
@@ -116,6 +120,7 @@ public class ValueWindow extends JFrame {
 		model.sendValueUpdate(index, list);
 	}
 	
+	//Inner class acts as a listener.
 	private class Listener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
