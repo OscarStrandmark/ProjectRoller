@@ -7,6 +7,7 @@ import java.util.ArrayList;
  * Class that represents a diceroll with multiple dies and a constant value to add.
  * 
  * @author Oscar Strandmark
+ * @author Haris Obradovac
  */
 public class Diceroll implements Serializable{
 
