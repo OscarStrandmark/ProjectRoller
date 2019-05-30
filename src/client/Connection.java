@@ -8,10 +8,17 @@ import java.net.SocketException;
 
 import javax.swing.JOptionPane;
 
+import client.Controller.STATES;
 import server.actions.*;
 
 import shared.Buffer;
 
+/**
+ * 
+ * class that handles the communication between the server and the client.
+ * 
+ * @author Oscar Strandmark
+ */
 public class Connection {
 
     private static final int PORT = 48361; //Port the server will operate on.
@@ -32,7 +39,7 @@ public class Connection {
 			sender = new Sender();
 			reciev = new Reciever();
 		} catch (ConnectException ce) {
-			int input = JOptionPane.showConfirmDialog(null, "Server not found", "ERROR", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showConfirmDialog(null, "Server not found", "ERROR", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
 			
 			controller.disposeAll();
 		} catch (Exception e) {
@@ -122,8 +129,10 @@ public class Connection {
 					else
 					
 					if(action instanceof JoinedAction) {
-						controller.sessionEntered();
-						controller.pushActionToServer(new BoardResyncRequestAction(controller.username));
+						if(controller.state == STATES.LOBBY) {
+							controller.sessionEntered();
+							controller.pushActionToServer(new BoardResyncRequestAction(controller.username));
+						}				
 					}
 					
 					else

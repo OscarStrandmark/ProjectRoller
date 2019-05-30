@@ -1,9 +1,13 @@
 package server.actions;
 
 /**
+ * Action for moving an icon on the board.
+ * 
  * @author Oscar Strandmark
  */
 public class BoardIconMoveAction extends Action {
+
+	private static final long serialVersionUID = -1506696520874842346L;
 
 	private int x;
 	private int y;

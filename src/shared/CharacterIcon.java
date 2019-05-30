@@ -5,6 +5,11 @@ import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 
+/**
+ * Class that represents an icon on the board. This class contains the values stored in an icon and its position on the field.
+ * 
+ * @author Oscar Strandmark
+ */
 public class CharacterIcon implements Serializable {
 
 	private static final long serialVersionUID = 197612831996384393L;

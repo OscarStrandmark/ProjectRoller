@@ -34,13 +34,22 @@ import server.actions.WrongPasswordAction;
 import shared.Buffer;
 import shared.Diceroll;
 
+/**
+ * Class that represents a client on the server. This class handles all communication between each client and the server.
+ * An object of this class is used by the server to represent the state of the client as well.
+ * If a user is connected to a session, its client object will be contained in a session. Else it will be contained in the list of 
+ * clients in the lobby.
+ * 
+ * @author Oscar Strandmark
+ */
 public class Client {
 
 	private Socket socket;
 	
-	private Sender sender;
+	@SuppressWarnings("unused")
 	private Reciever reciever;
-
+	private Sender sender;
+	
 	private String username; //Username of the user, can be changed in the settings menu.
 	private Client thisClient = this;
 
@@ -315,7 +324,6 @@ public class Client {
 					else
 						
 					if(action instanceof BoardResyncRequestAction) {
-						BoardResyncRequestAction act = (BoardResyncRequestAction) action;
 						BoardResyncAction a = session.getSyncAction();
 						sendAction(a);
 					}

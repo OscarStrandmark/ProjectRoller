@@ -19,7 +19,14 @@ import client.BoardModel;
 import shared.CharacterIcon;
 import shared.Value;
 
+/**
+ * Class that handles building the value-window that opens when the user clicks the "Open value-menu" button in the context menu for icons.
+ * 
+ * @author Oscar Strandmark
+ */
 public class ValueWindow extends JFrame {
+
+	private static final long serialVersionUID = 4356499130491471637L;
 
 	private JPanel contentPane;
 	

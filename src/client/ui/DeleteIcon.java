@@ -9,7 +9,14 @@ import javax.swing.JLabel;
 
 import client.BoardModel;
 
+/**
+ * Class for one of the buttons in the context-menu for icons on the playing field.
+ * 
+ * @author Oscar Strandmark
+ */
 public class DeleteIcon extends AbstractAction {
+
+	private static final long serialVersionUID = 6735193266973169483L;
 
 	private Component c;
 	private BoardModel model;

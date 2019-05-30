@@ -3,11 +3,9 @@ package server;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import server.actions.ConnectedToServerAction;
 import server.actions.SessionCreateAction;
-
 import server.actions.SessionListRefreshAction;
 
 

@@ -1,5 +1,9 @@
 package server.actions;
-
+/**
+ * Action that represents the user request to join a session.
+ * 
+ * @author Oscar Strandmark
+ */
 public class SessionJoinRequestAction extends Action {
 
 	private static final long serialVersionUID = -2728074350431203482L;
