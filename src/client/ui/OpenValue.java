@@ -12,7 +12,7 @@ import client.BoardModel;
 /**
  * Class for one of the buttons in the context-menu for icons on the playing field.
  * 
- * @author Oscar Strandmark
+ * @author Patrik Skuza
  */
 public class OpenValue extends AbstractAction {
 
@@ -21,6 +21,7 @@ public class OpenValue extends AbstractAction {
 	private Component c;
 	private BoardModel model;
 	
+	//Adds text to the alternative in the right-click context-menu for icons.
 	public OpenValue(Component c, BoardModel model) {
 		super("Open Value-menu");
 		this.model = model;
