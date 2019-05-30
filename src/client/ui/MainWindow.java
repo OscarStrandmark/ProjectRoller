@@ -45,7 +45,7 @@ import server.actions.QuitAction;
 import server.actions.SessionLeaveAction;
 import server.actions.UsernameChangeAction;
 
- * Class used for building the window that is used in session. This window contains the board-view and different tool-tabs.
+ /** Class used for building the window that is used in session. This window contains the board-view and different tool-tabs.
  * 
  * @author Oscar Strandmark
  * @author Andreas Jönsson
