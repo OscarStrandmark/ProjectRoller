@@ -20,6 +20,7 @@ import shared.Diceroll;
  * Class that handles the communication between ui and data structures. This class is the "spine" of the program.
  * 
  * @author Oscar Strandmark
+ * @author Haris Obradovac
  */
 public class Controller {
 
