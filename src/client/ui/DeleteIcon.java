@@ -21,6 +21,7 @@ public class DeleteIcon extends AbstractAction {
 	private Component c;
 	private BoardModel model;
 	
+	// Sets name of alternative in context-menu for icons.
 	public DeleteIcon(Component c, BoardModel model) {
 		super("Delete Icon");
 		this.model = model;
