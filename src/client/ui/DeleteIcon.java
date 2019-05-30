@@ -12,7 +12,7 @@ import client.BoardModel;
 /**
  * Class for one of the buttons in the context-menu for icons on the playing field.
  * 
- * @author Oscar Strandmark
+ * @author Patrik Skuza
  */
 public class DeleteIcon extends AbstractAction {
 
