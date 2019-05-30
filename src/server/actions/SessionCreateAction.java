@@ -4,6 +4,7 @@ package server.actions;
  * Class that is used in the object streams between server and client.
  * When an object of this class is sent a client is making a request to create a new session.
  * @author Oscar Strandmark
+ * @author Andreas Jönsson
  */
 public class SessionCreateAction extends Action {
 
