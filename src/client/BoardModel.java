@@ -22,6 +22,7 @@ import shared.Value;
  * Class that represents the board on the client.
  * 
  * @author Oscar Strandmark
+ * @author Andreas Jönsson
  */
 public class BoardModel implements Serializable {
 	
