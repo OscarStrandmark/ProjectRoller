@@ -45,17 +45,12 @@ import server.actions.QuitAction;
 import server.actions.SessionLeaveAction;
 import server.actions.UsernameChangeAction;
 
-/**
-
- * This class represents the entire user interface.
- * @author Haris Obradovac
- */
-
-
  * Class used for building the window that is used in session. This window contains the board-view and different tool-tabs.
  * 
  * @author Oscar Strandmark
  * @author Andreas Jönsson
+ * @author Haris Obradovac
+ * @author Patrik Skuza
  */
 
 public class MainWindow extends JFrame {
