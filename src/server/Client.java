@@ -41,6 +41,7 @@ import shared.Diceroll;
  * clients in the lobby.
  * 
  * @author Oscar Strandmark
+ * @author Andreas Jönsson
  */
 public class Client {
 
