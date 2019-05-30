@@ -9,11 +9,13 @@ import client.BoardModel;
 /**
  * Class that handles creating the context-menu for icons.
  * 
- * @author Oscar Strandmark
+ * @author Patrik Skuza
  */
 public class PopAltMenu extends JPopupMenu {
 		private static final long serialVersionUID = 1L;
 
+	        // Adds an alternative for "OpenValue"-menu and "Delete Icon" in the right click menu
+	        // of an icon.
 		public PopAltMenu(Component c, BoardModel model) {
 			JMenuItem altMenuValue = new JMenuItem(new OpenValue(c,model));
 			add(altMenuValue);
