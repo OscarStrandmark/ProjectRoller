@@ -54,11 +54,13 @@ import server.actions.QuitAction;
 import server.actions.SessionLeaveAction;
 import server.actions.UsernameChangeAction;
 
+/**
+ * This class represents the entire user interface.
+ * @author Haris Obradovac
+ */
+
 public class MainWindow extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	private Controller controller;
@@ -108,6 +110,10 @@ public class MainWindow extends JFrame {
 	private JButton settingsBtnSave;
 	private JButton settingsBtnLeave;
 	private JButton settingsBtnResync;
+	
+	//Components for help-panel
+	private JTextArea helpJTA;
+	
 
 	public MainWindow(Controller controller, BoardModel model) {
 		this.controller = controller;
@@ -159,7 +165,9 @@ public class MainWindow extends JFrame {
 		welcomeMsg += "/rp [name] [text] - Used to write a message as a character with the specified name." + "\n";
 		welcomeMsg += "/w [name] [text] - Used to write a private message to another player."+ "\n";
 		welcomeMsg += "-------------------------------------------" + "\n";
-		welcomeMsg += "Dont forget to change your username before you start!" + "\n";
+		welcomeMsg += "Don't forget to change your username before you start!" + "\n";
+		welcomeMsg += "-------------------------------------------" + "\n";
+		welcomeMsg += "For more information please go to the Help tab." + "\n";
 		welcomeMsg += "-------------------------------------------" + "\n";
 		chatJTA.setText(welcomeMsg);
 		chatPanel.add(scrollPane1, BorderLayout.CENTER);
@@ -287,6 +295,118 @@ public class MainWindow extends JFrame {
 		settingsPanel.add(settingsBtnSave);
 		settingsPanel.add(settingsBtnLeave);
 		settingsPanel.add(settingsBtnResync);
+		
+		// ---------- HELP ----------
+		JPanel helpPanel = new JPanel(new BorderLayout());
+		
+
+		JScrollPane scrollPane12 = new JScrollPane();
+		helpJTA = new JTextArea();
+		helpJTA.setEditable(false);
+		scrollPane12.setViewportView(helpJTA);
+		String instructionMsg = "";
+		instructionMsg += "Everything you need to know!" + "\n";
+		
+		instructionMsg += "\n" + "When using the chat:" + "\n";
+		
+		instructionMsg += "\n" + "* You can send messages by writing them in the text field" + "\n";
+		instructionMsg += "  and then send them by pushing the SEND button." + "\n";
+		
+		instructionMsg += "\n" + "* Sending messages by pressing the return button on the" + "\n";
+		instructionMsg += "  keyboard will not result in your message being sent." + "\n";
+		
+		instructionMsg += "\n" + "* /roll xdy + n - Is used to roll a dice:" + "\n";
+		instructionMsg += "  x = number of dices" + "\n";
+		instructionMsg += "  d = dice" + "\n";
+		instructionMsg += "  y = amount of sides per dice" + "\n";
+		instructionMsg += "  n = an amount that will add to the result of the dice throw" + "\n";
+		instructionMsg += "  If you don't want to add a value to the result of" + "\n";
+		instructionMsg += "  your dice throw you need to write 0 instead of n" + "\n";
+		
+		instructionMsg += "\n" + "* /dmroll xdy + n - Is used to roll a hidden dice:" + "\n";
+		instructionMsg += "  x = number of dices" + "\n";
+		instructionMsg += "  d = dice" + "\n";
+		instructionMsg += "  y = amount of sides per dice" + "\n";
+		instructionMsg += "  n = an amount that will add to the result of the dice throw" + "\n";
+		
+		instructionMsg += "\n" + "* /rp [name] [text] - Is used for writing message with " + "\n";
+		instructionMsg += "  a specific name. This is useful when you want to write " + "\n";
+		instructionMsg += "  something as your role playing character. You shouldn't " + "\n";
+		instructionMsg += "  keep the square brackets when writing this command." + "\n";
+
+		instructionMsg += "\n" + "* /w [name] [text] - Is used for writing in a private message. "+ "\n";
+		instructionMsg += "  You shouldn't keep the square brackets" + "\n";
+		instructionMsg += "  when writing this command." + "\n";
+
+		
+		instructionMsg += "\n" + "\n" + "When using notes:" + "\n";
+		instructionMsg += "\n" + "* Notes are used for making any notations that you think will " + "\n";
+		instructionMsg += "   be useful in the future or for writing down " + "\n";
+		instructionMsg += "   anything you want to remember. It is basically a note pad." + "\n";
+		
+		
+		instructionMsg += "\n" + "\n" + "When importing/creating:" + "\n";
+		instructionMsg += "\n" + "* When importing a background you need to press the " + "\n";
+		instructionMsg += "   Choose Background button and locate a picture of your " + "\n";
+		instructionMsg += "   choice. You can see the picture in the preview section " + "\n";
+		instructionMsg += "   below the buttons." + "\n";
+		instructionMsg += "      Secondly you need to press the Load Background " + "\n";
+		instructionMsg += "   button to put the picture as a background." + "\n";
+		
+		instructionMsg += "\n" + "* When importing an icon you need to press the " + "\n";
+		instructionMsg += "   Choose Icon button and locate a picture of your choice. " + "\n";
+		instructionMsg += "   You can see the picture of your choice in the preview " + "\n";
+		instructionMsg += "   section below the buttons." + "\n";
+		instructionMsg += "      Secondly you can scale the picture to decide how " + "\n";
+		instructionMsg += "   big or small it should be. You are not able to scale " + "\n";
+		instructionMsg += "   the picture after you have loaded it into the field." + "\n";
+		instructionMsg += "      Finally you need to press the " + "\n";
+		instructionMsg += "   Load Image button to put the picture on the field." + "\n";
+		
+		
+		instructionMsg += "\n" + "\n" + "When using settings:" + "\n";
+		instructionMsg += "\n" + "* When changing your username you need to write " + "\n";
+		instructionMsg += "   your new username in the text field and then press the " + "\n";
+		instructionMsg += "   Save settings button." + "\n";
+		
+		instructionMsg += "\n" + "* If you realize that the program isn't " + "\n";
+		instructionMsg += "   synchronized correctly you can press the Resync " + "\n";
+		instructionMsg += "   button to update the program according to" + "\n";
+		instructionMsg += "   the current board and chat." + "\n";
+		
+		instructionMsg += "\n" + "* If you want to leave a session you can " + "\n";
+		instructionMsg += "   either press the LEAVE SESSION button or " + "\n";
+		instructionMsg += "   just close down the program. " + "\n";
+		
+		instructionMsg += "\n" + "\n" + "interacting with the field:" + "\n";
+		instructionMsg += "\n" + "* You can move your icons freely across the " + "\n";
+		instructionMsg += "   field but need to keep in mind that the icon that " + "\n";
+		instructionMsg += "   was first loaded will always be in front of the " + "\n";
+		instructionMsg += "   other icons. This will be the same for all icons as " + "\n";
+		instructionMsg += "   in the first being in front of the second, " + "\n";
+		instructionMsg += "   the second being in front of the third and so on." + "\n";
+		
+		instructionMsg += "\n" + "* You can remove icons by pressing  " + "\n";
+		instructionMsg += "   Delete Icon button which appears by" + "\n";
+		instructionMsg += "   right clicking on the icon." + "\n";
+
+		
+		instructionMsg += "\n" + "* You can create, edit, save and delete values " + "\n";
+		instructionMsg += "   for each character by right clicking on an icon." + "\n";
+		instructionMsg += "   To create a value for an icon you need to press the " + "\n";
+		instructionMsg += "   Open Value-menu and then press Add new value." + "\n";
+		instructionMsg += "   Then you need to edit the name of the value. " + "\n";
+		instructionMsg += "   Important to remember is that you need to left " + "\n";
+		instructionMsg += "   click on the other text box before pressing the " + "\n";
+		instructionMsg += "   Save & Close button. This should be done after " + "\n";
+		instructionMsg += "   filling out the value. You can remove a value by " + "\n";
+		instructionMsg += "   selecting it, then pressing the Remove selected value " + "\n";
+		instructionMsg += "   and then finally pressing the Save & Close button." + "\n";
+
+
+		helpJTA.setText(instructionMsg);
+		helpPanel.add(scrollPane12, BorderLayout.CENTER);
+		
 		/*
 		 * ==============================================================
 		 * ======================MAIN PANELS=============================
@@ -302,6 +422,7 @@ public class MainWindow extends JFrame {
 		sidePanel.addTab("Notes", notePanel);
 		sidePanel.addTab("Import / Create", importPanel);
 		sidePanel.addTab("Settings", settingsPanel);
+		sidePanel.addTab("Help", helpPanel);
 		sidePanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		sidePanel.setMinimumSize(new Dimension(800, 800));
 
