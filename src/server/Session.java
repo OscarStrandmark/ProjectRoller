@@ -18,6 +18,7 @@ import shared.Value;
  * a corresponding session-object is created on the server to handle synchronization of board and chat.
  * 
  * @author Oscar Strandmark
+ * @author Patrik Skuza
  */
 public class Session {
 
