@@ -25,7 +25,8 @@ import server.actions.SessionJoinRequestAction;
  * Class for building the lobby-window.
  * 
  * @author Oscar Strandmark
- * @author Andreas Jönsson
+ * @author Andreas JÃ¶nsson
+ * @author Haris Obradovac
  */
 public class LobbyWindow extends JFrame {
 	
@@ -116,7 +117,7 @@ public class LobbyWindow extends JFrame {
 	}
 
 	/*
-	 * @author Andreas Jönsson
+	 * @author Andreas JÃ¶nsson
 	 **/
 	private static class SessionTableModel extends DefaultTableModel {
 
