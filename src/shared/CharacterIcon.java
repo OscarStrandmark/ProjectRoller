@@ -9,6 +9,7 @@ import javax.swing.ImageIcon;
  * Class that represents an icon on the board. This class contains the values stored in an icon and its position on the field.
  * 
  * @author Oscar Strandmark
+ * @author Andreas Jönsson
  */
 public class CharacterIcon implements Serializable {
 
