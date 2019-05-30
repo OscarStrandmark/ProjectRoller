@@ -11,6 +11,7 @@ import shared.Value;
  * Class that represents the board and its content on the server.
  * Two diffrent classes are used for the model since nothing needs to be drawn on the board serverside.
  * @author Oscar Strandmark
+ * @author Haris Obradovac
  */
 public class ServerBoardModel {
 	
