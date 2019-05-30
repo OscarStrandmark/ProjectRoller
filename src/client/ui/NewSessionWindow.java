@@ -16,6 +16,7 @@ import server.actions.SessionCreateAction;
  * Class for the window where the user creates a new session.	
  * 
  * @author Oscar Strandmark
+ * @author Haris Obradovac
  */
 public class NewSessionWindow extends JFrame {
 
