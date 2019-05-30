@@ -10,6 +10,7 @@ import shared.CharacterIcon;
  * Action for synchronizing the board.
  * 
  * @author Oscar Strandmark
+ * @author Haris Obradovac
  */
 public class BoardResyncAction extends Action {
 
