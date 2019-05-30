@@ -22,7 +22,8 @@ import shared.Value;
 /**
  * Class that handles building the value-window that opens when the user clicks the "Open value-menu" button in the context menu for icons.
  * 
- * @author Oscar Strandmark, Patrik Skuza
+ * @author Oscar Strandmark
+ * @author Patrik Skuza
  */
 public class ValueWindow extends JFrame {
 
