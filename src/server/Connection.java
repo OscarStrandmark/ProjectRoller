@@ -19,12 +19,12 @@ public class Connection {
     public static final int PORT = 48361; //Port the server will operate on.
 
 	private ArrayList<Client> clientsInLobby;
-	private ArrayList<Session> sessions;
+	private ArrayList<Session> listOfSessions;
 	private Connection thisClass = this;
 
 	public Connection() {
 		clientsInLobby = new ArrayList<Client>();
-		sessions = new ArrayList<Session>();
+		listOfSessions = new ArrayList<Session>();
 		new ServerUI(this);
 		new ConnectionAccepter();
 	}
@@ -40,7 +40,7 @@ public class Connection {
 		} else {
 			newSession = new Session(action.getSessionName(), action.getMaxPlayers(), this);
 		}
-		sessions.add(newSession);
+		listOfSessions.add(newSession);
 
 	}
 
@@ -50,7 +50,7 @@ public class Connection {
 	 * @param session The session to kill.
 	 */
 	public void killSession(Session session) {
-		sessions.remove(session);
+		listOfSessions.remove(session);
 		
 	}
 	
@@ -61,7 +61,7 @@ public class Connection {
 	 * @param client The client that will join
 	 */
 	public void joinSession(String sessionName, Client client) {
-		for(Session s : sessions) {
+		for(Session s : listOfSessions) {
 			if(s.getSessionName().equals(sessionName)) {
 				clientsInLobby.remove(client);
 				s.join(client);
@@ -73,7 +73,7 @@ public class Connection {
 
 		ArrayList<String> list = new ArrayList<String>();
 		
-		for(Session s : sessions) {
+		for(Session s : listOfSessions) {
 			list.add(s.getSessionName());
 		}
 		
@@ -81,7 +81,7 @@ public class Connection {
 	}
 	
 	public ArrayList<Session> getSessions(){
-		return sessions;
+		return listOfSessions;
 	}
 	
 	public void joinLobby(Client c) {
@@ -94,14 +94,14 @@ public class Connection {
 	 * @return The index of the session.
 	 */
 	public int getSessionIndex(Session session) {
-		return sessions.indexOf(session);
+		return listOfSessions.indexOf(session);
 	}
 	
 	public void refreshSessionList() {
 		
 		ArrayList<String> list = new ArrayList<String>();
 		
-		for(Session s : sessions) {
+		for(Session s : listOfSessions) {
 			String session = s.getSessionName() + ":" + s.getCurrentConnections() + ":" + s.getMaximumConnections();
 			list.add(session);
 		}
@@ -135,8 +135,8 @@ public class Connection {
 						ArrayList<String> sessionNames = new ArrayList<String>();
 
 						//Get all session names and put them in the list along with the current and maximum amount of connected users.
-						for (int i = 0; i < sessions.size(); i++) {
-							String sessionName = sessions.get(i).getSessionName() + sessions.get(i).getCurrentConnections() + sessions.get(i).getMaximumConnections();
+						for (int i = 0; i < listOfSessions.size(); i++) {
+							String sessionName = listOfSessions.get(i).getSessionName() + listOfSessions.get(i).getCurrentConnections() + listOfSessions.get(i).getMaximumConnections();
 							sessionNames.add(sessionName);
 						}
 						//Send an object to the client containing the list of all sessions.
