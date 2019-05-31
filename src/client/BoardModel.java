@@ -22,7 +22,6 @@ import shared.Value;
  * Class that represents the board on the client.
  * 
  * @author Oscar Strandmark
- * @author Andreas Jönsson
  */
 public class BoardModel implements Serializable {
 	
@@ -32,10 +31,10 @@ public class BoardModel implements Serializable {
 	private ArrayList<CharacterIcon> listChar;
 	private ArrayList<JLabel> listLabl;
 	
-	private ImageIcon background;
-	private JLabel backgroundReference;
+	private ImageIcon iconBackground;
+	private JLabel lblBackgroundReference;
 	
-	private JPanel board;
+	private JPanel pnlBoard;
 	
 	private Controller controller;
 
@@ -52,8 +51,8 @@ public class BoardModel implements Serializable {
 		this.listLabl = new ArrayList<JLabel>();
 	}
 
-	public void setBoard(JPanel board) {
-		this.board = board;
+	public void setBoard(JPanel pnlBoard) {
+		this.pnlBoard = pnlBoard;
 	}
 	
 	/**
@@ -63,22 +62,27 @@ public class BoardModel implements Serializable {
 	 */
 	public void setBackground(ImageIcon img) {
 		JLabel newBG = new JLabel(img);
-		newBG.setBounds(0, 0, board.getWidth(), board.getHeight());
+		newBG.setBounds(0, 0, pnlBoard.getWidth(), pnlBoard.getHeight());
 		
-		if(background != null) {
-			board.remove(backgroundReference);
+		if(iconBackground != null) {
+			pnlBoard.remove(lblBackgroundReference);
 		}
 		
-		backgroundReference = newBG;
-		this.background = img;
+		lblBackgroundReference = newBG;
+		this.iconBackground = img;
 		
 		
-		board.add(newBG);
-		board.setComponentZOrder(newBG, board.getComponentCount()-1);
-		board.repaint();
+		pnlBoard.add(newBG);
+		pnlBoard.setComponentZOrder(newBG, pnlBoard.getComponentCount()-1);
+		pnlBoard.repaint();
 		
 	}
 	
+	/**
+	 * Set the icon image.
+	 * 
+	 * @param img An {@link ImageIcon} of the icon image.
+	 */
 	public void addIcon(ImageIcon img) {
 		listIcon.add(img);
 		listChar.add(new CharacterIcon(img));
@@ -86,14 +90,14 @@ public class BoardModel implements Serializable {
 		JLabel icon = new JLabel(img);
 		icon.setBounds(0,0,img.getIconWidth(),img.getIconHeight());
 		
-		board.add(icon);
-		board.repaint();
+		pnlBoard.add(icon);
+		pnlBoard.repaint();
 		
 		icon.addMouseListener(new IconMovement(this));
 		icon.addMouseMotionListener(new IconMovement(this));
 		listLabl.add(icon);
-		if(backgroundReference != null) {
-			board.setComponentZOrder(backgroundReference, board.getComponentCount()-1);
+		if(lblBackgroundReference != null) {
+			pnlBoard.setComponentZOrder(lblBackgroundReference, pnlBoard.getComponentCount()-1);
 		}
 	}
 	
@@ -105,9 +109,9 @@ public class BoardModel implements Serializable {
 	public void removeIcon(int index) {
 		listChar.remove(index);
 		listIcon.remove(index);
-		board.remove(listLabl.get(index));
+		pnlBoard.remove(listLabl.get(index));
 		listLabl.remove(index);
-		board.repaint();
+		pnlBoard.repaint();
 	}
 	
 	public void setValues(int index, ArrayList<Value> list) {
@@ -121,8 +125,8 @@ public class BoardModel implements Serializable {
 		this.listChar = new ArrayList<CharacterIcon>();
 		this.listLabl = new ArrayList<JLabel>();
 		
-		board.removeAll();
-		board.repaint();
+		pnlBoard.removeAll();
+		pnlBoard.repaint();
 		
 		for (int i = 0; i < iconList.size(); i++) {
 			this.listIcon.add(iconList.get(i));
@@ -131,9 +135,9 @@ public class BoardModel implements Serializable {
 			JLabel icon = new JLabel(iconList.get(i));
 			icon.setBounds(0,0,iconList.get(i).getIconWidth(),iconList.get(i).getIconHeight());
 			
-			board.add(icon);
+			pnlBoard.add(icon);
 			icon.setLocation(charList.get(i).getX(), charList.get(i).getY());
-			board.repaint();
+			pnlBoard.repaint();
 			
 			icon.addMouseListener(new IconMovement(this));
 			icon.addMouseMotionListener(new IconMovement(this));
