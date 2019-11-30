@@ -5,22 +5,29 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import shared.BoardModel;
+import client.BoardModel;
 import shared.CharacterIcon;
 import shared.Value;
 
+/**
+ * Class that handles building the value-window that opens when the user clicks the "Open value-menu" button in the context menu for icons.
+ * 
+ * @author Oscar Strandmark
+ * @author Patrik Skuza
+ */
 public class ValueWindow extends JFrame {
+
+	private static final long serialVersionUID = 4356499130491471637L;
 
 	private JPanel contentPane;
 	
@@ -31,17 +38,21 @@ public class ValueWindow extends JFrame {
 	private JButton btnClose;
 	
 	private BoardModel model;
-	private JLabel label;
+	private ImageIcon img;
+	private int index;
 	
-	public ValueWindow(BoardModel model, JLabel label) {
+	// Constructor opens the values for the current icon.
+	public ValueWindow(BoardModel model, ImageIcon img) {
 		this.model = model;
-		this.label = label;
+		this.img = img;
 		init();
 		getValues();
 	}
 	
+	// Initialize value-menu GUI.
 	private void init() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setAlwaysOnTop(true);
 		setTitle("Values");
 		setSize(600, 400);
 		
@@ -80,37 +91,37 @@ public class ValueWindow extends JFrame {
 		setVisible(true);
 	}
 	
+	// Method for getting values of current icon.
 	private void getValues() {
-		CharacterIcon icon = model.lookup(label);
-		Iterator<Value> iter = icon.getValueIterator();
+		index = model.lookupIndex(img);
+		CharacterIcon c = model.getChar(index);
+		ArrayList<Value> list = c.getValueList();
 		
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 
-		while(iter.hasNext()) {
-			Value val = iter.next();
-			
-			model.addRow(new String[] {val.getName(),val.getValue()});
+		for(Value v : list) {
+			model.addRow(new String[] {v.getName(),v.getValue()});
 		}
 		
 		table.setModel(model);
 	}
 	
+	//Method for setting values of current icon.
 	private void setValues() {
-		CharacterIcon icon = model.lookup(label);
 		ArrayList<Value> list = new ArrayList<Value>();
 		
-		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
 
-		for (int i = 0; i < model.getRowCount(); i++) {
-			String name = (String)model.getValueAt(i, 0);
-			String value =(String)model.getValueAt(i, 1);
+		for (int i = 0; i < tableModel.getRowCount(); i++) {
+			String name = (String)tableModel.getValueAt(i, 0);
+			String value =(String)tableModel.getValueAt(i, 1);
 			list.add(new Value(value, name));
 		}
 		
-		icon.setValues(list);
-		//this.model.synchToServer();
+		model.sendValueUpdate(index, list);
 	}
 	
+	//Inner class acts as a listener.
 	private class Listener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {

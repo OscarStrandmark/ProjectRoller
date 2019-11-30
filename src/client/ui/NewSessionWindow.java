@@ -16,6 +16,7 @@ import server.actions.SessionCreateAction;
  * Class for the window where the user creates a new session.	
  * 
  * @author Oscar Strandmark
+ * @author Haris Obradovac
  */
 public class NewSessionWindow extends JFrame {
 
@@ -40,6 +41,7 @@ public class NewSessionWindow extends JFrame {
 	private void init()	{
 		//Set important values
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setAlwaysOnTop(true);
 		setResizable(false);
 		setTitle("Create new session");
 		

@@ -8,6 +8,13 @@ import java.net.SocketException;
 import java.util.ArrayList;
 
 import server.actions.Action;
+import server.actions.BoardBackgroundChangeAction;
+import server.actions.BoardIconCreateAction;
+import server.actions.BoardIconMoveAction;
+import server.actions.BoardIconRemoveAction;
+import server.actions.BoardIconValueUpdateAction;
+import server.actions.BoardResyncAction;
+import server.actions.BoardResyncRequestAction;
 import server.actions.ChatDisplayTextAction;
 import server.actions.ChatMessageAction;
 import server.actions.ChatRPAction;
@@ -22,19 +29,28 @@ import server.actions.RequestPasswordAction;
 import server.actions.SessionCreateAction;
 import server.actions.SessionJoinRequestAction;
 import server.actions.SessionLeaveAction;
-import server.actions.SynchAction;
 import server.actions.UsernameChangeAction;
 import server.actions.WrongPasswordAction;
 import shared.Buffer;
 import shared.Diceroll;
 
+/**
+ * Class that represents a client on the server. This class handles all communication between each client and the server.
+ * An object of this class is used by the server to represent the state of the client as well.
+ * If a user is connected to a session, its client object will be contained in a session. Else it will be contained in the list of 
+ * clients in the lobby.
+ * 
+ * @author Oscar Strandmark
+ * @author Andreas Jönsson
+ */
 public class Client {
 
 	private Socket socket;
 	
-	private Sender sender;
+	@SuppressWarnings("unused")
 	private Reciever reciever;
-
+	private Sender sender;
+	
 	private String username; //Username of the user, can be changed in the settings menu.
 	private Client thisClient = this;
 
@@ -155,6 +171,7 @@ public class Client {
 									connection.joinSession(sessionName, thisClient);
 									setSession(s);
 									sendAction(new JoinedAction("SERVER", sessionName));
+									session.pushChatText("USER JOINED SESSION");
 								}
 							}
 						}
@@ -182,6 +199,7 @@ public class Client {
 								if(s.checkPassword(password)) { //Password ok
 									connection.joinSession(sessionName, thisClient);
 									setSession(s);
+									session.pushChatText("USER JOINED SESSION");
 								} else { //Password not ok.
 									sendAction(new WrongPasswordAction("SERVER"));
 								}
@@ -269,12 +287,46 @@ public class Client {
 						session.pushChatText(contentString);
 					}
 					
+					else
+						
+					if(action instanceof BoardBackgroundChangeAction) {
+						BoardBackgroundChangeAction act = (BoardBackgroundChangeAction) action;
+						session.setBackground(act.getImage());
+					}
+					
 					else 
 						
-					if(action instanceof SynchAction) {
-						SynchAction act = (SynchAction) action;
-						session.synchBoard(act.getMap(),act.getBackground());
-						System.out.println("Recieved synch on server");
+					if(action instanceof BoardIconCreateAction) {
+						BoardIconCreateAction act = (BoardIconCreateAction) action;
+						session.createIcon(act.getImage());
+					}
+					
+					else
+						
+					if(action instanceof BoardIconMoveAction) {
+						BoardIconMoveAction act = (BoardIconMoveAction) action;
+						session.moveIcon(act.getIndex(), act.getX(), act.getY());
+					}
+					
+					else
+						
+					if(action instanceof BoardIconRemoveAction) {
+						BoardIconRemoveAction act = (BoardIconRemoveAction) action;
+						session.removeIcon(act.getIndex());
+					}
+					
+					else
+						
+					if(action instanceof BoardIconValueUpdateAction) {
+						BoardIconValueUpdateAction act = (BoardIconValueUpdateAction) action;
+						session.updateValue(act.getIndex(), act.getList());
+					}
+					
+					else
+						
+					if(action instanceof BoardResyncRequestAction) {
+						BoardResyncAction a = session.getSyncAction();
+						sendAction(a);
 					}
 					
 				} catch (SocketException se) {

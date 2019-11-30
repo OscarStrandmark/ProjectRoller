@@ -2,6 +2,11 @@ package shared;
 
 import java.io.Serializable;
 
+/**
+ * Class that represents a value stored in an icon.
+ * 
+ * @author Oscar Strandmark
+ */
 public class Value implements Serializable {
 
 	private static final long serialVersionUID = -3343975199321679760L;

@@ -1,102 +1,124 @@
 package client.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import client.BoardModel;
 import client.Controller;
+import client.Controller.STATES;
+import server.actions.BoardBackgroundChangeAction;
+import server.actions.BoardResyncRequestAction;
 import server.actions.QuitAction;
 import server.actions.SessionLeaveAction;
 import server.actions.UsernameChangeAction;
-import shared.BoardModel;
+
+ /** Class used for building the window that is used in session. This window contains the board-view and different tool-tabs.
+ * 
+ * @author Oscar Strandmark
+ * @author Andreas Jönsson
+ * @author Haris Obradovac
+ * @author Patrik Skuza
+ */
 
 public class MainWindow extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	private Controller controller;
-	private BoardModel model;
+	private BoardModel model; //Model of the board.
 	
 	//Components used in main window.
-	private JPanel boardPanel;
-	private JTabbedPane sidePanel;
-	private JSplitPane contentPane;
+	/*JLayeredPane backgroundLP = new JLayeredPane();*/
+	private JPanel boardPanel; //The jPanel of the board.
+	private JTabbedPane sidePanel; //Sidepanels.
+	private JSplitPane contentPane; //Split the board panel from the side tabs.
 
 	//Components for chat-panel
-	private JTextArea chatJTA;
-	private JTextField chatBox;
-	private JButton chatBtnSend;
+	private JTextArea chatJTA; //JTextArea for chat window.
+	private JTextField chatBox; //Box for chat-messages.
+	private JButton chatBtnSend; //Button for sending messages.
 
 	//Components for import-panel
-	private JTextField importJTFFilePath;
+	private JTextField importJTFFilePath; //Displays file path.
 
-	private JFileChooser importJFCBackground;
+	private JFileChooser importJFCBackground; //FileChooser for background.
 
+	//Buttons for all import-actions.
 	private JButton importBtnBackgroundFileChooser;
 	private JButton importBtnBackgoundImport;
 	private JButton importBtnIconFileChooser;
 	private JButton importBtnIconImport;
+	
+	//Preview for icons.
+	private JLabel lblIconPreviewer;
+	
+	//Preview for backgrounds.
+	private JLabel lblBackgroundPreviewer;
+	
+	//Slider for icon-size.
+	private JSlider sldrIconSize;
 
-	private JTextField scaleIcon;
-
+	//The image path for icons.
 	private String imagePath;
 
-	private JLabel backgroundIcon;
-
+	//Width and Height for icons.
 	private int iconWidth = 150;
 	private int iconHeight = 150;
 
-	//Components for settings-panel
+	//Components for draw-panel
+	 private int[] startPointMouse;
+	 private int[] endPointMouse;
+	 private int width;
+	 private Color color;
+	 private ArrayList<int[][]> lines;
+	 private ArrayList<Line> lineInfo;
+	 private Graphics2D g2d;
+	 private JButton drawBtnStartDraw;
+	 private JButton drawBtnClear;
+	 private JButton drawBtnThinLine;
+	 private JButton drawBtnAverageLine;
+	 private JButton drawBtnThickLine;
+	 private JButton drawBtnBlackLine;
+	 private JButton drawBtnWhiteLine;
+	 private JButton drawBtnRedLine;
+	 private JButton drawBtnBlueLine;
+	 private JButton drawBtnYellowLine;
+	 private JButton drawBtnGreenLine;
 
+	 //Components for painting-panel
+	 private DrawingPane paintingPanel;
+
+	//Components for settings-panel
 	private JTextField settingsJTFUsername;
 
 	private JButton settingsBtnSave;
 	private JButton settingsBtnLeave;
+	private JButton settingsBtnResync;
+	
+	//Components for help-panel
+	private JTextArea helpJTA;
+	
 
+	/**
+	 * Construtor for this class
+	 * @param controller Reference to the Controller-class.
+	 * @param model Reference to the BoardModel.
+	 */
 	public MainWindow(Controller controller, BoardModel model) {
 		this.controller = controller;
 		this.model = model;
+		lines = new ArrayList<>(25);
+		lineInfo = new ArrayList<Line>();
+		this.width = width;
+		this.color = color;
 		init();
 		repaint();
 		setVisible(true);
@@ -104,6 +126,9 @@ public class MainWindow extends JFrame {
 		model.setBoard(boardPanel);
 	}
 
+	/**
+	 * Initialize the window and create bounds for different sections.
+	 */
 	private void init() {
 		setTitle("Project Roller");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -136,6 +161,7 @@ public class MainWindow extends JFrame {
 		scrollPane1.setViewportView(chatJTA);
 		String welcomeMsg = "";
 		welcomeMsg += "Welcome to ProjectRoller!" + "\n";
+		welcomeMsg += "If you get de-synced use the resync-button in the settings" + "\n";
 		welcomeMsg += "This chat-tab can be used to communicate with other players or excecute commands." + "\n";
 		welcomeMsg += "Commands :" + "\n";
 		welcomeMsg += "/roll xdy + n - Used to roll a dice." + "\n";
@@ -143,7 +169,9 @@ public class MainWindow extends JFrame {
 		welcomeMsg += "/rp [name] [text] - Used to write a message as a character with the specified name." + "\n";
 		welcomeMsg += "/w [name] [text] - Used to write a private message to another player."+ "\n";
 		welcomeMsg += "-------------------------------------------" + "\n";
-		welcomeMsg += "Dont forget to change your username before you start!" + "\n";
+		welcomeMsg += "Don't forget to change your username before you start!" + "\n";
+		welcomeMsg += "-------------------------------------------" + "\n";
+		welcomeMsg += "For more information please go to the Help tab." + "\n";
 		welcomeMsg += "-------------------------------------------" + "\n";
 		chatJTA.setText(welcomeMsg);
 		chatPanel.add(scrollPane1, BorderLayout.CENTER);
@@ -164,60 +192,102 @@ public class MainWindow extends JFrame {
 		notePanel.setViewportView(noteJTA);
 
 		// ---------- IMPORT ----------
-		JPanel importPanel = new JPanel(new GridLayout(3, 1));
+		JPanel importPanel = new JPanel(new GridLayout(2, 1));
 
 		JPanel importIconPane = new JPanel();
-		importIconPane.setLayout(new GridLayout(2,2));
+		importIconPane.setLayout(new GridLayout(2,1));
 
-		JPanel importBGPane = new JPanel(new GridLayout(4,1)); //Panel for importing a background.
+		JPanel infoBGPane = new JPanel();
+		infoBGPane.setLayout(new BoxLayout(infoBGPane, BoxLayout.Y_AXIS));
+		JPanel buttonsBGPane = new JPanel(new GridLayout(1,2));
+		JPanel importBGPane = new JPanel(new GridLayout(2,1)); //Panel for importing a background.
 		importBGPane.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); //Creates a border for the panel
-
+		JPanel importBGControllPane = new JPanel(new GridLayout(2,1));
+		this.lblBackgroundPreviewer = new JLabel();
+		this.lblBackgroundPreviewer.setSize(importBGControllPane.getWidth(), importBGControllPane.getHeight()/3);
+		
 		importJTFFilePath = new JTextField();
 		importJTFFilePath.setEditable(false);
 		importJTFFilePath.setText("File path ");
 
 		importJFCBackground = new JFileChooser();
-		importBtnBackgoundImport = new JButton("Import");
-		importBtnBackgroundFileChooser = new JButton("Pick file");
+		importBtnBackgoundImport = new JButton("Load Background");
+		importBtnBackgroundFileChooser = new JButton("Choose Background");
 
 
 		importJFCBackground.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		importJFCBackground.setFileFilter(new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes())); //Accept all image files supported on the system the program is ran on.
 
-		importBGPane.add(new JLabel("Import an image as a background", SwingConstants.CENTER));
-		importBGPane.add(importBtnBackgroundFileChooser);
-		importBGPane.add(importJTFFilePath);
-		importBGPane.add(importBtnBackgoundImport);
-
-		JPanel importSaveLoadSessionPane = new JPanel(); //For future implementation of importing saved session data.
+		infoBGPane.add(new JLabel("Background", SwingConstants.CENTER));
+		infoBGPane.add(new JLabel("Import an image as a background", SwingConstants.CENTER));
+		//infoBGPane.add(importJTFFilePath);
+		
+		//importBGPane.add(infoBGPane);
+		buttonsBGPane.add(importBtnBackgroundFileChooser);
+		buttonsBGPane.add(importBtnBackgoundImport);
+		//importBGPane.add(buttonsBGPane);
+		
+		importBGControllPane.add(infoBGPane);
+		importBGControllPane.add(buttonsBGPane);
+		importBGPane.add(importBGControllPane);
+		importBGPane.add(this.lblBackgroundPreviewer);
+		this.lblBackgroundPreviewer.setBounds(this.getX(), this.getY(), importBGControllPane.getWidth(), importBGControllPane.getHeight());
 
 		importPanel.add(importIconPane);
 		importPanel.add(importBGPane);
-		importPanel.add(importSaveLoadSessionPane);
+
 
 		// ------- IMPORT ICON --------
 
-		scaleIcon = new JTextField();
-		JLabel setSizeIcon = new JLabel("Set size for Icon (1-15):", SwingConstants.CENTER);
+		JPanel infoPane = new JPanel();
+		infoPane.setLayout(new BoxLayout(infoPane, BoxLayout.Y_AXIS));
+		JLabel setSizeIcon = new JLabel("Set pixel size for icon", SwingConstants.CENTER);
+		JPanel buttonsPanel = new JPanel(new GridLayout(1,2));
+		JPanel sizePanel = new JPanel();
+		sizePanel.setLayout(new BoxLayout( sizePanel, BoxLayout.Y_AXIS));
+		JPanel importIconControllPane = new JPanel(new GridLayout(3, 1));
 
+	
+		this.lblIconPreviewer = new JLabel();
+		
+		this.sldrIconSize = new JSlider();
+		this.sldrIconSize.setMajorTickSpacing(40);
+		this.sldrIconSize.setMinorTickSpacing(10);
+		this.sldrIconSize.setPaintTicks(true);
+		this.sldrIconSize.setSnapToTicks(true);
+		this.sldrIconSize.setMinimum(20);
+		this.sldrIconSize.setMaximum(300);
+		this.sldrIconSize.setPaintLabels(true);
+		
 		Border borderImport = BorderFactory.createLineBorder(Color.black);
 
-		importBtnIconFileChooser = new JButton("Choose Image");
-		importBtnIconImport = new JButton("Import Icon");
+		importBtnIconFileChooser = new JButton("Choose Icon");
+		importBtnIconImport = new JButton("Load Icon");
 
-		importIconPane.add(importBtnIconFileChooser);
-		importIconPane.add(importBtnIconImport);
-		importIconPane.add(setSizeIcon);
-		importIconPane.add(scaleIcon);
+		infoPane.add(new JLabel("Icon", SwingConstants.CENTER));
+		infoPane.add(new JLabel("Import an image as a icon", SwingConstants.CENTER));
+		importIconControllPane.add(infoPane);
+		
+		sizePanel.add(setSizeIcon);
+		sizePanel.add(this.sldrIconSize);	
+		importIconControllPane.add(sizePanel);
+		
+		buttonsPanel.add(importBtnIconFileChooser);
+		buttonsPanel.add(importBtnIconImport);
+		importIconControllPane.add(buttonsPanel);
+		
+		importIconPane.add(importIconControllPane);
+		importIconPane.add(lblIconPreviewer);
 		importIconPane.setBorder(borderImport);
 
 		// ---------- SETTINGS ----------
 		JPanel settingsPanel = new JPanel();
-		JPanel settingsGrid = new JPanel(new GridLayout(1, 2)); //Grid is always 2 wide and 
+		JPanel settingsGrid = new JPanel(new GridLayout(1, 2)); //Grid is always 2 wide. 
 		
 		settingsBtnSave = new JButton("Save settings");
 		settingsBtnLeave = new JButton("LEAVE SESSION");
-
+		settingsBtnResync = new JButton("Resync");
+		
 		settingsJTFUsername = new JTextField();
 		settingsJTFUsername.setColumns(15);
 		
@@ -227,6 +297,184 @@ public class MainWindow extends JFrame {
 		settingsPanel.add(settingsGrid);
 		settingsPanel.add(settingsBtnSave);
 		settingsPanel.add(settingsBtnLeave);
+		settingsPanel.add(settingsBtnResync);
+
+		// ---------- DRAW ----------
+		JPanel drawPanel = new JPanel(new GridLayout(3, 1));
+
+		JPanel startAndClearPanel = new JPanel();
+		startAndClearPanel.setLayout(new BoxLayout(startAndClearPanel, BoxLayout.Y_AXIS));
+		startAndClearPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); //Creates a border for the panel
+		JPanel startAndClearGrid = new JPanel(new GridLayout(1, 2));
+		JPanel startAndClearControlGrid = new JPanel(new GridLayout(2, 1));
+
+		JPanel lineWidthPanel = new JPanel();
+		lineWidthPanel.setLayout(new BoxLayout(lineWidthPanel, BoxLayout.Y_AXIS));
+		lineWidthPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); //Creates a border for the panel
+		JPanel lineWidthGrid = new JPanel(new GridLayout(3, 1));
+		JPanel lineWidthControlGrid = new JPanel(new GridLayout(2, 1));
+
+		JPanel lineColorPanel = new JPanel();
+		lineColorPanel.setLayout(new BoxLayout(lineColorPanel, BoxLayout.Y_AXIS));
+		lineColorPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1)); //Creates a border for the panel
+		JPanel lineColorGrid = new JPanel(new GridLayout(3, 2));
+		JPanel lineColorControlGrid = new JPanel(new GridLayout(2, 1));
+
+		startAndClearPanel.add(new JLabel("Start and clear your drawing", SwingConstants.CENTER));
+		lineWidthPanel.add(new JLabel("Choose the width of your brush", SwingConstants.CENTER));
+		lineColorPanel.add(new JLabel("Choose the color of your brush", SwingConstants.CENTER));
+
+
+		drawBtnStartDraw = new JButton("Start Drawing");
+		drawBtnClear = new JButton("Clear");
+		drawBtnThinLine = new JButton("Thin Line");
+		drawBtnAverageLine = new JButton("Average Line");
+		drawBtnThickLine = new JButton("Thick Line");
+		drawBtnBlackLine = new JButton("Black");
+		drawBtnWhiteLine = new JButton("White");
+		drawBtnGreenLine = new JButton("Green");
+		drawBtnBlueLine = new JButton("Blue");
+		drawBtnRedLine = new JButton("Red");
+		drawBtnYellowLine = new JButton("Yellow");
+
+		startAndClearGrid.add(drawBtnStartDraw);
+		startAndClearGrid.add(drawBtnClear);
+
+		lineWidthGrid.add(drawBtnThinLine);
+		lineWidthGrid.add(drawBtnAverageLine);
+		lineWidthGrid.add(drawBtnThickLine);
+
+		lineColorGrid.add(drawBtnBlackLine);
+		lineColorGrid.add(drawBtnWhiteLine);
+		lineColorGrid.add(drawBtnGreenLine);
+		lineColorGrid.add(drawBtnBlueLine);
+		lineColorGrid.add(drawBtnRedLine);
+		lineColorGrid.add(drawBtnYellowLine);
+
+		startAndClearControlGrid.add(startAndClearPanel);
+		startAndClearControlGrid.add(startAndClearGrid);
+		lineWidthControlGrid.add(lineWidthPanel);
+		lineWidthControlGrid.add(lineWidthGrid);
+		lineColorControlGrid.add(lineColorPanel);
+		lineColorControlGrid.add(lineColorGrid);
+
+		drawPanel.add(startAndClearControlGrid);
+		drawPanel.add(lineWidthControlGrid);
+		drawPanel.add(lineColorControlGrid);
+
+		// ---------- Painting ----------
+
+
+		// ---------- HELP ----------
+		JPanel helpPanel = new JPanel(new BorderLayout());
+
+		JScrollPane scrollPane12 = new JScrollPane();
+		helpJTA = new JTextArea();
+		helpJTA.setEditable(false);
+		scrollPane12.setViewportView(helpJTA);
+		String instructionMsg = "";
+		instructionMsg += "Everything you need to know!" + "\n";
+		
+		instructionMsg += "\n" + "When using the chat:" + "\n";
+		
+		instructionMsg += "\n" + "* You can send messages by writing them in the text field" + "\n";
+		instructionMsg += "  and then send them by pushing the SEND button." + "\n";
+		
+		instructionMsg += "\n" + "* Sending messages by pressing the return button on the" + "\n";
+		instructionMsg += "  keyboard will not result in your message being sent." + "\n";
+		
+		instructionMsg += "\n" + "* /roll xdy + n - Is used to roll a dice:" + "\n";
+		instructionMsg += "  x = number of dices" + "\n";
+		instructionMsg += "  d = dice" + "\n";
+		instructionMsg += "  y = amount of sides per dice" + "\n";
+		instructionMsg += "  n = an amount that will add to the result of the dice throw" + "\n";
+		instructionMsg += "  If you don't want to add a value to the result of" + "\n";
+		instructionMsg += "  your dice throw you need to write 0 instead of n" + "\n";
+		
+		instructionMsg += "\n" + "* /dmroll xdy + n - Is used to roll a hidden dice:" + "\n";
+		instructionMsg += "  x = number of dices" + "\n";
+		instructionMsg += "  d = dice" + "\n";
+		instructionMsg += "  y = amount of sides per dice" + "\n";
+		instructionMsg += "  n = an amount that will add to the result of the dice throw" + "\n";
+		
+		instructionMsg += "\n" + "* /rp [name] [text] - Is used for writing message with " + "\n";
+		instructionMsg += "  a specific name. This is useful when you want to write " + "\n";
+		instructionMsg += "  something as your role playing character. You shouldn't " + "\n";
+		instructionMsg += "  keep the square brackets when writing this command." + "\n";
+
+		instructionMsg += "\n" + "* /w [name] [text] - Is used for writing in a private message. "+ "\n";
+		instructionMsg += "  You shouldn't keep the square brackets" + "\n";
+		instructionMsg += "  when writing this command." + "\n";
+
+		
+		instructionMsg += "\n" + "\n" + "When using notes:" + "\n";
+		instructionMsg += "\n" + "* Notes are used for making any notations that you think will " + "\n";
+		instructionMsg += "   be useful in the future or for writing down " + "\n";
+		instructionMsg += "   anything you want to remember. It is basically a note pad." + "\n";
+		
+		
+		instructionMsg += "\n" + "\n" + "When importing/creating:" + "\n";
+		instructionMsg += "\n" + "* When importing a background you need to press the " + "\n";
+		instructionMsg += "   Choose Background button and locate a picture of your " + "\n";
+		instructionMsg += "   choice. You can see the picture in the preview section " + "\n";
+		instructionMsg += "   below the buttons." + "\n";
+		instructionMsg += "      Secondly you need to press the Load Background " + "\n";
+		instructionMsg += "   button to put the picture as a background." + "\n";
+		
+		instructionMsg += "\n" + "* When importing an icon you need to press the " + "\n";
+		instructionMsg += "   Choose Icon button and locate a picture of your choice. " + "\n";
+		instructionMsg += "   You can see the picture of your choice in the preview " + "\n";
+		instructionMsg += "   section below the buttons." + "\n";
+		instructionMsg += "      Secondly you can scale the picture to decide how " + "\n";
+		instructionMsg += "   big or small it should be. You are not able to scale " + "\n";
+		instructionMsg += "   the picture after you have loaded it into the field." + "\n";
+		instructionMsg += "      Finally you need to press the " + "\n";
+		instructionMsg += "   Load Image button to put the picture on the field." + "\n";
+		
+		
+		instructionMsg += "\n" + "\n" + "When using settings:" + "\n";
+		instructionMsg += "\n" + "* When changing your username you need to write " + "\n";
+		instructionMsg += "   your new username in the text field and then press the " + "\n";
+		instructionMsg += "   Save settings button." + "\n";
+		
+		instructionMsg += "\n" + "* If you realize that the program isn't " + "\n";
+		instructionMsg += "   synchronized correctly you can press the Resync " + "\n";
+		instructionMsg += "   button to update the program according to" + "\n";
+		instructionMsg += "   the current board and chat." + "\n";
+		
+		instructionMsg += "\n" + "* If you want to leave a session you can " + "\n";
+		instructionMsg += "   either press the LEAVE SESSION button or " + "\n";
+		instructionMsg += "   just close down the program. " + "\n";
+		
+		instructionMsg += "\n" + "\n" + "interacting with the field:" + "\n";
+		instructionMsg += "\n" + "* You can move your icons freely across the " + "\n";
+		instructionMsg += "   field but need to keep in mind that the icon that " + "\n";
+		instructionMsg += "   was first loaded will always be in front of the " + "\n";
+		instructionMsg += "   other icons. This will be the same for all icons as " + "\n";
+		instructionMsg += "   in the first being in front of the second, " + "\n";
+		instructionMsg += "   the second being in front of the third and so on." + "\n";
+		
+		instructionMsg += "\n" + "* You can remove icons by pressing  " + "\n";
+		instructionMsg += "   Delete Icon button which appears by" + "\n";
+		instructionMsg += "   right clicking on the icon." + "\n";
+
+		
+		instructionMsg += "\n" + "* You can create, edit, save and delete values " + "\n";
+		instructionMsg += "   for each character by right clicking on an icon." + "\n";
+		instructionMsg += "   To create a value for an icon you need to press the " + "\n";
+		instructionMsg += "   Open Value-menu and then press Add new value." + "\n";
+		instructionMsg += "   Then you need to edit the name of the value. " + "\n";
+		instructionMsg += "   Important to remember is that you need to left " + "\n";
+		instructionMsg += "   click on the other text box before pressing the " + "\n";
+		instructionMsg += "   Save & Close button. This should be done after " + "\n";
+		instructionMsg += "   filling out the value. You can remove a value by " + "\n";
+		instructionMsg += "   selecting it, then pressing the Remove selected value " + "\n";
+		instructionMsg += "   and then finally pressing the Save & Close button." + "\n";
+
+
+		helpJTA.setText(instructionMsg);
+		helpPanel.add(scrollPane12, BorderLayout.CENTER);
+		
 		/*
 		 * ==============================================================
 		 * ======================MAIN PANELS=============================
@@ -236,12 +484,16 @@ public class MainWindow extends JFrame {
 		contentPane = new JSplitPane();
 		boardPanel = new JPanel();
 		boardPanel.setLayout(null);
+		paintingPanel = new DrawingPane();
 		sidePanel = new JTabbedPane();
 
 		sidePanel.addTab("Chat", chatPanel);
 		sidePanel.addTab("Notes", notePanel);
 		sidePanel.addTab("Import / Create", importPanel);
 		sidePanel.addTab("Settings", settingsPanel);
+		sidePanel.addTab("Draw", drawPanel);
+		sidePanel.addTab("Painting", paintingPanel);
+		sidePanel.addTab("Help", helpPanel);
 		sidePanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		sidePanel.setMinimumSize(new Dimension(800, 800));
 
@@ -256,7 +508,7 @@ public class MainWindow extends JFrame {
 		 * ==============================================================
 		 */
 
-		ButtonListener listener = new ButtonListener();
+		ButtonListener listener = new ButtonListener(); //Listener for buttons
 
 		importBtnBackgroundFileChooser.addActionListener(listener);
 		importBtnBackgoundImport.addActionListener(listener);
@@ -266,12 +518,106 @@ public class MainWindow extends JFrame {
 		
 		settingsBtnSave.addActionListener(listener);
 		settingsBtnLeave.addActionListener(listener);
-		
+		settingsBtnResync.addActionListener(listener);
+
+		drawBtnStartDraw.addActionListener(listener);
+		drawBtnThinLine.addActionListener(listener);
+		drawBtnAverageLine.addActionListener(listener);
+		drawBtnThickLine.addActionListener(listener);
+		drawBtnBlackLine.addActionListener(listener);
+		drawBtnWhiteLine.addActionListener(listener);
+		drawBtnGreenLine.addActionListener(listener);
+		drawBtnBlueLine.addActionListener(listener);
+		drawBtnRedLine.addActionListener(listener);
+		drawBtnYellowLine.addActionListener(listener);
+		drawBtnClear.addActionListener(listener);
+
 		this.addWindowListener(new wListener());
 	}
 
+
+	 /**
+	  * Inner class to enable drawing
+	  */
+	private class DrawingPane extends JPanel {
+		public boolean isDrawing = false;
+
+		 /**
+		  * Constructor which enables the mouse listener and mouse motion listener
+		  * by using a mouse adapter to handle only the necessary methods
+		  */
+		private DrawingPane() {
+			MouseAdapter handler = new MouseAdapter() {
+				public void mousePressed(MouseEvent e) {
+					startPointMouse = new int[]{e.getX(), e.getY()};
+					endPointMouse = startPointMouse;
+					paintingPanel.repaint();
+				}
+
+				public void mouseDragged(MouseEvent e) {
+					endPointMouse = new int[]{e.getX(), e.getY()};
+					paintingPanel.repaint();
+				}
+
+				public void mouseReleased(MouseEvent e) {
+					if (startPointMouse != null && endPointMouse != null &&
+							startPointMouse.length == 2 && endPointMouse.length == 2) {
+						lines.add(new int[][]{startPointMouse, endPointMouse});
+					}
+					startPointMouse = null;
+					endPointMouse = null;
+					paintingPanel.repaint();
+				}
+			};
+
+			addMouseListener(handler);
+			addMouseMotionListener(handler);
+		}
+
+		 /**
+		  * Method to enable or disable the drawing process
+		  */
+		public void startDrawing() {
+			if (isDrawing == false) {
+				System.out.println("sann");
+				isDrawing = true;
+
+			} else {
+				System.out.println("falsk");
+				isDrawing = false;
+			}
+		}
+
+		 /**
+		  * Method to paint based on where the user places and moves the mouse
+		  * @param g makes it a graphics object
+		  */
+		@Override
+		protected void paintComponent(Graphics g) {
+			if (isDrawing == true) {
+				super.paintComponent(g);
+
+				g2d = (Graphics2D) g.create();
+				if (startPointMouse != null && endPointMouse != null &&
+						startPointMouse.length == 2 && endPointMouse.length == 2) {
+					lineInfo.add(new Line(startPointMouse, endPointMouse, width, color));
+				}
+
+				for (Line line : lineInfo) {
+					g2d.setColor(line.getColor());
+					g2d.setStroke(new BasicStroke(line.getWidth()));
+					g2d.drawLine(line.getStartPoint()[0], line.getStartPoint()[1], line.getEndPoint()[0], line.getEndPoint()[1]);
+				}
+				g2d.dispose();
+			}
+		}
+	}
+
+	/**
+	 * Method for appending chat line to the chat JTextArea.
+	 * @param line The line to be appended.
+	 */
 	public void appendChatLine(String line) {
-		System.out.println("append");
 		String current = chatJTA.getText();
 		chatJTA.setText(current + line + "\n");
 	}
@@ -292,6 +638,11 @@ public class MainWindow extends JFrame {
 		return resizedImg;
 	}
 
+	/**
+	 * Inner-class for the ButtonListener which handles all button-functionalities.
+	 * @author Patrik Skuza, Oscar Strandmark, Andreas JÃ¶nsson, Haris Obradovac
+	 *
+	 */
 	private class ButtonListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
@@ -307,20 +658,21 @@ public class MainWindow extends JFrame {
 				File file = importJFCBackground.getSelectedFile();
 
 				importJTFFilePath.setText(file.getPath());
+			
+				ImageIcon image = new ImageIcon(importJTFFilePath.getText());
+				
+				lblBackgroundPreviewer.setIcon(new ImageIcon(image.getImage().getScaledInstance(lblIconPreviewer.getWidth(), lblIconPreviewer.getHeight(), Image.SCALE_DEFAULT)));
+				lblBackgroundPreviewer.setBounds(0, 0, image.getIconWidth(), image.getIconHeight());
+				lblBackgroundPreviewer.repaint();
+				
 			}
-
 			//Import selected file as a background
 			if(e.getSource() == importBtnBackgoundImport) {
 				ImageIcon background = new ImageIcon(importJTFFilePath.getText());
-				Image backgroundImage = background.getImage();
-				Image newBackgroundImage = getScaledImage(backgroundImage, boardPanel.getWidth(), boardPanel.getHeight()); //mer parametrar i metoden
+				Image newBackgroundImage = getScaledImage(background.getImage(), boardPanel.getWidth(), boardPanel.getHeight()); //mer parametrar i metoden
 				ImageIcon finalBackground = new ImageIcon(newBackgroundImage);
-				backgroundIcon = new JLabel(finalBackground);
-				backgroundIcon.setBounds(0,0,boardPanel.getWidth(), boardPanel.getHeight());
-				boardPanel.add(backgroundIcon);
-				model.setBackground(backgroundIcon);
-				boardPanel.repaint();
-			} 
+				controller.pushActionToServer(new BoardBackgroundChangeAction(controller.username, finalBackground));
+			}
 			
 			//Open file picker for importing new icons.
 			if(e.getSource() == importBtnIconFileChooser) {
@@ -337,39 +689,28 @@ public class MainWindow extends JFrame {
 				if(fileOk == JFileChooser.APPROVE_OPTION) {
 					imagePath = fileChooser.getSelectedFile().getPath();
 				}
+				
+				ImageIcon image = new ImageIcon(imagePath);
+				lblIconPreviewer.setIcon(new ImageIcon(image.getImage().getScaledInstance(lblIconPreviewer.getWidth(), lblIconPreviewer.getHeight(), Image.SCALE_DEFAULT)));
+				lblIconPreviewer.repaint();
 			}
 			
 			//Import the chosen file for icon import. 
 			if(e.getSource() == importBtnIconImport) {
 				
 				boolean scaled = false;
-				
-				if(scaleIcon.getText().length() != 0) {
-					int scale = Integer.parseInt(scaleIcon.getText());
+			
+						int scale = sldrIconSize.getValue();
+									
+							iconWidth = scale;
+							iconHeight = scale;
+							scaled = true;
 					
-					if( scale < 0 || scale > 15 ) {
-						JOptionPane.showMessageDialog(null, "Enter a valid number between 0-15, or leave the field empty for a standard size of 150 by 150 ");
-					} else if(scale >= 1 && scale <= 15 ) {
-						iconWidth = scale * 20;
-						iconHeight = scale * 20;
-						scaled = true;
-					}
-				} else {
-					JOptionPane.showMessageDialog(null, "Enter a valid number between 0-15, or leave the field empty for a standard size of 150 by 150 ");
-				}
-				
 				if(scaled) {
 					
 					Image image = new ImageIcon(imagePath).getImage();
 					Image newIconImage = getScaledImage(image, iconWidth, iconHeight);
-					
-					JLabel icon = new JLabel(new ImageIcon(newIconImage));
-					icon.setBounds(0,0,iconWidth,iconHeight);
-					boardPanel.add(icon);
-					model.addIcon(icon);
-					boardPanel.repaint();
-					icon.addMouseListener(new IconMovement());
-					icon.addMouseMotionListener(new IconMovement());
+					model.sendIconNew(new ImageIcon(newIconImage));
 				}
 			}
 			
@@ -386,10 +727,77 @@ public class MainWindow extends JFrame {
 			if(e.getSource() == settingsBtnLeave) {
 				controller.pushActionToServer(new SessionLeaveAction(controller.username));
 				controller.sessionLeft();
+				controller.state = STATES.LOBBY;
+			}
+			
+			//Resync request
+			if(e.getSource() == settingsBtnResync) {
+				controller.pushActionToServer(new BoardResyncRequestAction(controller.username));
+			}
+
+			//Starts or ends the drawing process
+			if (e.getSource() == drawBtnStartDraw) {
+				paintingPanel.startDrawing();
+			}
+
+			//Changes the width of the brush to thin
+			if (e.getSource() == drawBtnThinLine) {
+				width = 1;
+			}
+
+			//Changes the width of the brush to average
+			if (e.getSource() == drawBtnAverageLine) {
+				width = 10;
+			}
+
+			//Changes the width of the brush to thick
+			if (e.getSource() == drawBtnThickLine) {
+				width = 20;
+			}
+
+			//Changes the color of the brush to black
+			if (e.getSource() == drawBtnBlackLine) {
+				color = Color.BLACK;
+			}
+
+			//Changes the color of the brush to white
+			if (e.getSource() == drawBtnWhiteLine) {
+				color = Color.WHITE;
+			}
+
+			//Changes the color of the brush to green
+			if (e.getSource() == drawBtnGreenLine) {
+				color = Color.GREEN;
+			}
+
+			//Changes the color of the brush to blue
+			if (e.getSource() == drawBtnBlueLine) {
+				color = Color.BLUE;
+			}
+
+			//Changes the color of the brush to red
+			if (e.getSource() == drawBtnRedLine) {
+				color = Color.RED;
+			}
+
+			//Changes the color of the brush to yellow
+			if (e.getSource() == drawBtnYellowLine) {
+				color = Color.YELLOW;
+			}
+
+			//Clears all drawn lines
+			if (e.getSource() == drawBtnClear) {
+				lineInfo.clear();
+				repaint();
 			}
 		}
 	}
 	
+	/**
+	 * Inner-class for quit-action of the program.
+	 * @author Oscar Strandmark
+	 *
+	 */
 	private class wListener implements WindowListener {
 		
 		//Called when user exits program via the red X.
@@ -403,71 +811,5 @@ public class MainWindow extends JFrame {
 		public void windowActivated(WindowEvent e) {}
 		public void windowDeactivated(WindowEvent e) {}
 		public void windowOpened(WindowEvent e) {}
-	}
-
-	private class IconMovement implements MouseListener, MouseMotionListener {
-		private int x,y;
-
-		public void mouseDragged(MouseEvent event) {
-			event.getComponent().setLocation((event.getX() + event.getComponent().getX()-x), (event.getY() + event.getComponent().getY()-y));
-		}
-
-		public void mousePressed(MouseEvent event) {
-			x = event.getX();
-			y = event.getY();
-		}
-
-		public void mouseReleased(MouseEvent event) {
-			if(event.getButton() == 3) {
-				PopAltMenu popMenu = new PopAltMenu(event.getComponent());
-				popMenu.show(event.getComponent(), event.getX(), event.getY());
-			}
-		}
-		
-		public void mouseMoved(MouseEvent event) {}
-		public void mouseClicked(MouseEvent event) {}
-		public void mouseEntered(MouseEvent e) {}
-		public void mouseExited(MouseEvent e) {}
-	}
-
-	private class PopAltMenu extends JPopupMenu {
-		private static final long serialVersionUID = 1L;
-
-		public PopAltMenu(Component c) {
-			JMenuItem altMenuValue = new JMenuItem(new OpenValue(c));
-			add(altMenuValue);
-			
-			JMenuItem altMenuDelete = new JMenuItem(new DeleteIcon(c));
-			add(altMenuDelete);
-
-		}
-	}
-
-	private class OpenValue extends AbstractAction {
-
-		private Component c;
-
-		public OpenValue(Component c) {
-			super("Open Value-menu");
-			this.c = c;
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			new ValueWindow(model, (JLabel)c);
-		}
-	}
-	
-	private class DeleteIcon extends AbstractAction {
-
-		private Component c;
-		
-		public DeleteIcon(Component c) {
-			super("Delete Icon");
-			this.c = c;
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			model.removeIcon((JLabel)c);
-		}
 	}
 }

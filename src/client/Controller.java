@@ -12,43 +12,61 @@ import server.actions.ChatRPAction;
 import server.actions.ChatWhisperAction;
 import server.actions.DiceRollAction;
 import server.actions.DiceRollHiddenAction;
-import shared.BoardModel;
 import shared.Dice;
 import shared.Diceroll;
 
+/**
+ * 
+ * Class that handles the communication between ui and data structures. This class is the "spine" of the program.
+ * 
+ * @author Oscar Strandmark
+ */
 public class Controller {
 
+	public enum STATES {LOBBY, GAME};
+	public STATES state;
+	public String username = "NewClient";
 
 	private LobbyWindow lobbyWindow;
 	private Connection connection;
 	private MainWindow mainWindow;
-	public String username = "NewClient";
 	private BoardModel boardModel;
 
 	public Controller() {
-		boardModel = new BoardModel(this);
 		connection = new Connection(this);
 		lobbyWindow = new LobbyWindow(this);
-		mainWindow = new MainWindow(this,boardModel);
-		mainWindow.setVisible(false);
+		state = STATES.LOBBY;
 	}
 
 	public void pushActionToServer(Action act) {
 		connection.send(act);
 	}
 
+	/**
+	 * Updates the session list
+	 * @param sessionList
+	 */
 	public void updateSessionList(ArrayList<String> sessionList) {
 		lobbyWindow.updateSessionList(sessionList);
 	}
 	
+	/**
+	 * Brings the main window which is the board model forward when the session is entered
+	 */
 	public void sessionEntered() {
+		state = STATES.GAME;
 		lobbyWindow.setVisible(false);
-		mainWindow.setVisible(true);
+		boardModel = new BoardModel(this);
+		mainWindow = new MainWindow(this,boardModel);
 	}
 	
+	/**
+	 * Removes the main window and leaves the lobby window when the session is left
+	 */
 	public void sessionLeft() {
+		state = STATES.LOBBY;
 		lobbyWindow.setVisible(true);
-		mainWindow.setVisible(false);
+		mainWindow.dispose();
 	}
 
 	public void setUsername(String username) {
@@ -61,10 +79,10 @@ public class Controller {
 	}
 	
 	public void disposeAll() {
-		if(lobbyWindow != null) {
+		if (lobbyWindow != null) {
 			lobbyWindow.dispose();
 		}
-		if(mainWindow != null) {
+		if (mainWindow != null) {
 			mainWindow.dispose();
 		}
 	}
@@ -78,24 +96,21 @@ public class Controller {
 	}
 	
 	/**
-	 * Method that handles all text written in the chat box and sends the appropiate action to the server. 
+	 * Method that handles all text written in the chat box and sends the appropriate action to the server. 
 	 * 
 	 * @param s
 	 */
 	public void handleMessage(String s) {
 		String[] arr = s.split(" ");
 		
-		if(arr[0].equals("/roll")) { //Roll command
+		if (arr[0].equals("/roll")) { //Roll command
 			
 			try {
-				for(String r : arr) {
-					System.out.print(s);
-				}
-				System.out.println();
+								
 				Diceroll roll = new Diceroll(Integer.parseInt(arr[arr.length-1]));
 				
 				for (int i = 0; i < arr.length; i++) {
-					if(arr[i].contains("d")) {
+					if (arr[i].contains("d")) {
 						String[] diceString = arr[i].split("d"); //index 0 = amount of dice, index 1 = dice sides.
 						for (int j = 0; j < Integer.parseInt(diceString[0]); j++) {
 							roll.addDice(new Dice(Integer.parseInt(diceString[1])));
@@ -111,16 +126,13 @@ public class Controller {
 		
 		else 
 			
-		if(arr[0].equals("/dmroll")) {
+		if (arr[0].equals("/dmroll")) { //Dungeon master roll command, a private dice roll
 			try {
-				for(String r : arr) {
-					System.out.print(s);
-				}
-				System.out.println();
+
 				Diceroll roll = new Diceroll(Integer.parseInt(arr[arr.length-1]));
 				
 				for (int i = 0; i < arr.length; i++) {
-					if(arr[i].contains("d")) {
+					if(arr[i].contains("d") && i != 0) {
 						String[] diceString = arr[i].split("d"); //index 0 = amount of dice, index 1 = dice sides.
 						for (int j = 0; j < Integer.parseInt(diceString[0]); j++) {
 							roll.addDice(new Dice(Integer.parseInt(diceString[1])));
@@ -136,7 +148,7 @@ public class Controller {
 			
 		else
 			
-		if(arr[0].equals("/w")) { //Whisper msg
+		if (arr[0].equals("/w")) { //Whisper-message
 			String content = "";
 			String receiver = arr[1];
 			
@@ -149,7 +161,7 @@ public class Controller {
 		
 		else 
 			
-		if(arr[0].equals("/rp")) { //RP-message
+		if (arr[0].equals("/rp")) { //RP-message
 			String content = "";
 			String rpName = arr[1];
 			
@@ -160,7 +172,7 @@ public class Controller {
 			pushActionToServer(new ChatRPAction(username, rpName, content));
 		}
 		
-		else if(s.length() != 0){ //Normal message
+		else if (s.length() != 0){ //Normal message
 			pushActionToServer(new ChatMessageAction(username, s));
 		}
 	}

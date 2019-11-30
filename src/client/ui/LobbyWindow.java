@@ -20,7 +20,17 @@ import client.Controller;
 import server.actions.RefreshAction;
 import server.actions.SessionJoinRequestAction;
 
+/**
+ * 
+ * Class for building the lobby-window.
+ * 
+ * @author Oscar Strandmark
+ * @author Andreas Jönsson
+ * @author Haris Obradovac
+ */
 public class LobbyWindow extends JFrame {
+	
+	private static final long serialVersionUID = -6577727974819245754L;
 	
 	private JPanel pnlContent;
 	private JScrollPane pnlScroll;
@@ -84,6 +94,8 @@ public class LobbyWindow extends JFrame {
 		btnCreate.addActionListener(listener);
 		btnRefresh.addActionListener(listener);
 		
+		this.addWindowListener(new wListener());
+		
 		//Final calls
 		setContentPane(pnlContent);
 		pack();
@@ -98,29 +110,24 @@ public class LobbyWindow extends JFrame {
 		for(String s : sessionList) {
 			String[] sessionString = s.split(":");
 			model.addRow(sessionString);
-			for(String sl : sessionList) {
-				System.out.print(sl);
-			}
-			System.out.println();
+			
 		}
 		
 		table.setModel(model);
 	}
 
 	/*
-	 * @author Andreas J�nsson
+	 * @author Andreas Jönsson
 	 **/
 	private static class SessionTableModel extends DefaultTableModel {
+
+		private static final long serialVersionUID = 9163942243774054926L;
 
 		// The names of the columns
 		private static final String[] columnNames = { "Session Name", "Current players", "Maximum allowed"};
 
 		public SessionTableModel() {
 			super(columnNames, 0);
-		}
-
-		public String[] getColumnNames() {
-			return columnNames;
 		}
 		
 		@Override

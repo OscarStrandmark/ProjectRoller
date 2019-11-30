@@ -1,31 +1,30 @@
 package shared;
 
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 
+/**
+ * Class that represents an icon on the board. This class contains the values stored in an icon and its position on the field.
+ * 
+ * @author Oscar Strandmark
+ * @author Andreas Jönsson
+ */
 public class CharacterIcon implements Serializable {
 
 	private static final long serialVersionUID = 197612831996384393L;
 
 	private ImageIcon image;
-	private JLabel lblRef;
 	private int x;
 	private int y;
 	
 	private ArrayList<Value> values;
 
-	public CharacterIcon(JLabel image) {
-		this.image = (ImageIcon)image.getIcon();
-		this.x = image.getX();
-		this.y = image.getY();
+	public CharacterIcon(ImageIcon image) {
+		this.x = 0;
+		this.y = 0;
 		values = new ArrayList<Value>();
-		//image.addComponentListener(new IconListener());
 	}
 
 	public ImageIcon getImage() {
@@ -46,27 +45,19 @@ public class CharacterIcon implements Serializable {
 	}
 
 	/**
-	 * An iterator to iterate over the values in the values-list.
+	 * Return the list of all values belonging to the icon.
 	 *
-	 * @return Returns an iterator over all values in the list.
+	 * @return Returns an ArrayList<Value>.
 	 */
-	public Iterator<Value> getValueIterator() {
-		return values.iterator();
+	public ArrayList<Value> getValueList() {
+		ArrayList<Value> clone = new ArrayList<Value>();
+		for(Value v : values) {
+			clone.add(v);
+		}
+		return clone;
 	}
 	
 	public void setValues(ArrayList<Value> valueList) {
 		values = valueList;
-	}
-
-	private class IconListener implements ComponentListener {
-		public void componentMoved(ComponentEvent e) {
-			x = lblRef.getX();
-			y = lblRef.getY();
-			System.out.println(x+","+y);
-		}
-		public void componentResized(ComponentEvent e) {}
-		public void componentShown(ComponentEvent e) {}
-		public void componentHidden(ComponentEvent e) {}
-
 	}
 }

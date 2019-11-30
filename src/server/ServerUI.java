@@ -10,6 +10,12 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+/**
+ * Small UI-window for the server. The window displays the active sessions on the server.
+ * 
+ * @author Oscar Strandmark
+ * @author Andreas Jönsson
+ */
 public class ServerUI extends JFrame {
 
 	private static final long serialVersionUID = 8974573212414025888L;
